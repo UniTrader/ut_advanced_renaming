@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<diff>
+  <!-- Update Object Name in case it incudes Entity Skills -->
+  <add sel="//cue[@name='SectionHandler']//add_skill" pos="after">
+    <signal_objects object="event.param2.{3}.container" param="'Object Name Updated'"/>
+  </add>
+</diff>

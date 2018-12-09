@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml-stylesheet type="text/xsl" href="../../content.xsl"?>
+<content id="utcac_ext_advanced_renaming" name="UT CaC Extension Advanced Renaming" description="Adds Expressions which can be dynamically Replaced into Object Names and adds Option to pass Names down to Subordinates" author="UniTrader" date="2016-09-01" version="030" save="false" uninstaller="false" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://utnas/~unitrader/XRebirthxsds/content.xsd">
+  <text language="44" name="UT CaC Extension Advanced Renaming" description="Adds Expressions which can be dynamically Replaced into Object Names and adds Option to pass Names down to Subordinates" author="UniTrader">
+    <info site="forum.egosoft.com" url="http://forum.egosoft.com/viewtopic.php?t=379177" />
+  </text>
+  <text language="49" name="UT CaC Erweiterung Erweitertes Umbenennen" description="Fügt bei Objektnamen Namensbestandteile ein, die automatisch der Situation angepasst werden können." author="UniTrader">
+    <info site="forum.egosoft.com" url="http://forum.egosoft.com/viewtopic.php?t=379177" />
+  </text>
+</content>

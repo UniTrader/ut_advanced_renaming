@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<diff>
+  <!-- Set initial Object Name for Ships on Small Ship Dealer -->
+  <add sel="//cue[@name='SectionHandler']/actions/do_elseif[@value=&quot;event.param == &apos;cSmallshiptrader_spawnships&apos;&quot;]//start_script" pos="after">
+    <do_if value="{5554302,5} != ''">
+      <set_value name="$ship.pilot.$unformatted_object_name" exact="{5554302,5}"/>
+      <signal_objects object="player.galaxy" param="'Object Name Updated'" param2="$ship"/>
+    </do_if>
+  </add>
+</diff>

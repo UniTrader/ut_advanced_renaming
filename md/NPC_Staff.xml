@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<diff>
+  <!-- Set initial Object Name for Stations -->
+  <add sel="//cue[@name='OnDroneArrival']/actions//do_if[@value='$actor.type == entitytype.manager']">
+    <do_if value="{5554302,3} != ''">
+      <set_value name="$actor.$unformatted_object_name" exact="{5554302,3}"/>
+      <signal_objects object="player.galaxy" param="'Object Name Updated'" param2="$actor.container"/>
+    </do_if>
+  </add>
+</diff>

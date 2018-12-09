@@ -1,0 +1,474 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<language>
+
+<!-- Naming Scheme: 5554 -> Hexadecimal Ascii for UT; 
+10 for Player choices; 20 for Logbook Entries + 
+1 for Player Logo Extension
+2 for Bridge Commands Extension
+3 for Command and Control Extension
+
+301 and 302 for Expression Object Naming (not using the previous Scheme)
+301 + 302 : Expression and Replacement (for static Replacements)
+303: Dynamic Expressions delivered by Script (DO NOT TRANSLATE; USE EXPRESSION ABOVE TO INSERT TRANSLATED STRING INSTEAD)
+
+Ranges for 301:
+0-999: User-Definied Strings (free for the User to use)
+1000-1999: Translation-Definied Strings (for translation of Game Language to common language, like english)
+2000-2999: Pre-Defined static Replacements
+
+How Expressions are marked:
+/*** is a Static Replacement (applied first)
+$***** is a Script-defined dnyamic Replacement (applied second;based on a local Table-Type Var on the Controlentity)
+%***** is a Engine-based dynamic Replacement (applied third, based on Entries in Page 303 id 1-999)
+
+-->
+
+<!--For translations please use Replacements in the ID Range from 1000 to 1999 instead of replacing the Expressions themselves, like its done in the 0001-L049 for example. this way Savegames can be transferred between Languages. -->
+<page id="5554301" title="UT Advanced Renaming" descr="Object Name Static Expressions" voice="no">
+  <!--  Translation Defined Part -->
+  <!-- Color Codes -->
+  <!--<t id="1000">/gr1</t> gray 1 -->
+  <t id="1001">/gr1</t><!-- gray 1 -->
+  <t id="1002">/bla</t><!-- blue -->
+  <t id="1003">/blu</t><!-- blue -->
+  <!--<t id="1004">/cya</t> cyan -->
+  <t id="1005">/cya</t><!-- cyan -->
+  <!--<t id="1006">/grn</t> green -->
+  <t id="1007">/grn</t><!-- green -->
+  <!--<t id="1008">/mag</t> magenta -->
+  <t id="1009">/mag</t><!-- magenta -->
+  <t id="1010">/rot</t>
+  <t id="1011">/red</t>
+  <t id="1012">/hbl</t><!--light blue -->
+  <t id="1013">/lbl</t><!--light blue -->
+  <t id="1014">/wei</t><!-- white -->
+  <t id="1015">/whi</t><!-- white -->
+  <!--<t id="1016">/nor</t> Regular Color -->
+  <t id="1017">/nor</t><!-- Regular Color -->
+  <t id="1018">/gel</t><!-- yellow -->
+  <t id="1019">/yel</t><!-- yellow -->
+  <!--<t id="1020">/gr2</t> gray 2 -->
+  <t id="1021">/gr2</t><!-- gray 2 -->
+  <t id="1022">/swa</t><!-- black -->
+  <t id="1023">/blk</t><!-- black -->
+  <!-- Core Replacements -->
+  <!-- Color Codes -->
+  <t id="2000">/gr1</t><!-- gray 1 -->
+  <t id="2001">\033A</t><!-- gray 1 -->
+  <t id="2002">/blu</t><!-- blue -->
+  <t id="2003">\033B</t><!-- blue -->
+  <t id="2004">/cya</t><!-- cyan -->
+  <t id="2005">\033C</t><!-- cyan -->
+  <t id="2006">/grn</t><!-- green -->
+  <t id="2007">\033G</t><!-- green -->
+  <t id="2008">/mag</t><!-- magenta -->
+  <t id="2009">\033M</t><!-- magenta -->
+  <t id="2010">/red</t>
+  <t id="2011">\033R</t>
+  <t id="2012">/lbl</t><!--light blue -->
+  <t id="2013">\033U</t><!--light blue -->
+  <t id="2014">/whi</t><!-- white -->
+  <t id="2015">\033W</t><!-- white -->
+  <t id="2016">/nor</t><!-- Regular Color -->
+  <t id="2017">\033X</t><!-- Regular Color -->
+  <t id="2018">/yel</t><!-- yellow -->
+  <t id="2019">\033Y</t><!-- yellow -->
+  <t id="2020">/gr2</t><!-- gray 2 -->
+  <t id="2021">\033Z</t><!-- gray 2 -->
+  <t id="2022">/blk</t><!-- black -->
+  <t id="2023">/COLOR0</t><!-- black -->
+  <t id="2024">/COLOR</t><!--Used for black to Insert Coloring Chat (technical entry) -->
+  <t id="2025">\033</t><!-- just the Coloring Char (technical entry) -->
+  <!-- Post-Dynamic part Replacements (used to convert Internal Values to ones which can be displayed, or to clean up stuff not intended to be in the final name) -->
+  <!-- Custom Range: 10.000 to 10.999 ( no Previous Expressions available - if you want colors use Color Tags directly here) -->
+  
+  <!-- Objectputposes -->
+  <t id="11001">%PURPOSE:</t><!-- just for defining the prefix for the next Entries, no actual replacement -->
+  <t id="11002">%PURPOSE:trade</t>
+  <t id="11003">Handel</t>
+  <t id="11004">%PURPOSE:fight</t>
+  <t id="11005">Kampf</t>
+  <t id="11006">%PURPOSE:build</t>
+  <t id="11007">Bauen</t>
+  <t id="11008">%PURPOSE:mine</t>
+  <t id="11009">Mining</t>
+  <t id="11010">%PURPOSE:hack</t>
+  <t id="11011">Hack</t>
+  <t id="11012">%PURPOSE:scan</t>
+  <t id="11013">Scan</t>
+  <!-- Classes -->
+  <t id="11015">%CLASS:</t><!-- just for defining the prefix for the next Entries, no actual replacement -->
+  <t id="11016">%CLASS:ship_xl</t>
+  <t id="11017">XL</t>
+  <t id="11018">%CLASS:ship_l</t>
+  <t id="11019">L</t>
+  <t id="11020">%CLASS:ship_m</t>
+  <t id="11021">M</t>
+  <t id="11022">%CLASS:ship_s</t>
+  <t id="11023">S</t>
+  <t id="11024">%CLASS:ship_xs</t>
+  <t id="11025">XS</t>
+  <t id="11026">%CLASS:station</t>
+  <t id="11027">ST</t>
+  <!-- Replacements for Object Names via %type expression to shorten overly long Names (planned to work for Spaces like %zone or %sector, too - but NYI)-->
+  <!-- Remove Type Variation -->
+  <t id="20000"> {20106,2001}</t>
+  <t id="20001"></t>
+  <t id="20002"> {20106,2101}</t>
+  <t id="20003"></t>
+  <t id="20004"> {20106,2201}</t>
+  <t id="20005"></t>
+  <t id="20006"> {20106,2301}</t>
+  <t id="20007"></t>
+  <t id="20008"> {20106,3001}</t>
+  <t id="20009"></t>
+  <t id="20010"> {20106,3101}</t>
+  <t id="20011"></t>
+  <t id="20012"> {20106,3201}</t>
+  <t id="20013"></t>
+  <t id="20014"> {20106,3301}</t>
+  <t id="20015"></t>
+  <t id="20016"> {20106,3401}</t>
+  <t id="20017"></t>
+  <t id="20018"> {20106,3501}</t>
+  <t id="20019"></t>
+  <!-- shorten overly long Names -->
+</page>
+<page id="5554302" title="UT Advanced Renaming" descr="Object Name Dynamic Expressions Internally used Text" voice="no">
+  <t id="1" comment="Setting:  Version Number of the Custom Expressions File - change this Entry to update the Result on all Objects upon loading a Savegame">0</t>
+  <t id="2" comment="Setting:  Safe Expression converted into English? (default no, set to yes if you want to transfer your Save from another language than english to a Game in another Language)">no</t>
+  <t id="3" comment="Name Template for Stations (will be applied when built, leave empty to not use this)"></t>
+  <t id="4" comment="Name Template for Big Ships (will be applied when built, leave empty to not use this)"></t>
+  <t id="5" comment="Name Template for Small Ships (will be applied when bought, leave empty to not use this)"></t>
+  <t id="6" comment="Help Text in Renaing Menu (All: All Info; Script: Script-defined Expressions only; Static:Static Info only; everything else is no Expression Info">All</t>
+  <!-- NPC Skills
+  S => Skill
+  +
+  B => Boarding NPC
+  C  => Pilot,Captain (both are technically equal)
+  D => Defense Officer
+  E => Engineer
+  M => Manager
+  +
+  A => All(Combined)
+  B => Boarding
+  C => Combat
+  E => Engineering
+  L => Leadership
+  M => Managment
+  N => Navigation
+  O => Morale
+  S => Science
+  P=> Primary Skills in order of importance -->
+  <t id="10">$SBA</t>
+  <t id="11">$SBB</t>
+  <t id="12">$SBC</t>
+  <t id="13">$SBE</t>
+  <t id="14">$SBL</t>
+  <t id="15">$SBM</t>
+  <t id="16">$SBN</t>
+  <t id="17">$SBO</t>
+  <t id="18">$SBS</t>
+  <t id="19">$SBP</t>
+  <t id="20">$SCA</t>
+  <t id="21">$SCB</t>
+  <t id="22">$SCC</t>
+  <t id="23">$SCE</t>
+  <t id="24">$SCL</t>
+  <t id="25">$SCM</t>
+  <t id="26">$SCN</t>
+  <t id="27">$SCO</t>
+  <t id="28">$SCS</t>
+  <t id="29">$SCP</t>
+  <t id="30">$SDA</t>
+  <t id="31">$SDB</t>
+  <t id="32">$SDC</t>
+  <t id="33">$SDE</t>
+  <t id="34">$SDL</t>
+  <t id="35">$SDM</t>
+  <t id="36">$SDN</t>
+  <t id="37">$SDO</t>
+  <t id="38">$SDS</t>
+  <t id="39">$SDP</t>
+  <t id="40">$SEA</t>
+  <t id="41">$SEB</t>
+  <t id="42">$SEC</t>
+  <t id="43">$SEE</t>
+  <t id="44">$SEL</t>
+  <t id="45">$SEM</t>
+  <t id="46">$SEN</t>
+  <t id="47">$SEO</t>
+  <t id="48">$SES</t>
+  <t id="49">$SEP</t>
+  <t id="50">$SMA</t>
+  <t id="51">$SMB</t>
+  <t id="52">$SMC</t>
+  <t id="53">$SME</t>
+  <t id="54">$SML</t>
+  <t id="55">$SMM</t>
+  <t id="56">$SMN</t>
+  <t id="57">$SMO</t>
+  <t id="58">$SMS</t>
+  <t id="59">$SMP</t>
+  <!-- Dynamic Replacements other than Skills -->
+  <t id="100">$sup.name</t>
+  <t id="101">/sup.zone</t>
+  <t id="102">/sup.sec</t>
+  <t id="103">/sup.clu</t>
+  <t id="104">/zone</t>
+  <t id="105">/sec</t>
+  <t id="106">/clu</t>
+  <t id="107">/type</t>
+  <t id="108">/purpose</t>
+  <t id="109">/class</t>
+  <!-- currently unused -->
+  <t id="110">%superiorshortzone</t>
+  <t id="111">%superiorshortsector</t>
+  <t id="112">%superiorshortcluster</t>
+  <t id="113">%shortzone</t>
+  <t id="114">%shortsector</t>
+  <t id="115">%shortcluster</t>
+  <t id="116">%shorttype</t>
+  <!-- #####-->
+  <t id="117">%sub.total</t><!-- Mass Renaming: Total Number of Subordinates -->
+  <t id="118">%sub.id</t><!-- Mass Renaming: continonous Numbering of Subordinates -->
+  <t id="119">/rco</t><!-- Random Color Expression - currently internally suffixed with a number to allow multiple random colors -->
+  <t id="120">$scriptset</t><!-- Script Set used - will result in next Value if unknown -->
+  <t id="121">Vanilla/Unbekannt</t>
+  <t id="122">0</t><!-- Leading Sign for %subnumber if there are more than 9 or 99 total subordinates (will be doubled if necesary)-->
+  <!-- ##### -->
+  <t id="123">$money</t>
+  <t id="124">$cargo.primary</t>
+  <t id="125">Empty</t><!-- Text in case there is no primary Cargo -->
+  <t id="126">$cargo.secondary</t>
+  <t id="124"></t><!-- Text in case there is no secondary Cargo -->
+  <t id="127">$cargo.primary</t>
+  <t id="128">$cargo.free</t>
+  <t id="129">$cargo.volume</t>
+  <t id="130">$cargo.used</t>
+  <t id="131">$cargo.typecount</t>
+  <!-- Freight Class Expression and Results -->
+  <t id="200">/freightclass</t>
+  <t id="201">U(niversal - equals MCEF)</t>
+  <t id="202">M(assengut)</t>
+  <t id="203">C(ontainer)</t>
+  <t id="204">E(nergie)</t>
+  <t id="205">F(lüssigkeit)</t>
+  <t id="206">T(reibstoff)</t><!-- For Completeness; unused -->
+  <t id="207">S(chiffe)</t><!-- For Completeness; implemented but shouldnt appear in regular game -->
+  <t id="208">I(nventar)</t><!-- For Completeness; implemented but shouldnt appear in regular game -->
+  <t id="209">V(erschiedene)</t><!-- Split Vargo Bay, like the one used by a Scaldis -->
+  <!-- Station Building Stages (Vanilla sequences only; will be made more general once standard string functions are available)) -->
+  <t id="301">$stageA#</t>
+  <t id="302">$stageB#</t>
+  <t id="303">$stageC#</t>
+  <t id="304">$stageD#</t>
+  <t id="305">$stageE#</t>
+  <t id="306">$stageF#</t>
+  <t id="307">$stageG#</t>
+  <t id="308">$stageH#</t>
+  <t id="309">$stageI#</t>
+  <!-- UT CaC Expressions -->
+  <t id="400">UT CaC</t><!-- result value for $scriptset with UT CaC -->
+  <t id="401">$currentorder</t>
+  <t id="402">$ordercount</t>
+  <!-- Debug Expression - sets or removes/resets the Debug Values for Object if present/not present -->
+  <t id="998">DEBUG OFF</t><!-- will be removed but forces Reset of all Debug Vars -->
+  <t id="999">DEBUG</t>
+  <!-- Internally used Text eg for Menus -->
+  <t id="1001">                             Untergebene Umbenennen</t><!--leading spaces intentional to center text till i find out how to do it properly-->
+  <t id="1002">Alle Untergebenen</t>
+  <t id="1003">Benenne alle Untergebenen dieses Schiffes/dieser Station um</t>
+  <t id="1004">Grosschiffe</t>
+  <t id="1005">Benenne alle Untergebenen L/XL Schiffe dieses Schiffes/dieser Station um</t>
+  <t id="1006">Kleinschiffe</t>
+  <t id="1007">Benenne alle Untergebenen M/S/XS Schiffe dieses Schiffes/dieser Station </t>
+  <t id="1008">Logowahl \(wird beim nächsten Werftbesuch angewendet\)</t>
+  <t id="1009">Vorgesetzter/Standardlogo</t>
+  <t id="1010">Momentanes Logo</t>
+  <!-- Help Text -->
+  <t id="1100">Verfügbare Ausdrücke:</t>
+  <t id="1101">Farben: {5554301, 2025}0{5554301, 2022} {5554301, 2001}{5554301, 2000} {5554301, 2003}{5554301, 2002} {5554301, 2005}{5554301, 2004} {5554301, 2007}{5554301, 2006} {5554301, 2009}{5554301, 2008} {5554301, 2011}{5554301, 2010} {5554301, 2013}{5554301, 2012} {5554301, 2015}{5554301, 2014} {5554301, 2019}{5554301, 2018} {5554301, 2021}{5554301, 2020}        {5554301, 2017}Reguläre Farbe /(Menüabhängig/): {5554301, 2016}</t>
+  <t id="1102">Statische Ausdrücke: {5554302, 107}  {5554302, 109}  {5554302, 108}  {5554302, 200}  {5554302, 104}  {5554302, 105}  {5554302, 106}  {5554302, 101}  {5554302, 102}  {5554302, 103}</t>
+  <t id="1103">Dynamische ausdrücke: {5554302, 301} {5554302, 302} etc. || {5554302, 100}</t>
+  <t id="1104">Skills \(3-buchstaben-kombination\}: $S{5554301, 2005}A{5554301, 2007}B</t>
+  <t id="1105">   {5554301, 2005}A: {5554301, 2017}B => Marineoffizier || C => Pilot/Captain || D => Verteidigungsoffizier || E => Techniker || M => Manager</t>
+  <t id="1106">   {5554301, 2007}B: {5554301, 2017}A => Alle \(0-100\) || B => Entern || C => Kampf || E => Technik || L => Führung || M => Verwaltung</t>
+  <t id="1107">        N => Navigation || O => Moral || S => Wissenschaft || P => Primäre Skills \(in Reihenfolge der Wichtigkeit\)</t>
+  <t id="1108">Nur beim Massen-Umbenennen: </t>
+  <t id="1109">{5554302, 117} => Gesamtzahl der Untergebenen, die umbenannt werden</t>
+  <t id="1110">{5554302, 118} => Fortlaufende Nummer der umbenannten Untergebenen, mit führenden nullen wenn nötig</t>
+  <t id="1111">Verfügbare Script-definierte Ausdrücke:</t>
+  <t id="1112">\(Knöpfe funktionieren nicht\)</t>
+  <!-- Keyboard Buttons for special Funcions -->
+  <t id="1200">Keyboard</t>
+  <t id="1201">Shift</t>
+  <t id="1202">\033GShift</t>
+  <t id="1203">Alt</t>
+  <t id="1204">\033GAlt</t>
+  <t id="1205">&lt;   &gt;</t>
+  <t id="1206">Super /(unused/)</t>
+  <t id="1207">\033GSuper /(unused/)</t>
+  <t id="1208">&lt;==</t>
+  <!-- Expression Update from October/November 2016 - converting all expressions to new format -->
+  <t id="2000">%S</t>
+  <t id="2001">$S</t><!-- All Skills -->
+  <t id="2002">%superiorobject</t>
+  <t id="2003">$sup.name</t>
+  <t id="2004">%superiorzone</t>
+  <t id="2005">$sup.zone</t>
+  <t id="2006">%superiorsector</t>
+  <t id="2007">$sup.sec</t>
+  <t id="2008">%superiorcluster</t>
+  <t id="2009">$sup.clu</t>
+  <t id="2010">%zone</t>
+  <t id="2011">/zone</t>
+  <t id="2012">%sector</t>
+  <t id="2013">/sec</t>
+  <t id="2014">%cluster</t>
+  <t id="2015">/clu</t>
+  <t id="2016">%type</t>
+  <t id="2017">/type</t>
+  <t id="2018">%purpose</t>
+  <t id="2019">/purpose</t>
+  <t id="2020">%class</t>
+  <t id="2021">/class</t>
+  <t id="2022">%scriptset</t>
+  <t id="2023">$scriptset</t>
+  <t id="2024">%freightclass</t>
+  <t id="2025">/freightclass</t>
+  <t id="2026">%stage</t>
+  <t id="2027">$stage</t>
+</page>
+<page id="5554303" title="UT Advanced Renaming" descr="Keyboard Keys" voice="no">
+<!-- ID Explaination: id 123 is:
+1 - row
+2 - key in Row (0 equals the last Key 10)
+3 - Modifier, as bitmask: 0 - regular, 1 - Shift, 2 - Alt, 4 - Super => 3 is Shift + Alt
+-->
+<!-- number Row -->
+<t id="110">1</t>
+<t id="120">2</t>
+<t id="130">3</t>
+<t id="140">4</t>
+<t id="150">5</t>
+<t id="160">6</t>
+<t id="170">7</t>
+<t id="180">8</t>
+<t id="190">9</t>
+<t id="100">0</t>
+<t id="111">!</t>
+<t id="121">"</t>
+<t id="131">§</t>
+<t id="141">$</t>
+<t id="151">%</t>
+<t id="161">&amp;</t>
+<t id="171">/</t>
+<t id="181">(</t>
+<t id="191">)</t>
+<t id="101">=</t>
+<t id="112">¹</t>
+<t id="122">²</t>
+<t id="132">³</t>
+<t id="142">¼</t>
+<t id="152">½</t>
+<t id="162">¬</t>
+<t id="172">{</t>
+<t id="182">[</t>
+<t id="192">]</t>
+<t id="102">}</t>
+<!-- Top Row -->
+<t id="210">q</t>
+<t id="220">w</t>
+<t id="230">e</t>
+<t id="240">r</t>
+<t id="250">t</t>
+<t id="260">z</t>
+<t id="270">u</t>
+<t id="280">i</t>
+<t id="290">o</t>
+<t id="200">p</t>
+<t id="211">Q</t>
+<t id="221">W</t>
+<t id="231">E</t>
+<t id="241">R</t>
+<t id="251">T</t>
+<t id="261">Z</t>
+<t id="271">U</t>
+<t id="281">I</t>
+<t id="291">O</t>
+<t id="201">P</t>
+<t id="212">@</t>
+<t id="222">ł</t>
+<t id="232">€</t>
+<t id="242">¶</t>
+<t id="252">ŧ</t>
+<t id="262">←</t>
+<t id="272">↓</t>
+<t id="282">→</t>
+<t id="292">ø</t>
+<t id="202">þ</t>
+<!-- Middle Row -->
+<t id="310">a</t>
+<t id="320">s</t>
+<t id="330">d</t>
+<t id="340">f</t>
+<t id="350">g</t>
+<t id="360">h</t>
+<t id="370">j</t>
+<t id="380">k</t>
+<t id="390">l</t>
+<t id="300">ö</t>
+<t id="311">A</t>
+<t id="321">S</t>
+<t id="331">D</t>
+<t id="341">F</t>
+<t id="351">G</t>
+<t id="361">H</t>
+<t id="371">J</t>
+<t id="381">K</t>
+<t id="391">L</t>
+<t id="301">Ö</t>
+<t id="312">æ</t>
+<t id="322">ſ</t>
+<t id="332">ð</t>
+<t id="342">đ</t>
+<t id="352">ŋ</t>
+<t id="362">ħ</t>
+<t id="372">↓</t>
+<t id="382">ĸ</t>
+<t id="392">ł</t>
+<t id="302">˝</t>
+<!-- Bottom Row -->
+<t id="410">y</t>
+<t id="420">x</t>
+<t id="430">c</t>
+<t id="440">v</t>
+<t id="450">b</t>
+<t id="460">n</t>
+<t id="470">m</t>
+<t id="480">,</t>
+<t id="490">.</t>
+<t id="400">-</t>
+<t id="411">Y</t>
+<t id="421">X</t>
+<t id="431">C</t>
+<t id="441">V</t>
+<t id="451">B</t>
+<t id="461">N</t>
+<t id="471">M</t>
+<t id="481">,</t>
+<t id="491">.</t>
+<t id="401">-</t>
+<t id="412">»</t>
+<t id="422">«</t>
+<t id="432">¢</t>
+<t id="442">„</t>
+<t id="452">“</t>
+<t id="462">”</t>
+<t id="472">µ</t>
+<t id="482">·</t>
+<t id="492">…</t>
+<t id="402">–</t>
+</page>
+</language>

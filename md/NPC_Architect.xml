@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<diff>
+  <!-- Update Object Name when a Station Module is complete -->
+  <add sel="//cue[@name='BuildFinished_Active']/actions/do_if">
+    <signal_objects object="event.param2.{3}.container" param="'Object Name Updated'"/>
+  </add>
+</diff>
