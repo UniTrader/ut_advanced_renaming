@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<mdscript xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="UT_CAC_Object_Name_Managment" xsi:noNamespaceSchemaLocation="http://utnas/~unitrader/XRebirthxsds/md.xsd">
+<mdscript name="UT_CAC_Object_Name_Managment" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://utnas/~unitrader/XRebirthxsds/md.xsd">
   <cues>
-    <cue name="Init" version="5">
+    <cue name="Init">
       <actions>
         <!-- Set Up all Groups needed for Automatic Name Upates -->
         <create_group groupname="$NamedObjects" comment="group to keep track of all Named Objects (for future Force-Updates of Non-Dynamic Names)"/>
@@ -9,49 +9,6 @@
         <!-- set current User Expression Version so Update on load only happens when it changed -->
         <set_value name="$customversion" exact="{5554302,1}"/>
       </actions>
-      <patch sinceversion="2">
-        <remove_value name="$Skill"/>
-        <create_group groupname="$NamedObjects"/>
-      </patch>
-      <patch sinceversion="4">
-        <find_ship groupname="$NamedObjectsDynamic" multiple="true" space="player.galaxy" trueowner="faction.player"/>
-        <find_station groupname="$NamedObjectsDynamic" multiple="true" space="player.galaxy" trueowner="faction.player"/>
-        <do_all exact="$NamedObjectsDynamic.count" counter="$i" reverse="true">
-          <do_if value="$NamedObjectsDynamic.{$i}.isclass.station">
-            <do_if value="$NamedObjectsDynamic.{$i}.tradenpc.exists and $NamedObjectsDynamic.{$i}.controlentity.$unformatted_object_name? ">
-              <set_value name="$NamedObjectsDynamic.{$i}.tradenpc.$unformatted_object_name" exact="$NamedObjectsDynamic.{$i}.controlentity.$unformatted_object_name"/>
-              <remove_value name="$NamedObjectsDynamic.{$i}.controlentity.$unformatted_object_name"/>
-            </do_if>
-            <do_elseif value="$NamedObjectsDynamic.{$i}.controlentity.$unformatted_object_name?">
-              <remove_value name="$NamedObjectsDynamic.{$i}.controlentity.$unformatted_object_name"/>
-              <remove_from_group group="$NamedObjectsDynamic" object="$NamedObjectsDynamic.{$i}"/>
-            </do_elseif>
-          </do_if>
-        </do_all>
-        <add_to_group groupname="$NamedObjects" group="$NamedObjectsDynamic"/>
-      </patch>
-      <patch sinceversion="5">
-        <add_to_group groupname="$NamedObjectsDynamic" group="$NamedObjects"/>
-        <get_text_ids_in_range result="$keys" page="5554302" start="2000" end="2099" factor="2"/>
-        <do_all exact="$NamedObjectsDynamic.count" counter="$i">
-          <do_if value="$NamedObjectsDynamic.{$i}.isclass.station">
-            <do_all exact="$keys.count" counter="$j" reverse="false">
-              <substitute_text text="$NamedObjectsDynamic.{$i}.tradenpc.$unformatted_object_name">
-                <replace string="readtext.{5554302}.{$keys.{$j}}" with="readtext.{5554302}.{$keys.{$j}+1}"/>
-              </substitute_text>
-            </do_all>
-          </do_if>
-          <do_else>
-            <do_all exact="$keys.count" counter="$j" reverse="false">
-              <substitute_text text="$NamedObjectsDynamic.{$i}.controlentity.$unformatted_object_name">
-                <replace string="readtext.{5554302}.{$keys.{$j}}" with="readtext.{5554302}.{$keys.{$j}+1}"/>
-              </substitute_text>
-            </do_all>
-          </do_else>
-        </do_all>
-        <signal_objects group="$NamedObjectsDynamic" param="'Object Name Updated'" delay="5s"/>
-        <remove_value name="$keys"/>
-      </patch>
       <cues>
         <cue name="NameUpdate" instantiate="true">
           <conditions>
@@ -408,6 +365,7 @@
             </do_if>
             <do_elseif value="( @$object.cargo.{$cargolist.{$i}} * @$cargolist.{$i}.volume gt ( @$object.cargo.{$secondarycargo}.count * @$secondarycargo.volume )">
               <set_value name="$secondarycargo" exact="$cargolist.{$i}"/>
+            </do_elseif>
           </do_all>
           <substitute_text text="$nameA">
             <!-- Skill-based Expressions -->
