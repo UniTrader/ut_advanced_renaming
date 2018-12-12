@@ -14728,7 +14728,7 @@ function menu.infoChangeObjectName(objectid, text, textchanged)
     -- UniTrader change: Set blackboard Var and Signal Universe/Object instead of actual renaming (is handled in MD)
     if GetControlEntity(objectid) then
       SetNPCBlackboard((GetComponentData(objectid, "assignedpilot")), "$unformatted_object_name" , text)
-      SignalObject(GetComponentData(menu.object, "galaxyid" ) , "Object Name Updated" , menu.object )
+      SignalObject(GetComponentData(objectid, "galaxyid" ) , "Object Name Updated" , objectid )
     -- UniTrader Changes end (next line was a if before, but i have some diffrent conditions)
     elseif textchanged then
 		SetComponentName(objectid, text)
