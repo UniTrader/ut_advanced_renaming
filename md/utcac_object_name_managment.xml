@@ -96,7 +96,7 @@
     <library name="RenameActions">
       <actions>
         <!-- confirm valadity of Object, saveBlackboard Entity -->
-        <set_value name="$controlentity" exact="if $object == player.primaryship then player.entity else if $object.isclass.station then $object.tradenpc else $object.controlentity"/>
+        <set_value name="$controlentity" exact="if $object == player.occupiedship then $object.assignedpilot else if $object.isclass.station then $object.tradenpc else if $object.isclass.ship then $object.pilot else $object.object.controlentity"/>
         <do_if value="$object.exists and $controlentity.$unformatted_object_name?">
           <do_if value="$keys? or $nameA? or $nameB? or $cargotype? or $type? or $scriptset? or $debug?">
             <debug_text filter="error" text="'Internally used Vars in Included Actions also used by previous Code: $keys: %1 $nameA: %2 $nameB: %3 $cargotype: %4 $type: %5 $scriptset: %6 $debug: %7 - will be overridden and removed!!'.[@$keys,@$nameA,@$nameB,@$cargotype,@$type,@$scriptset,@$debug]"/>
@@ -112,8 +112,8 @@
             <set_value name="$object.defencenpc.$debug" exact="false" chance="$object.defencenpc.exists * 100"/>
             <set_value name="$object.tradenpc.$debug" exact="false" chance="$object.tradenpc.exists * 100"/>
             <set_value name="$object.engineer.$debug" exact="false" chance="$object.engineer.exists * 100"/>
-            <set_value name="$object.architect.$debug" exact="false" chance="$object.architect.exists * 100"/>
-            <set_value name="$object.boardingnpc.$debug" exact="false" chance="$object.boardingnpc.exists * 100"/>
+            <!-- <set_value name="$object.architect.$debug" exact="false" chance="$object.architect.exists * 100"/>
+            <set_value name="$object.boardingnpc.$debug" exact="false" chance="$object.boardingnpc.exists * 100"/-->
             <set_value name="$controlentity.$unformatted_object_name" exact="$nameB"/>
             <set_value name="$nameA" exact="$nameB"/>
           </do_if>
@@ -127,10 +127,11 @@
             <set_value name="$object.defencenpc.$debug" exact="true" chance="$object.defencenpc.exists * 100"/>
             <set_value name="$object.tradenpc.$debug" exact="true" chance="$object.tradenpc.exists * 100"/>
             <set_value name="$object.engineer.$debug" exact="true" chance="$object.engineer.exists * 100"/>
-            <set_value name="$object.architect.$debug" exact="true" chance="$object.architect.exists * 100"/>
-            <set_value name="$object.boardingnpc.$debug" exact="true" chance="$object.boardingnpc.exists * 100"/>
+            <!-- set_value name="$object.architect.$debug" exact="true" chance="$object.architect.exists * 100"/>
+            <set_value name="$object.boardingnpc.$debug" exact="true" chance="$object.boardingnpc.exists * 100"/-->
             <set_value name="$debug" exact="'%1 Advanced Renaming Name Stages:  // naming Entity: %3\nUNFORM:  %2'.[$object.name,$nameA,$controlentity.name]"/>
           </do_if>
+          <set_value name="$debug" exact="'%1 Advanced Renaming Name Stages:  // naming Entity: %3\nUNFORM:  %2'.[$object.name,$nameA,$controlentity.name]"/>
           <!-- ========= -->
           <!-- Perform Static Replacements (Preffered Marking Key / ) -->
           <get_text_ids_in_range result="$keys" page="5554301" start="0" end="1999" factor="2"/>
@@ -161,10 +162,9 @@
             <!-- Universal or 4 Type Mixed Cargo -->
             <do_if value="$object.cargo.tags.indexof.{tag.bulk} and $object.cargo.tags.indexof.{tag.container} and $object.cargo.tags.indexof.{tag.energy} and $object.cargo.tags.indexof.{tag.liquid}">
               <!-- Differ between real Universal Cargo and Split Multi  Cargo -->
-              <do_if comment="checking if all Cargo Types have equal amount of Capacity ( C and B , C and E , C and L) indicating Universal Cargo (no direct check available)" value="
-                $object.cargo.{ware.bofu}.max == $object.cargo.{ware.meat}.max and 
-                $object.cargo.{ware.bofu}.max == $object.cargo.{ware.antimattercells}.max and 
-                $object.cargo.{ware.microchips}.max == $object.cargo.{ware.hydrogen}.max ">
+              <do_if comment="checking if all Cargo Types have equal amount of Capacity ( C and B , C and L) indicating Universal Cargo (no direct check available)" value="
+                $object.cargo.{ware.energycells}.max * ware.helium.vloume == $object.cargo.{ware.helium}.max and 
+                $object.cargo.{ware.energycells}.max * ware.ice.vloume == $object.cargo.{ware.ice}.max ">
                 <set_value name="$cargotype" exact="{5554302,201}"/>
               </do_if>
               <do_else>
@@ -353,17 +353,18 @@
           <!-- Generate the Long Name -->
           <!-- Find Primary and Secondary Ware in Cargo -->
           <set_value name="$cargolist" exact="@$object.cargo.list"/>
-          <do_if value="$cargolist.indexof.{ware.fuelcells}">
+		  <!-- Old Code from XR
+		  <do_if value="$cargolist.indexof.{ware.fuelcells}">
             <remove_value name="$cargolist.{$cargolist.indexof.{ware.fuelcells}}"/>
-          </do_if>
+          </do_if-->
           <set_value name="$primarycargo" exact="null"/>
           <set_value name="$secondarycargo" exact="null"/>
           <do_all exact="$cargolist.count" counter="$i">
-            <do_if value="( @$object.cargo.{$cargolist.{$i}} * @$cargolist.{$i}.volume gt ( @$object.cargo.{$primarycargo}.count * @$primarycargo.volume )">
+            <do_if value="( @$object.cargo.{$cargolist.{$i}} * @$cargolist.{$i}.volume gt ( @$object.cargo.{$primarycargo}.count * @$primarycargo.volume ))">
               <set_value name="$secondarycargo" exact="$primarycargo"/>
               <set_value name="$primarycargo" exact="$cargolist.{$i}"/>
             </do_if>
-            <do_elseif value="( @$object.cargo.{$cargolist.{$i}} * @$cargolist.{$i}.volume gt ( @$object.cargo.{$secondarycargo}.count * @$secondarycargo.volume )">
+            <do_elseif value="( @$object.cargo.{$cargolist.{$i}} * @$cargolist.{$i}.volume gt ( @$object.cargo.{$secondarycargo}.count * @$secondarycargo.volume ))">
               <set_value name="$secondarycargo" exact="$cargolist.{$i}"/>
             </do_elseif>
           </do_all>
