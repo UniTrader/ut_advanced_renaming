@@ -100,6 +100,7 @@
         <do_if value="$object.exists and $controlentity.$unformatted_object_name?">
           <do_if value="$keys? or $nameA? or $nameB? or $cargotype? or $type? or $scriptset? or $debug?">
             <debug_text filter="error" text="'Internally used Vars in Included Actions also used by previous Code: $keys: %1 $nameA: %2 $nameB: %3 $cargotype: %4 $type: %5 $scriptset: %6 $debug: %7 - will be overridden and removed!!'.[@$keys,@$nameA,@$nameB,@$cargotype,@$type,@$scriptset,@$debug]"/>
+            <debug_to_file text="'[== ERROR ==] Internally used Vars in Included Actions also used by previous Code: $keys: %1 $nameA: %2 $nameB: %3 $cargotype: %4 $type: %5 $scriptset: %6 $debug: %7 - will be overridden and removed!!'.[@$keys,@$nameA,@$nameB,@$cargotype,@$type,@$scriptset,@$debug]" name="'Advanced Renaming.txt'" directory="'..'" output="true"/>
           </do_if>
           <set_value name="$nameA" exact="$controlentity.$unformatted_object_name"/>
           <!-- Check if we have a Debug Expression in the Object Name and activate it (if not deactivate when outside Debug Mode)-->
@@ -160,7 +161,7 @@
           <!-- Freight Class -->
           <do_if value="true" comment="just for better node folding">
             <!-- Universal or 4 Type Mixed Cargo -->
-            <do_if value="$object.cargo.tags.indexof.{tag.bulk} and $object.cargo.tags.indexof.{tag.container} and $object.cargo.tags.indexof.{tag.energy} and $object.cargo.tags.indexof.{tag.liquid}">
+            <do_if value="$object.cargo.tags.indexof.{tag.bulk} and $object.cargo.tags.indexof.{tag.container} and $object.cargo.tags.indexof.{tag.liquid}">
               <!-- Differ between real Universal Cargo and Split Multi  Cargo -->
               <do_if comment="checking if all Cargo Types have equal amount of Capacity ( C and B , C and L) indicating Universal Cargo (no direct check available)" value="
                 $object.cargo.{ware.energycells}.max * ware.helium.vloume == $object.cargo.{ware.helium}.max and 
@@ -221,13 +222,13 @@
           <substitute_text text="$nameA">
             <replace string="{5554302,200}" with="$cargotype"/>
             <replace string="{5554302,100}" with="if $object.commander.controlentity.$shortname then $object.commander.controlentity.$shortname else $object.commander.name"/>
-            <replace string="{5554302,101}" with="$object.commander.zone.name"/>
-            <replace string="{5554302,102}" with="$object.commander.sector.name"/>
-            <replace string="{5554302,103}" with="$object.commander.cluster.name"/>
-            <replace string="{5554302,104}" with="$object.zone.name"/>
-            <replace string="{5554302,105}" with="$object.sector.name"/>
-            <replace string="{5554302,106}" with="$object.cluster.name"/>
-            <replace string="{5554302,107}" with="$type"/>
+            <replace string="{5554302,101}" with="$object.commander.sector.name"/>
+            <replace string="{5554302,102}" with="$object.commander.cluster.name"/>
+            <replace string="{5554302,103}" with="$object.sector.name"/>
+            <replace string="{5554302,104}" with="$object.cluster.name"/>
+            <replace string="{5554302,105}" with="$type"/>
+            <replace string="{5554302,106}" with="$object.macro.name"/>
+            <replace string="{5554302,107}" with="$object.macro.name"/>
             <replace string="{5554302,108}" with="{5554301,11001} + $object.primarypurpose"/> <!-- will be post-dynamic replaced with proper Purpose Name -->
             <replace string="{5554302,109}" with="{5554301,11015} + $object.class"/> <!-- will be post-dynamic replaced with proper Class Name -->
             <!-- Random Color (cannot be done from t-file directly) -->
@@ -370,7 +371,7 @@
           </do_all>
           <substitute_text text="$nameA">
             <!-- Skill-based Expressions -->
-            <replace string="{5554302,10}" with="@$object.boardingnpc.skill.combinedskill"/>
+            <!--replace string="{5554302,10}" with="@$object.boardingnpc.skill.combinedskill"/>
             <replace string="{5554302,11}" with="@$object.boardingnpc.skill.boarding"/>
             <replace string="{5554302,12}" with="@$object.boardingnpc.skill.combat"/>
             <replace string="{5554302,13}" with="@$object.boardingnpc.skill.engineering"/>
@@ -383,7 +384,7 @@
 $object.boardingnpc.skill.{$object.boardingnpc.type.skilltypes.{1}} + 
 ( if $object.boardingnpc.type.skilltypes.{2}? then  + $object.boardingnpc.skill.{$object.boardingnpc.type.skilltypes.{2}} else '' ) +  
 ( if $object.boardingnpc.type.skilltypes.{3}? then  + $object.boardingnpc.skill.{$object.boardingnpc.type.skilltypes.{3}} else '' ) )
-else 'null'"/>
+else 'null'"/-->
             <replace string="{5554302,20}" with="@$object.pilot.combinedskill"/>
             <replace string="{5554302,21}" with="@$object.pilot.skill.boarding"/>
             <replace string="{5554302,22}" with="@$object.pilot.skill.combat"/>
@@ -440,7 +441,7 @@ $object.tradenpc.skill.{$object.tradenpc.type.skilltypes.{1}} +
 ( if $object.tradenpc.type.skilltypes.{2}? then  + $object.tradenpc.skill.{$object.tradenpc.type.skilltypes.{2}} else '' ) +  
 ( if $object.tradenpc.type.skilltypes.{3}? then  + $object.tradenpc.skill.{$object.tradenpc.type.skilltypes.{3}} else '' ) )
 else 'null'"/>
-            <!-- Station Build Sequence Progress -->
+            <!-- Station Build Progress -->
             <replace string="{5554302,301}" with="if @$object.completebuildplan.{'a'}.stage then $object.currentbuildplan.{'a'}.stage else ''"/>
             <replace string="{5554302,302}" with="if @$object.completebuildplan.{'b'}.stage then $object.currentbuildplan.{'b'}.stage else ''"/>
             <replace string="{5554302,303}" with="if @$object.completebuildplan.{'c'}.stage then $object.currentbuildplan.{'c'}.stage else ''"/>
@@ -518,7 +519,7 @@ else 'null'"/>
           <set_object_name object="$object" name="$nameA + {5554301,2017}" comment="adding neutral Color Tag at the end"/>
           <add_to_group groupname="md.UT_CAC_Object_Name_Managment.Init.$NamedObjects" object="$object"/>
           <!-- for the short name / $nameB look in the Code Group before - more economic there -->
-          <debug_text filter="general" text="$debug" chance="$debug? * 100"/>
+          <debug_to_file text="$debug" name="'Advanced Renaming.txt'" directory="'..'" output="true"/>
           <remove_value name="$keys"/>
           <remove_value name="$nameA"/>
           <remove_value name="$nameB"/>
@@ -530,11 +531,12 @@ else 'null'"/>
         <do_else>
           <do_if value="not $object.exists">
             <debug_text filter="error" text="'Object not set or Invalid for Included Code $object: %1 - doing nothing!!'.[@$object]"/>
+            <debug_to_file text="'[== ERROR ==] Object not set or Invalid for Included Code $object: %1 - doing nothing!!'.[@$object]" name="'Advanced Renaming.txt'" directory="'..'"/>
           </do_if>
           <do_else>
             <remove_from_group group="md.UT_CAC_Object_Name_Managment.Init.$NamedObjects" object="$object"/>
             <remove_from_group group="md.UT_CAC_Object_Name_Managment.Init.$NamedObjectsDynamic" object="$object"/>
-            <debug_text filter="general" text="'No Unformatted Name Var set on Object: %1 - doing nothing!! (may be caused by a Script Update)'.[@$object]"/>
+            <debug_to_file text="'No Unformatted Name Var set on Object: %1 - doing nothing!! (may be caused by a Script Update)'.[@$object]" name="'Advanced Renaming.txt'" directory="'..'" output="true"/>
           </do_else>
         </do_else>
       </actions>

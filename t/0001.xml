@@ -142,29 +142,41 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   -->
   <!-- Replacements for Object Names via %type expression to shorten overly long Names (planned to work for Spaces like %zone or %sector, too - but NYI)-->
   <!-- Remove Type Variation -->
-  <t id="20000"> {20106,2001}</t>
+  <t id="20000"> {20111,2001}</t><!--Universal-->
   <t id="20001"></t>
-  <t id="20002"> {20106,2101}</t>
+  <t id="20002"> {20111,2101}</t><!-- Solid -->
   <t id="20003"></t>
-  <t id="20004"> {20106,2201}</t>
+  <t id="20004"> {20111,2201}</t><!-- Liquid -->
   <t id="20005"></t>
-  <t id="20006"> {20106,2301}</t>
+  <t id="20006"> {20111,3001}</t><!-- XL -->
   <t id="20007"></t>
-  <t id="20008"> {20106,3001}</t>
+  <t id="20008"> {20111,3101}</t><!-- Mineral -->
   <t id="20009"></t>
-  <t id="20010"> {20106,3101}</t>
+  <t id="20010"> {20111,3201}</t><!-- Gas -->
   <t id="20011"></t>
-  <t id="20012"> {20106,3201}</t>
+  <t id="20012"> {20111,3301}</t><!-- Fuel -->
   <t id="20013"></t>
-  <t id="20014"> {20106,3301}</t>
+  <t id="20014"> {20111,4001}</t><!-- Tanker -->
   <t id="20015"></t>
-  <t id="20016"> {20106,3401}</t>
+  <t id="20016"> {20111,1001}</t><!-- Raider -->
   <t id="20017"></t>
-  <t id="20018"> {20106,3501}</t>
+  <t id="20018"> {20111,1101}</t><!-- Vanguard -->
   <t id="20019"></t>
+  <t id="20020"> {20111,1201}</t><!-- Sentinel -->
+  <t id="20021"></t>
+  <t id="20022"> {20111,5101}</t><!-- Light -->
+  <t id="20023"></t>
+  <t id="20024"> {20111,5201}</t><!-- Heavy -->
+  <t id="20025"></t>
+  <t id="20026"> {20111,5301}</t><!-- Basic -->
+  <t id="20027"></t>
+  <t id="20028"> {20111,5401}</t><!--  Luxury -->
+  <t id="20029"></t>
+  <!--<t id="20030"> {20111,6001}</t><!- -  Venture - ->
+  <t id="20031"></t>-->
   <!-- shorten overly long Names -->
-  <t id="20020">Construction Vessel</t>
-  <t id="20021">CVessel</t>
+  <t id="20040">Construction Vessel</t>
+  <t id="20041">CVessel</t>
 </page>
 <page id="5554302" title="UT Advanced Renaming" descr="Object Name Dynamic Expressions and Internally used Text" voice="no">
   <t id="1" comment="Setting:  Version Number of the Custom Expressions File - change this Entry to update the Result on all Objects upon loading a Savegame">0</t>
@@ -176,7 +188,7 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   <!-- NPC Skills
   S => Skill
   +
-  B => Boarding NPC
+  B => Boarding NPC (not present in X4; unused)
   C  => Pilot,Captain (both are technically equal)
   D => Defense Officer
   E => Engineer
@@ -244,13 +256,13 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   <t id="59">$SMP</t>
   <!-- Dynamic Replacements other than Skills -->
   <t id="100">$sup.name</t>
-  <t id="101">/sup.zone</t>
-  <t id="102">/sup.sec</t>
-  <t id="103">/sup.clu</t>
-  <t id="104">/zone</t>
-  <t id="105">/sec</t>
-  <t id="106">/clu</t>
-  <t id="107">/type</t>
+  <t id="101">/sup.sec</t>
+  <t id="102">/sup.clu</t>
+  <t id="103">/sec</t>
+  <t id="104">/clu</t>
+  <t id="105">/type0</t>
+  <t id="106">/type-</t><!-- Unused; Intended for shortened Variation if there is demand -->
+  <t id="107">/type+</t>
   <t id="108">/purpose</t>
   <t id="109">/class</t>
   <!-- currently unused -->
@@ -290,14 +302,14 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   <t id="207">S(hips)</t><!-- For Completeness; implemented but shouldnt appear in regular game -->
   <t id="208">I(nventory)</t><!-- For Completeness; implemented but shouldnt appear in regular game -->
   <t id="209">M(ultiple)</t><!-- For Seperated Cargo, like Scaldis, to differentiate from U -->
-  <!-- Station Building Stages (Vanilla sequences only; will be made more general once standard string functions are available)) -->
-  <t id="301">$stageA#</t>
-  <t id="302">$stageB#</t>
-  <t id="303">$stageC#</t>
-  <t id="304">$stageD#</t>
-  <t id="305">$stageE#</t>
-  <t id="306">$stageF#</t>
-  <t id="307">$stageG#</t>
+  <!-- Station Building Progress -->
+  <t id="301">$build.time.elapsed</t>
+  <t id="302">$build.time.total</t>
+  <t id="303">$build.steptime.elapsed</t>
+  <t id="304">$build.steptime.total</t>
+  <t id="305">$build.progress</t><!-- step time / total time *100 -->
+  <t id="306">$building.queue</t><!-- $station.builds.queued.count -->
+  <t id="307">$building.inprogress</t><!-- $station.builds.inprogress.count -->
   <t id="308">$stageH#</t>
   <t id="309">$stageI#</t>
   <!-- UT CaC Expressions -->
