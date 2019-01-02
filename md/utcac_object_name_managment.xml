@@ -442,15 +442,13 @@ $object.tradenpc.skill.{$object.tradenpc.type.skilltypes.{1}} +
 ( if $object.tradenpc.type.skilltypes.{3}? then  + $object.tradenpc.skill.{$object.tradenpc.type.skilltypes.{3}} else '' ) )
 else 'null'"/>
             <!-- Station Build Progress -->
-            <replace string="{5554302,301}" with="if @$object.completebuildplan.{'a'}.stage then $object.currentbuildplan.{'a'}.stage else ''"/>
-            <replace string="{5554302,302}" with="if @$object.completebuildplan.{'b'}.stage then $object.currentbuildplan.{'b'}.stage else ''"/>
-            <replace string="{5554302,303}" with="if @$object.completebuildplan.{'c'}.stage then $object.currentbuildplan.{'c'}.stage else ''"/>
-            <replace string="{5554302,304}" with="if @$object.completebuildplan.{'d'}.stage then $object.currentbuildplan.{'d'}.stage else ''"/>
-            <replace string="{5554302,305}" with="if @$object.completebuildplan.{'e'}.stage then $object.currentbuildplan.{'e'}.stage else ''"/>
-            <replace string="{5554302,306}" with="if @$object.completebuildplan.{'f'}.stage then $object.currentbuildplan.{'f'}.stage else ''"/>
-            <replace string="{5554302,307}" with="if @$object.completebuildplan.{'g'}.stage then $object.currentbuildplan.{'g'}.stage else ''"/>
-            <replace string="{5554302,308}" with="if @$object.completebuildplan.{'h'}.stage then $object.currentbuildplan.{'h'}.stage else ''"/>
-            <replace string="{5554302,309}" with="if @$object.completebuildplan.{'i'}.stage then $object.currentbuildplan.{'i'}.stage else ''"/>
+            <replace string="{5554302,301}" with="if $object.buildingprocessor.exists and $object.buildingprocessor.isbuilding then $object.buildingprocessor.elapsedtime else ''"/>
+            <replace string="{5554302,302}" with="if $object.buildingprocessor.exists and $object.buildingprocessor.isbuilding then $object.buildingprocessor.totaltime else ''"/>
+            <replace string="{5554302,303}" with="if $object.buildingprocessor.exists and $object.buildingprocessor.isbuilding then $object.buildingprocessor.elapsedsteptime else ''"/>
+            <replace string="{5554302,304}" with="if $object.buildingprocessor.exists and $object.buildingprocessor.isbuilding then $object.buildingprocessor.steptime else ''"/>
+            <replace string="{5554302,305}" with="if $object.buildingprocessor.exists and $object.buildingprocessor.isbuilding then ($object.buildingprocessor.elapsedtime / $object.buildingprocessor.totaltime * 100 ) + '%' else ''"/>
+            <replace string="{5554302,306}" with="$object.builds.queued.count"/>
+            <replace string="{5554302,307}" with="$object.builds.inprogress.count"/>
             <!-- Trade relevant Replacements -->
             <replace string="{5554302,123}" with="if $object.isclass.ship then $object.pilot.money.formatted.{'%s%Cr'} else $object.tradenpc.money.formatted.{'%s%Cr'}"/>
             <replace string="{5554302,124}" with="if $primarycargo then $primarycargo.name else {5554302,125}"/>
