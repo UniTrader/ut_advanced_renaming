@@ -267,15 +267,15 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   <t id="107">/type+</t>
   <t id="108">/purpose</t>
   <t id="109">/class</t>
-  <t id="109">/idcode</t>
-  <!-- currently unused -->
+  <t id="110">/idcode</t>
+  <!-- currently unused - ->
   <t id="110">%superiorshortzone</t>
   <t id="111">%superiorshortsector</t>
   <t id="112">%superiorshortcluster</t>
   <t id="113">%shortzone</t>
   <t id="114">%shortsector</t>
   <t id="115">%shortcluster</t>
-  <t id="116">%shorttype</t>
+  <t id="116">%shorttype</t>-->
   <!-- #####-->
   <t id="117">%sub.total</t><!-- Mass Renaming: Total Number of Subordinates -->
   <t id="118">%sub.id</t><!-- Mass Renaming: continonous Numbering of Subordinates -->
