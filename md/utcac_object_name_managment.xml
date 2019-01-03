@@ -280,6 +280,7 @@
             <replace string="{5554302,107}" with="$object.macro.name"/>
             <replace string="{5554302,108}" with="{5554301,11001} + $object.primarypurpose"/> <!-- will be post-dynamic replaced with proper Purpose Name -->
             <replace string="{5554302,109}" with="{5554301,11015} + $object.class"/> <!-- will be post-dynamic replaced with proper Class Name -->
+            <replace string="{5554302,110}" with="$object.idcode"/> <!-- will be post-dynamic replaced with proper Class Name -->
             <!-- Random Color (cannot be done from t-file directly) -->
             <replace string="{5554302,119}+'0'" with="[{5554301,2001},{5554301,2003},{5554301,2005},{5554301,2007},{5554301,2009},{5554301,2011},{5554301,2013},{5554301,2015},{5554301,2017},{5554301,2019},{5554301,2021},{5554301,2025}+'0'].random"/>
             <replace string="{5554302,119}+'1'" with="[{5554301,2001},{5554301,2003},{5554301,2005},{5554301,2007},{5554301,2009},{5554301,2011},{5554301,2013},{5554301,2015},{5554301,2017},{5554301,2019},{5554301,2021},{5554301,2025}+'0'].random"/>

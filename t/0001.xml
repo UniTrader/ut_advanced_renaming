@@ -267,6 +267,7 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   <t id="107">/type+</t>
   <t id="108">/purpose</t>
   <t id="109">/class</t>
+  <t id="109">/idcode</t>
   <!-- currently unused -->
   <t id="110">%superiorshortzone</t>
   <t id="111">%superiorshortsector</t>
