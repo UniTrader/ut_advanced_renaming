@@ -7122,7 +7122,7 @@ function menu.setupInfoSubmenuRows(mode, inputtable, inputobject)
 				-- Changed by UniTrader: Edit Unformatted Name if available
 				-- Original Line:
 				-- row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = objectname })
-				local editname = GetNPCBlackboard((GetComponentData(inputobject, "assignedpilot")) , "$unformatted_object_name") or objectname
+				local editname = ((GetNPCBlackboard(C.GetPlayerID()) , "$unformatted_names")[inputobject]) or objectname
 				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = editname })
 				-- End change by UniTrader
 				row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return menu.infoChangeObjectName(inputobject, text, textchanged) end
@@ -14817,14 +14817,12 @@ function menu.getNumOperationalTurrets(objectid, numtotalturrets)
 end
 
 function menu.infoChangeObjectName(objectid, text, textchanged)
-    -- UniTrader change: Set blackboard Var and Signal Universe/Object instead of actual renaming (is handled in MD)
-    if GetControlEntity(objectid) then
-      SetNPCBlackboard((GetComponentData(objectid, "assignedpilot")), "$unformatted_object_name" , text)
-      SignalObject(GetComponentData(objectid, "galaxyid" ) , "Object Name Updated" , ConvertStringToLuaID(tostring(objectid)))
-    -- UniTrader Changes end (next line was a if before, but i have some diffrent conditions)
-    elseif textchanged then
+    if textchanged then
 		SetComponentName(objectid, text)
 	end
+    -- UniTrader change: Set Signal Universe/Object instead of actual renaming (whih is handled in MD)
+    SignalObject(GetComponentData(objectid, "galaxyid" ) , "Object Name Updated" , ConvertStringToLuaID(tostring(objectid)) , text)
+    -- UniTrader Changes end (next line was a if before, but i have some diffrent conditions)
 
 	menu.noupdate = false
 	menu.refreshInfoFrame()
