@@ -7122,7 +7122,7 @@ function menu.setupInfoSubmenuRows(mode, inputtable, inputobject)
 				-- Changed by UniTrader: Edit Unformatted Name if available
 				-- Original Line:
 				-- row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = objectname })
-				local editname = ((GetNPCBlackboard(C.GetPlayerID()) , "$unformatted_names")[inputobject]) or objectname
+				local editname = ((GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names"))[inputobject]) or objectname
 				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = editname })
 				-- End change by UniTrader
 				row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return menu.infoChangeObjectName(inputobject, text, textchanged) end
@@ -16168,4 +16168,3 @@ function menu.getSlotSizeText(slotsize)
 end
 
 init()
-
