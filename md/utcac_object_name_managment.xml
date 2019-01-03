@@ -6,9 +6,9 @@
         <!-- Set Up all Groups needed for Automatic Name Upates -->
         <create_group groupname="$NamedObjects" comment="group to keep track of all Named Objects (for future Force-Updates of Non-Dynamic Names)"/>
         <create_group groupname="$NamedObjectsDynamic" comment="group to keep track of all Named Objects which have Dnamic Name Parts (to handle update Signals)"/>
-        <set_value name="global.$unformatted_names" exact="table[]"/>
-        <set_value name="global.$namereplacement" exact="table[]"/>
-        <set_value name="global.$shortname" exact="table[]"/>
+        <set_value name="player.entity.$unformatted_names" exact="table[]"/>
+        <set_value name="player.entity.$namereplacement" exact="table[]"/>
+        <set_value name="player.entity.$shortname" exact="table[]"/>
         <!-- set current User Expression Version so Update on load only happens when it changed -->
         <set_value name="$customversion" exact="{5554302,1}"/>
       </actions>
@@ -18,7 +18,7 @@
             <event_object_destroyed group="$NamedObjects"/>
           </conditions>
           <actions>
-            <remove_value name="global.$unformatted_names.{event.object}"/>
+            <remove_value name="player.entity.$unformatted_names.{event.object}"/>
           </actions>
         </cue>
         <cue name="NameUpdate_Initialize" instantiate="true">
@@ -32,7 +32,7 @@
             <set_value name="$object" exact="event.param"/>
             <do_if value="$object.isclass.station">
               <do_if value="{5554302,3} != ''">
-                <set_value name="global.$unformatted_names.$object" exact="{5554302,3}"/>
+                <set_value name="player.entity.$unformatted_names.$object" exact="{5554302,3}"/>
               </do_if>
               <do_else>
                 <set_value name="$skiprename"/>
@@ -40,7 +40,7 @@
             </do_if>
             <do_elseif value="$object.isclass.{[ class.ship_xl , class.ship_l ]} ">
               <do_if value="{5554302,4} != ''">
-                <set_value name="global.$unformatted_names.$object" exact="{5554302,4}"/>
+                <set_value name="player.entity.$unformatted_names.$object" exact="{5554302,4}"/>
               </do_if>
               <do_else>
                 <set_value name="$skiprename"/>
@@ -48,7 +48,7 @@
             </do_elseif>
             <do_elseif value="$object.isclass.{[ class.ship_m , class.ship_s , class.ship_xs ]} ">
               <do_if value="{5554302,5} != ''">
-                <set_value name="global.$unformatted_names.$object" exact="{5554302,5}"/>
+                <set_value name="player.entity.$unformatted_names.$object" exact="{5554302,5}"/>
               </do_if>
               <do_else>
                 <set_value name="$skiprename"/>
@@ -124,7 +124,7 @@
             </do_if>
             <do_else>
               <set_value name="$object" exact="event.param2"/>
-              <set_value name="global.$unformatted_names.$object" exact="event.param3"/>
+              <set_value name="player.entity.$unformatted_names.$object" exact="event.param3"/>
               <add_to_group groupname="$NamedObjectsDynamic" object="$object"/>
               <include_actions ref="RenameActions"/>
               <remove_value name="$object"/>
@@ -155,12 +155,12 @@
     <library name="RenameActions">
       <actions>
         <!-- confirm valadity of Object, saveBlackboard Entity -->
-        <do_if value="$object.exists and global.$unformatted_names.$object?">
+        <do_if value="$object.exists and player.entity.$unformatted_names.$object?">
           <do_if value="$keys? or $nameA? or $nameB? or $cargotype? or $type? or $scriptset? or $debug?">
             <debug_text filter="error" text="'Internally used Vars in Included Actions also used by previous Code: $keys: %1 $nameA: %2 $nameB: %3 $cargotype: %4 $type: %5 $scriptset: %6 $debug: %7 - will be overridden and removed!!'.[@$keys,@$nameA,@$nameB,@$cargotype,@$type,@$scriptset,@$debug]"/>
             <debug_to_file text="'[== ERROR ==] Internally used Vars in Included Actions also used by previous Code: $keys: %1 $nameA: %2 $nameB: %3 $cargotype: %4 $type: %5 $scriptset: %6 $debug: %7 - will be overridden and removed!!'.[@$keys,@$nameA,@$nameB,@$cargotype,@$type,@$scriptset,@$debug]" name="'Advanced Renaming.txt'" directory="'..'" output="true"/>
           </do_if>
-          <set_value name="$nameA" exact="global.$unformatted_names.$object"/>
+          <set_value name="$nameA" exact="player.entity.$unformatted_names.$object"/>
           <!-- Check if we have a Debug Expression in the Object Name and activate it (if not deactivate when outside Debug Mode)-->
           <!-- DEBUG OFF (Expression will be removed permanently) -->
           <substitute_text text="$nameB" source="$nameA">
@@ -173,7 +173,7 @@
             <set_value name="$object.engineer.$debug" exact="false" chance="$object.engineer.exists * 100"/>
             <!-- <set_value name="$object.architect.$debug" exact="false" chance="$object.architect.exists * 100"/>
             <set_value name="$object.boardingnpc.$debug" exact="false" chance="$object.boardingnpc.exists * 100"/-->
-            <set_value name="global.$unformatted_names.$object" exact="$nameB"/>
+            <set_value name="player.entity.$unformatted_names.$object" exact="$nameB"/>
             <set_value name="$nameA" exact="$nameB"/>
           </do_if>
           <!-- DEBUG ON (Expression will stay) -->
@@ -202,7 +202,7 @@
           <set_value name="$debug" exact="'%1\nCUSTOM: (Not seperate from next yet)\nLOCAL:   %2'.[$debug,$nameA]" chance="$debug? *100" comment="fill debug output Value"/>
           <!-- If Language-transfer is desired Save name Var back to local Var now, continue with remaining phrases after that -->
           <do_if value="{5554302,1} == 'yes'">
-            <set_value name="global.$unformatted_names.$object" exact="$nameA"/>
+            <set_value name="player.entity.$unformatted_names.$object" exact="$nameA"/>
           </do_if>
           <get_text_ids_in_range result="$keys" page="5554301" start="2000" end="3000" factor="2"/>
           <do_all exact="$keys.count" counter="$i" reverse="false">
@@ -268,7 +268,7 @@
           <!-- Expressions which always have the same Result - just change the content of the name Var -->
           <substitute_text text="$nameA">
             <replace string="{5554302,200}" with="$cargotype"/>
-            <replace string="{5554302,100}" with="if global.$shortname.{$object.commander} then global.$shortname.{$object.commander} else $object.commander.name"/>
+            <replace string="{5554302,100}" with="if player.entity.$shortname.{$object.commander} then player.entity.$shortname.{$object.commander} else $object.commander.name"/>
             <replace string="{5554302,101}" with="$object.commander.sector.name"/>
             <replace string="{5554302,102}" with="$object.commander.cluster.name"/>
             <replace string="{5554302,103}" with="$object.sector.name"/>
@@ -307,19 +307,19 @@
           
           <!-- Perform Script-Dynamic Replacements ( Marking Key $ ) - no Registration for Automated Update Event, send Signal or Include Actions yourself.-->
           <!-- (feel free to add your own Values to the local table $namereplacement though ;) -->
-          <do_if value="not global.$namereplacement.$object?">
-            <set_value name="global.$namereplacement.$object" exact="table[]"/>
+          <do_if value="not player.entity.$namereplacement.$object?">
+            <set_value name="player.entity.$namereplacement.$object" exact="table[]"/>
           </do_if>
-          <set_value name="$keys" exact="global.$namereplacement.$object.keys.list"/>
+          <set_value name="$keys" exact="player.entity.$namereplacement.$object.keys.list"/>
           <do_all exact="$keys.count" counter="$i" reverse="false">
             <substitute_text text="$nameA">
-              <replace string="$keys.{$i}" with="global.$namereplacement.$object.{$keys.{$i}}"/>
+              <replace string="$keys.{$i}" with="player.entity.$namereplacement.$object.{$keys.{$i}}"/>
             </substitute_text>
             <substitute_text text="$nameB">
               <replace string="$keys.{$i}" with="''"/>
             </substitute_text>
           </do_all>
-          <set_value name="$debug" exact="'%1\nSCRIPT EXPR: %3\nSCRIPT:  %2'.[$debug,$nameA,global.$namereplacement.$object]" chance="$debug? *100" comment="fill debug output Value"/>
+          <set_value name="$debug" exact="'%1\nSCRIPT EXPR: %3\nSCRIPT:  %2'.[$debug,$nameA,player.entity.$namereplacement.$object]" chance="$debug? *100" comment="fill debug output Value"/>
           
           <!-- First generate the short Name by replacing all Dynamic Expressions with an empty String ( =removing them) -->
           <substitute_text text="$nameB">
@@ -547,7 +547,7 @@ else 'null'"/>
               <replace string="'    '" with="' '"/>
               <replace string="'  '" with="' '"/>
             </substitute_text>
-            <set_value name="global.$shortname.$object" exact="$nameB"/>
+            <set_value name="player.entity.$shortname.$object" exact="$nameB"/>
           </do_if>
           <do_else>
             <do_all exact="$keys.count" counter="$i" reverse="false">
@@ -555,7 +555,7 @@ else 'null'"/>
                 <replace string="readtext.{5554301}.{$keys.{$i}}" with="readtext.{5554301}.{$keys.{$i}+1}"/>
               </substitute_text>
             </do_all>
-            <remove_value name="global.$shortname.$object"/>
+            <remove_value name="player.entity.$shortname.$object"/>
           </do_else>
           <set_value name="$debug" exact="'%1\nPOSTDYN: %2    %3'.[$debug,$nameA,@$nameB]" chance="$debug? *100" comment="fill debug output Value"/>
           <do_if value="$nameA == ''">
