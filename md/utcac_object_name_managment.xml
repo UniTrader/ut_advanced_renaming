@@ -19,6 +19,8 @@
           </conditions>
           <actions>
             <remove_value name="player.entity.$unformatted_names.{event.object}"/>
+            <remove_value name="player.entity.$namereplacement.{event.object}"/>
+            <remove_value name="player.entity.$shortname.{event.object}"/>
           </actions>
         </cue>
         <cue name="NameUpdate_Initialize" instantiate="true">
