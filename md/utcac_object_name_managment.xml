@@ -59,7 +59,7 @@
             <do_else>
               <set_value name="$skiprename"/>
               <debug_text filter="error" text="'New Ship %1 is of unknown class %2 - skippint renaming actions'.[$object.name,$object.class]"/>
-              <debug_to_file text="'[== ERROR ==] New Ship %1 is of unknown class %2 - skippint renaming actions'.[$object.name,$object.class]" name="'Advanced Renaming.txt'" directory="'..'" output="true"/>
+              <debug_to_file text="'[== ERROR ==] New Ship %1 is of unknown class %2 - skippint renaming actions'.[$object.name,$object.class]" name="'Advanced Renaming.txt'" output="true"/>
             </do_else>
             <do_if value="not $skiprename?">
               <include_actions ref="RenameActions"/>
@@ -160,7 +160,7 @@
         <do_if value="$object.exists and player.entity.$unformatted_names.$object?">
           <do_if value="$keys? or $nameA? or $nameB? or $cargotype? or $type? or $scriptset? or $debug?">
             <debug_text filter="error" text="'Internally used Vars in Included Actions also used by previous Code: $keys: %1 $nameA: %2 $nameB: %3 $cargotype: %4 $type: %5 $scriptset: %6 $debug: %7 - will be overridden and removed!!'.[@$keys,@$nameA,@$nameB,@$cargotype,@$type,@$scriptset,@$debug]"/>
-            <debug_to_file text="'[== ERROR ==] Internally used Vars in Included Actions also used by previous Code: $keys: %1 $nameA: %2 $nameB: %3 $cargotype: %4 $type: %5 $scriptset: %6 $debug: %7 - will be overridden and removed!!'.[@$keys,@$nameA,@$nameB,@$cargotype,@$type,@$scriptset,@$debug]" name="'Advanced Renaming.txt'" directory="'..'" output="true"/>
+            <debug_to_file text="'[== ERROR ==] Internally used Vars in Included Actions also used by previous Code: $keys: %1 $nameA: %2 $nameB: %3 $cargotype: %4 $type: %5 $scriptset: %6 $debug: %7 - will be overridden and removed!!'.[@$keys,@$nameA,@$nameB,@$cargotype,@$type,@$scriptset,@$debug]" name="'Advanced Renaming.txt'" output="true"/>
           </do_if>
           <set_value name="$nameA" exact="player.entity.$unformatted_names.$object"/>
           <!-- Check if we have a Debug Expression in the Object Name and activate it (if not deactivate when outside Debug Mode)-->
@@ -568,7 +568,7 @@ else 'null'"/>
           <set_object_name object="$object" name="$nameA + {5554301,2017}" comment="adding neutral Color Tag at the end"/>
           <add_to_group groupname="md.UT_CAC_Object_Name_Managment.Init.$NamedObjects" object="$object"/>
           <!-- for the short name / $nameB look in the Code Group before - more economic there -->
-          <debug_to_file text="$debug" name="'Advanced Renaming.txt'" directory="'..'" output="true"/>
+          <debug_to_file text="$debug" name="'Advanced Renaming.txt'" output="true"/>
           <remove_value name="$keys"/>
           <remove_value name="$nameA"/>
           <remove_value name="$nameB"/>
@@ -580,12 +580,12 @@ else 'null'"/>
         <do_else>
           <do_if value="not $object.exists">
             <debug_text filter="error" text="'Object not set or Invalid for Included Code $object: %1 - doing nothing!!'.[@$object]"/>
-            <debug_to_file text="'[== ERROR ==] Object not set or Invalid for Included Code $object: %1 - doing nothing!!'.[@$object]" name="'Advanced Renaming.txt'" directory="'..'"/>
+            <debug_to_file text="'[== ERROR ==] Object not set or Invalid for Included Code $object: %1 - doing nothing!!'.[@$object]" name="'Advanced Renaming.txt'"/>
           </do_if>
           <do_else>
             <remove_from_group group="md.UT_CAC_Object_Name_Managment.Init.$NamedObjects" object="$object"/>
             <remove_from_group group="md.UT_CAC_Object_Name_Managment.Init.$NamedObjectsDynamic" object="$object"/>
-            <debug_to_file text="'No Unformatted Name Var set on Object: %1 - doing nothing!! (may be caused by a Script Update)'.[@$object]" name="'Advanced Renaming.txt'" directory="'..'" output="true"/>
+            <debug_to_file text="'No Unformatted Name Var set on Object: %1 - doing nothing!! (may be caused by a Script Update)'.[@$object]" name="'Advanced Renaming.txt'" output="true"/>
           </do_else>
         </do_else>
       </actions>
