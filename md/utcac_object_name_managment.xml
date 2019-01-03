@@ -124,12 +124,11 @@
             </do_if>
             <do_else>
               <set_value name="$object" exact="event.param2"/>
+              <set_value name="global.$unformatted_names.$object" exact="event.param3"/>
               <add_to_group groupname="$NamedObjectsDynamic" object="$object"/>
-            </do_else>
-            <do_if value="$object?" comment="not mass renaming">
               <include_actions ref="RenameActions"/>
               <remove_value name="$object"/>
-            </do_if>
+            </do_else>
           </actions>
         </cue>
         <cue name="NameUpdateAllPlayerObjects" instantiate="true">
