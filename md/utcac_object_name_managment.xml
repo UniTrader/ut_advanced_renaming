@@ -558,7 +558,9 @@ else 'null'"/>
             <remove_value name="global.$shortname.$object"/>
           </do_else>
           <set_value name="$debug" exact="'%1\nPOSTDYN: %2    %3'.[$debug,$nameA,@$nameB]" chance="$debug? *100" comment="fill debug output Value"/>
-          
+          <do_if value="$nameA == ''">
+            <set_value name="$nameA" exact="$object.macro.name"/>
+          </do_if>
           
           <!-- Finally Set Name, write debug value to log and cleanup -->
           <set_object_name object="$object" name="$nameA + {5554301,2017}" comment="adding neutral Color Tag at the end"/>
