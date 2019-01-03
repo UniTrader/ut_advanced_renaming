@@ -221,18 +221,6 @@ ffi.cdef[[
 		uint32_t idx;
 	} UIWeaponGroup;
 	typedef struct {
-		const char* path;
-		const char* group;
-	} UpgradeGroup;
-	typedef struct {
-		UniverseID currentcomponent;
-		const char* currentmacro;
-		const char* slotsize;
-		uint32_t count;
-		uint32_t operational;
-		uint32_t total;
-	} UpgradeGroupInfo;
-	typedef struct {
 		const char* id;
 		const char* name;
 		bool active;
@@ -275,6 +263,7 @@ ffi.cdef[[
 	bool GetAskToSignalForControllable(const char* signalid, UniverseID controllableid);
 	bool GetAskToSignalForFaction(const char* signalid, const char* factionid);
 	uint32_t GetAttackersOfBoardingOperation(UniverseID* result, uint32_t resultlen, UniverseID defensibletargetid, const char* boarderfactionid);
+	bool CanAcceptSubordinate(UniverseID commanderid, UniverseID potentialsubordinateid);
 	bool CanContainerMineTransport(UniverseID containerid, const char* transportname);
 	bool CanContainerTransport(UniverseID containerid, const char* transportname);
 	bool CanControllableHaveControlEntity(UniverseID controllableid, const char* postid);
@@ -407,7 +396,6 @@ ffi.cdef[[
 	uint32_t GetNumSuitableControlPosts(UniverseID controllableid, UniverseID entityid, bool free);
 	uint32_t GetNumTiersOfRole(const char* role);
 	size_t GetNumTradeComputerOrders(UniverseID controllableid);
-	uint32_t GetNumUpgradeGroups(UniverseID destructibleid, const char* macroname);
 	size_t GetNumUpgradeSlots(UniverseID destructibleid, const char* macroname, const char* upgradetypename);
 	size_t GetNumVirtualUpgradeSlots(UniverseID objectid, const char* macroname, const char* upgradetypename);
 	uint32_t GetNumWares(const char* tags, bool research, const char* licenceownerid, const char* exclusiontags);
@@ -457,15 +445,10 @@ ffi.cdef[[
 	float GetTextHeight(const char*const text, const char*const fontname, const float fontsize, const float wordwrapwidth);
 	uint32_t GetTiersOfRole(RoleTierData* result, uint32_t resultlen, const char* role);
 	UniverseID GetTopLevelContainer(UniverseID componentid);
-	const char* GetTurretGroupMode(UniverseID defensibleid, const char* path, const char* group);
-	UpgradeGroupInfo GetUpgradeGroupInfo(UniverseID destructibleid, const char* macroname, const char* path, const char* group, const char* upgradetypename);
-	uint32_t GetUpgradeGroups(UpgradeGroup* result, uint32_t resultlen, UniverseID destructibleid, const char* macroname);
 	UniverseID GetUpgradeSlotCurrentComponent(UniverseID destructibleid, const char* upgradetypename, size_t slot);
-	UpgradeGroup GetUpgradeSlotGroup(UniverseID destructibleid, const char* macroname, const char* upgradetypename, size_t slot);
 	const char* GetVirtualUpgradeSlotCurrentMacro(UniverseID defensibleid, const char* upgradetypename, size_t slot);
 	uint32_t GetWares(const char** result, uint32_t resultlen, const char* tags, bool research, const char* licenceownerid, const char* exclusiontags);
 	uint32_t GetWeaponGroupsByWeapon(UIWeaponGroup* result, uint32_t resultlen, UniverseID defensibleid, UniverseID weaponid);
-	const char* GetWeaponMode(UniverseID weaponid);
 	const char* GetWingName(UniverseID controllableid);
 	WorkForceInfo GetWorkForceInfo(UniverseID containerid, const char* raceid);
 	UniverseID GetZoneAt(UniverseID sectorid, UIPosRot* uioffset);
@@ -516,8 +499,6 @@ ffi.cdef[[
 	void SelectSimilarMapComponents(UniverseID holomapid, UniverseID componentid);
 	void SellPlayerShip(UniverseID shipid, UniverseID shipyardid);
 	void SetAllowedWeaponSystems(UniverseID defensibleid, size_t orderidx, bool usedefault, WeaponSystemInfo* uiweaponsysteminfo, uint32_t numuiweaponsysteminfo);
-	void SetAllTurretModes(UniverseID defensibleid, const char* mode);
-	bool SetAmmoOfWeapon(UniverseID weaponid, const char* newammomacro);
 	void SetAssignment(UniverseID controllableid, const char* assignment);
 	bool SetCommander(UniverseID controllableid, UniverseID commanderid, const char* assignment);
 	bool SetDefaultResponseToSignalForControllable(const char* newresponse, bool ask, const char* signalid, UniverseID controllableid);
@@ -525,7 +506,7 @@ ffi.cdef[[
 	void SetFocusMapComponent(UniverseID holomapid, UniverseID componentid, bool resetplayerpan);
 	UIFormationInfo SetFormationShape(UniverseID objectid, const char* formationshape);
 	bool SetEntityToPost(UniverseID controllableid, UniverseID entityid, const char* postid);
-	void SetGuidance(UniverseID componentid, UIPosRot offset);
+	void SetGuidance(UniverseID componentid, UIPosRot offset, bool useinfopoint);
 	void SetMapFilterString(UniverseID holomapid, uint32_t numtexts, const char** textarray);
 	void SetMapPanOffset(UniverseID holomapid, UniverseID offsetcomponentid);
 	void SetMapPicking(UniverseID holomapid, bool enable);
@@ -556,9 +537,8 @@ ffi.cdef[[
 	void SetSelectedMapComponent(UniverseID holomapid, UniverseID componentid);
 	void SetSelectedMapComponents(UniverseID holomapid, UniverseID* componentids, uint32_t numcomponentids);
 	bool SetSofttarget(UniverseID componentid, const char*const connectionname);
-	void SetTurretGroupMode(UniverseID defensibleid, const char* path, const char* group, const char* mode);
 	void SetWeaponGroup(UniverseID defensibleid, UniverseID weaponid, bool primary, uint32_t groupidx, bool value);
-	void SetWeaponMode(UniverseID weaponid, const char* mode);
+	bool SetAmmoOfWeapon(UniverseID weaponid, const char* newammomacro);
 	void ShowBuildPlotPlacementMap(UniverseID holomapid, UniverseID sectorid);
 	void ShowUniverseMap(UniverseID holomapid, bool setoffset, bool showzone, bool forcebuildershipicons);
 	void SignalObjectWithNPCSeed(UniverseID objecttosignalid, const char* param, NPCSeed person, UniverseID controllableid);
@@ -1117,9 +1097,6 @@ function menu.cleanup()
 	menu.buttonline = nil
 	menu.orderdefs = {}
 	menu.orderdefsbycategory = {}
-
-	menu.turrets = {}
-	menu.turretgroups = {}
 
 	menu.mainFrame = nil
 	if ((menu.infoTableMode == "info") and ((menu.infoMode == "orderqueue") or (menu.infoMode == "orderqueue_advanced"))) or (menu.infoTableMode == "plots") then
@@ -3279,7 +3256,7 @@ function menu.hotkey(action)
 				menu.openDetails(selectedcomponent)
 			end
 		elseif action == "INPUT_ACTION_ADDON_DETAILMONITOR_P" then
-			menu.plotCourse(selectedcomponent)
+			menu.plotCourse(selectedcomponent, nil, GetComponentData(selectedcomponent, "ismodule"))
 		elseif action == "INPUT_ACTION_ADDON_DETAILMONITOR_A_SHIFT" then
 			if IsSameComponent(menu.autopilottarget, selectedcomponent) then
 				StopAutoPilot()
@@ -6399,7 +6376,6 @@ function menu.createPlotMode(inputframe)
 	local row = menu.table_plotlist:addRow(false, {fixed = true, bgColor = Helper.defaultTitleBackgroundColor})
 	row[1]:setColSpan(4):createText(ReadText(1001, 9201), Helper.headerRowCenteredProperties)	-- Your Plots
 
-	local maxVisibleHeight
 	local numplotentries = #menu.plots + 1
 	for i, plot in ipairs(menu.plots) do
 		local station64 = plot.station
@@ -6420,20 +6396,12 @@ function menu.createPlotMode(inputframe)
 
 		row[4]:createButton({ active = not plot.permanent }):setText("x", {halign = "center"})
 		row[4].handlers.onClick = function() return menu.buttonRemovePlot(station64) end
-
-		if i == 10 then
-			maxVisibleHeight = menu.table_plotlist:getFullHeight()
-		end
 	end
 	row = menu.table_plotlist:addRow("plots_new")
 	row[1]:setBackgroundColSpan(4):createText(ReadText(1001, 9200), textproperties)	-- New Plot
 	row[2]:createText((ReadText(1001, 9210) .. " " .. tostring(numplotentries)), textproperties)	-- Plot
 	row[2].properties.halign = "right"
 	row[2].properties.x = 0
-
-	if maxVisibleHeight then
-		menu.table_plotlist.properties.maxVisibleHeight = maxVisibleHeight
-	end
 
 	if not menu.plotData.component and not menu.plots_initialized then
 		for id, _ in pairs(menu.selectedcomponents) do
@@ -6846,7 +6814,6 @@ function menu.createHireMode(ftable, numCols)
 					local startOption = menu.hireRole and ((menu.hireIsPost and "post:" or "role:") .. menu.hireRole) or ""
 					row[1]:setColSpan(numCols):createDropDown(roleOptions, { startOption = startOption, height = config.mapRowHeight }):setTextProperties({ halign = "center" })
 					row[1].handlers.onDropDownConfirmed = menu.dropdownHireRole
-					row[1].properties.uiTriggerID = "npcrole"
 					row[1].handlers.onDropDownActivated = function () menu.noupdate = true end
 				else
 					row[1]:setColSpan(numCols):createText(string.format(ReadText(1001, 3260), shipname), { halign = "center", color = Helper.color.red })
@@ -6892,12 +6859,8 @@ function menu.createHireMode(ftable, numCols)
 	end
 	row[1]:setColSpan(5):createButton({ active = (menu.hireRole ~= nil) and ((not ishiring) or (balance >= 0)), mouseOverText = mouseovertext }):setText(ishiring and ReadText(1001, 3262) or ReadText(1001, 3263), { halign = "center" })
 	row[1].handlers.onClick = menu.buttonHire
-	row[1].properties.uiTriggerID = "hire_ok"
-
 	row[6]:setColSpan(numCols - 5):createButton():setText(ReadText(1001, 64), { halign = "center" })
 	row[6].handlers.onClick = function () return menu.onCloseElement("back") end
-	row[6].properties.uiTriggerID = "hire_cancel"
-
 end
 
 function menu.createInfoSubmenu(inputframe)
@@ -7877,72 +7840,6 @@ function menu.setupInfoSubmenuRows(mode, inputtable, inputobject)
 			end
 		end
 
-		locrowdata = { "info_turretbehaviour", ReadText(1001, 8612) }	-- Turret Behaviour
-		row = menu.addInfoSubmenuRow(inputtable, row, locrowdata, true, true, isplayerowned and (#loadout.component.turret > 0))
-		if isplayerowned and menu.extendedinfo[ locrowdata[1] ] and #loadout.component.turret > 0 then
-			menu.turrets = {}
-			local numslots = tonumber(C.GetNumUpgradeSlots(inputobject, "", "turret"))
-			for j = 1, numslots do
-				local groupinfo = C.GetUpgradeSlotGroup(inputobject, "", "turret", j)
-				if (ffi.string(groupinfo.path) == "..") and (ffi.string(groupinfo.group) == "") then
-					local current = C.GetUpgradeSlotCurrentComponent(inputobject, "turret", j)
-					if current ~= 0 then
-						table.insert(menu.turrets, current)
-					end
-				end
-			end
-
-			menu.turretgroups = {}
-			local n = C.GetNumUpgradeGroups(inputobject, "")
-			local buf = ffi.new("UpgradeGroup[?]", n)
-			n = C.GetUpgradeGroups(buf, n, inputobject, "")
-			for i = 0, n - 1 do
-				if (ffi.string(buf[i].path) ~= "..") or (ffi.string(buf[i].group) ~= "") then
-					local group = { path = ffi.string(buf[i].path), group = ffi.string(buf[i].group) }
-					local groupinfo = C.GetUpgradeGroupInfo(inputobject, "", group.path, group.group, "turret")
-					if (groupinfo.count > 0) then
-						group.operational = groupinfo.operational
-						group.currentmacro = ffi.string(groupinfo.currentmacro)
-						group.slotsize = ffi.string(groupinfo.slotsize)
-						table.insert(menu.turretgroups, group)
-					end
-				end
-			end
-
-			if (#menu.turrets > 0) or (#menu.turretgroups > 0) then
-				local turretmodes = {
-					[1] = { id = "attackenemies",	text = ReadText(1001, 8614),	icon = "",	displayremoveoption = false },
-					[2] = { id = "defend",			text = ReadText(1001, 8613),	icon = "",	displayremoveoption = false },
-					[3] = { id = "mining",			text = ReadText(1001, 8616),	icon = "",	displayremoveoption = false },
-					[4] = { id = "missiledefence",	text = ReadText(1001, 8615),	icon = "",	displayremoveoption = false },
-					[5] = { id = "autoassist",		text = ReadText(1001, 8617),	icon = "",	displayremoveoption = false },
-					[6] = { id = "holdfire",		text = ReadText(1041, 10157),	icon = "",	displayremoveoption = false },
-				}
-
-				local row = inputtable:addRow("info_turretconfig", { bgColor = Helper.color.transparent })
-				row[2]:setColSpan(2):createText(ReadText(1001, 2963))
-				row[4]:setColSpan(10):createDropDown(turretmodes, { startOption = function () return menu.getDropDownTurretModeOption(inputobject, "all") end })
-				row[4].handlers.onDropDownConfirmed = function(_, newturretmode) menu.noupdate = false; C.SetAllTurretModes(inputobject, newturretmode) end
-				row[4].handlers.onDropDownActivated = function () menu.noupdate = true end
-
-				for i, turret in ipairs(menu.turrets) do
-					local row = inputtable:addRow("info_turretconfig" .. i, { bgColor = Helper.color.transparent })
-					row[2]:setColSpan(2):createText(ffi.string(C.GetComponentName(turret)))
-					row[4]:setColSpan(10):createDropDown(turretmodes, { startOption = function () return menu.getDropDownTurretModeOption(turret) end })
-					row[4].handlers.onDropDownConfirmed = function(_, newturretmode) menu.noupdate = false; C.SetWeaponMode(turret, newturretmode) end
-					row[4].handlers.onDropDownActivated = function () menu.noupdate = true end
-				end
-
-				for i, group in ipairs(menu.turretgroups) do
-					local row = inputtable:addRow("info_turretgroupconfig" .. i, { bgColor = Helper.color.transparent })
-					row[2]:setColSpan(2):createText(ReadText(1001, 8023) .. " " .. i .. ((group.currentmacro ~= "") and (" (" .. menu.getSlotSizeText(group.slotsize) .. " " .. GetMacroData(group.currentmacro, "shortname") .. ")") or ""), { color = (group.operational > 0) and Helper.color.white or Helper.color.red })
-					row[4]:setColSpan(10):createDropDown(turretmodes, { startOption = function () return menu.getDropDownTurretModeOption(inputobject, group.path, group.group) end, active = group.operational > 0 })
-					row[4].handlers.onDropDownConfirmed = function(_, newturretmode) menu.noupdate = false; C.SetTurretGroupMode(inputobject, group.path, group.group, newturretmode) end
-					row[4].handlers.onDropDownActivated = function () menu.noupdate = true end
-				end
-			end
-		end
-
 		local showloadout = defenceinfo_high and (#loadout.component.weapon > 0 or #loadout.component.turret > 0 or #loadout.component.shield > 0 or #loadout.component.engine > 0 or #loadout.macro.thruster > 0 or #loadout.ware.software > 0)
 		locrowdata = { "Loadout", ReadText(1001, 9413) }	-- Loadout
 		row = menu.addInfoSubmenuRow(inputtable, row, locrowdata, true, true, showloadout)
@@ -8176,8 +8073,13 @@ function menu.setupInfoSubmenuRows(mode, inputtable, inputobject)
 			if isplayerowned and menu.infoeditname then
 				row = inputtable:addRow(locrowdata[1], { bgColor = Helper.color.transparent })
 				row[1]:setBackgroundColSpan(13)
-				row[2]:setColSpan(2):createText(locrowdata[2], { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = Helper.standardFont, x = Helper.standardTextOffsetx + (1 * indentsize) })
-				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = objectname })
+				row[2]:setColSpan(2):createText(locrowdata[2], { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = Helper.standardFont, x = Helper.standardTextOffsetx + (1 * indentsize) })			
+				-- Changed by UniTrader: Edit Unformatted Name if available
+				-- Original Line:
+				-- row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = objectname })
+				local editname = GetNPCBlackboard((GetComponentData(inputobject, "assignedpilot")), "$unformatted_object_name") or objectname
+				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = editname })
+				-- End change by UniTrader
 				row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return menu.infoChangeObjectName(inputobject, text, textchanged) end
 			else
 				row = menu.addInfoSubmenuRow(inputtable, row, locrowdata, false, false, false, 1, indentsize)
@@ -8433,9 +8335,9 @@ function menu.setupInfoSubmenuRows(mode, inputtable, inputobject)
 					end
 				end
 				if methodindex then
-					table.insert(productiontable[methodindex], { products = {}, primaryresources = {}, efficiency = proddata.products.efficiency, cycletime = proddata.cycletime, cycletimeremaining = proddata.remainingcycletime, modulename = GetComponentData(prodmod, "name"), moduleindex = i })
+					table.insert(productiontable[methodindex], { products = {}, primaryresources = {}, efficiency = proddata.products.efficiency, cycletime = proddata.cycletime, cycletimeremaining = proddata.remainingcycletime, moduleindex = i })
 				else
-					table.insert(productiontable, { productionmethod = proddata.productionmethod, [1] = { products = {}, primaryresources = {}, efficiency = proddata.products.efficiency, cycletime = proddata.cycletime, cycletimeremaining = proddata.remainingcycletime, modulename = GetComponentData(prodmod, "name"), moduleindex = i } })
+					table.insert(productiontable, { productionmethod = proddata.productionmethod, [1] = { products = {}, primaryresources = {}, efficiency = proddata.products.efficiency, cycletime = proddata.cycletime, cycletimeremaining = proddata.remainingcycletime, moduleindex = i } })
 					methodindex = #productiontable
 				end
 
@@ -8457,7 +8359,13 @@ function menu.setupInfoSubmenuRows(mode, inputtable, inputobject)
 			for i, productionmethod in ipairs(productiontable) do
 				for j, productionmodule in ipairs(productionmethod) do
 					if #productionmodule.products > 0 then
-						locrowdata = { ("Method" .. i .. "Module" .. j), productioninfo_products and (productionmodule.modulename .. " " .. j) or unknowntext }	-- Production
+						local productname = ""
+						if #productionmodule.products == 1 then
+							productname = tostring(productionmodule.products[1].name)
+						else
+							productname = ReadText(1001, 9417)	-- Multiple Product Line
+						end
+						locrowdata = { ("Method" .. i .. "Module" .. j), productioninfo_products and (productname .. " " .. ReadText(1001, 1600) .. " " .. j) or unknowntext }	-- Production
 						-- switch next two commented-out lines below if we want to make the individual production module sections accessible even if all information is crossed out.
 						--row = menu.addInfoSubmenuRow(inputtable, row, locrowdata, true, true, true, 1, indentsize)
 						--if menu.extendedinfo[locrowdata[1]] then
@@ -10854,7 +10762,7 @@ function menu.createTopLevel(frame)
 
 		local title = ""
 		if menu.mode == "hire" then
-			title = (menu.modeparam[3] ~= 0) and ReadText(1001, 3500) or ReadText(1001, 3264)
+			title = (menu.modeparam[3] ~= 0) and "Hire Staff" or "Transfer Staff"
 		elseif menu.mode == "selectCV" then
 			title = ReadText(1001, 7942)
 		elseif menu.mode == "orderparam_object" then
@@ -11922,9 +11830,9 @@ function menu.createTradeContext(frameData, width, height, xoffset, yoffset)
 		end
 	end
 	if (not found) and (menu.contextMenuData.currentShip ~= 0) then
-		local ship = { shipid = convertedCurrentShip, name = ffi.string(C.GetComponentName(menu.contextMenuData.currentShip)) }
+		local ship = { shipid = ConvertStringTo64Bit(tostring(menu.contextMenuData.currentShip)) }
 
-		local class = ffi.string(C.GetComponentClass(menu.contextMenuData.currentShip))
+		local class = ffi.string(C.GetComponentClass(ship.shipid))
 		local icon, primarypurpose, hullpercent, shieldpercent, isplayerowned, isenemy = GetComponentData(ship.shipid, "icon", "primarypurpose", "hullpercent", "shieldpercent", "isplayerowned", "isenemy")
 		local i = menu.findEntryByShipIcon(sortedShips, icon)
 		if i then
@@ -15410,7 +15318,7 @@ function menu.checkForOrderParamObject(component)
 	return true
 end
 
-function menu.plotCourse(object, offset)
+function menu.plotCourse(object, offset, useinfopoint)
 	local convertedObject = ConvertStringToLuaID(tostring(object))
 	if menu.mode or (object == C.GetPlayerControlledShipID()) then
 		return -- no plot course to playership or when menu.mode is set
@@ -15421,10 +15329,8 @@ function menu.plotCourse(object, offset)
 	else
 		if offset == nil then
 			offset = ffi.new("UIPosRot", 0)
-		elseif C.IsComponentClass(object, "sector") then
-			object = C.GetZoneAt(object, offset)
 		end
-		C.SetGuidance(object, offset)
+		C.SetGuidance(object, offset, useinfopoint)
 	end
 
 	menu.settoprow = GetTopRow(menu.selecttable)
@@ -16123,50 +16029,6 @@ function menu.updateMouseCursor()
 	else
 		menu.removeMouseCursorOverride(2)
 	end
-end
-
-function menu.getDropDownTurretModeOption(defensibleorturret, path, group)
-	if (path == nil) and (group == nil) then
-		return ffi.string(C.GetWeaponMode(defensibleorturret))
-	elseif path == "all" then
-		local allmode
-		for i, turret in ipairs(menu.turrets) do
-			local mode = ffi.string(C.GetWeaponMode(turret))
-			if allmode == nil then
-				allmode = mode
-			elseif allmode ~= mode then
-				allmode = ""
-				break
-			end
-		end
-		for i, group in ipairs(menu.turretgroups) do
-			if group.operational > 0 then
-				local mode = ffi.string(C.GetTurretGroupMode(defensibleorturret, group.path, group.group))
-				if allmode == nil then
-					allmode = mode
-				elseif allmode ~= mode then
-					allmode = ""
-					break
-				end
-			end
-		end
-		return allmode
-	end
-	return ffi.string(C.GetTurretGroupMode(defensibleorturret, path, group))
-end
-
-function menu.getSlotSizeText(slotsize)
-	if slotsize == "extralarge" then
-		return ReadText(1001, 48)
-	elseif slotsize == "large" then
-		return ReadText(1001, 49)
-	elseif slotsize == "medium" then
-		return ReadText(1001, 50)
-	elseif slotsize == "small" then
-		return ReadText(1001, 51)
-	end
-
-	return ""
 end
 
 init()
