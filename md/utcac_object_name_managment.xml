@@ -6,65 +6,125 @@
         <!-- Set Up all Groups needed for Automatic Name Upates -->
         <create_group groupname="$NamedObjects" comment="group to keep track of all Named Objects (for future Force-Updates of Non-Dynamic Names)"/>
         <create_group groupname="$NamedObjectsDynamic" comment="group to keep track of all Named Objects which have Dnamic Name Parts (to handle update Signals)"/>
+        <set_value name="global.$unformatted_names" exact="table[]"/>
+        <set_value name="global.$namereplacement" exact="table[]"/>
+        <set_value name="global.$shortname" exact="table[]"/>
         <!-- set current User Expression Version so Update on load only happens when it changed -->
         <set_value name="$customversion" exact="{5554302,1}"/>
       </actions>
       <cues>
-        <cue name="NameUpdate" instantiate="true">
+        <cue name="EventObjectDestroyed" instantiate="true">
+          <conditions>
+            <event_object_destroyed group="$NamedObjects"/>
+          </conditions>
+          <actions>
+            <remove_value name="global.$unformatted_names.{event.object}"/>
+          </actions>
+        </cue>
+        <cue name="NameUpdate_Initialize" instantiate="true">
+          <conditions>
+            <check_any>
+              <event_player_built_ship/>
+              <event_player_built_station/>
+            </check_any>
+          </conditions>
+          <actions>
+            <set_value name="$object" exact="event.param"/>
+            <do_if value="$object.isclass.station">
+              <do_if value="{5554302,3} != ''">
+                <set_value name="global.$unformatted_names.$object" exact="{5554302,3}"/>
+              </do_if>
+              <do_else>
+                <set_value name="$skiprename"/>
+              </do_else>
+            </do_if>
+            <do_elseif value="$object.isclass.{[ class.ship_xl , class.ship_l ]} ">
+              <do_if value="{5554302,4} != ''">
+                <set_value name="global.$unformatted_names.$object" exact="{5554302,4}"/>
+              </do_if>
+              <do_else>
+                <set_value name="$skiprename"/>
+              </do_else>
+            </do_elseif>
+            <do_elseif value="$object.isclass.{[ class.ship_m , class.ship_s , class.ship_xs ]} ">
+              <do_if value="{5554302,5} != ''">
+                <set_value name="global.$unformatted_names.$object" exact="{5554302,5}"/>
+              </do_if>
+              <do_else>
+                <set_value name="$skiprename"/>
+              </do_else>
+            </do_elseif>
+            <do_else>
+              <set_value name="$skiprename"/>
+              <debug_text filter="error" text="'New Ship %1 is of unknown class %2 - skippint renaming actions'.[$object.name,$object.class]"/>
+              <debug_to_file text="'[== ERROR ==] New Ship %1 is of unknown class %2 - skippint renaming actions'.[$object.name,$object.class]" name="'Advanced Renaming.txt'" directory="'..'" output="true"/>
+            </do_else>
+            <do_if value="not $skiprename?">
+              <include_actions ref="RenameActions"/>
+            </do_if>
+            <remove_value name="$object"/>
+            <remove_value name="$skiprename"/>
+          </actions>
+        </cue>
+        <cue name="NameUpdate_FromEventObject" instantiate="true">
+          <conditions>
+            <check_any>
+              <event_object_signalled group="$NamedObjectsDynamic" param="'Object Name Updated'" comment="for Update Signalling from other Scripts"/>
+            </check_any>
+          </conditions>
+          <actions>
+            <set_value name="$object" exact="event.object"/>
+            <include_actions ref="RenameActions"/>
+            <remove_value name="$object"/>
+          </actions>
+        </cue>
+        <cue name="NameUpdate_FromLua" instantiate="true">
           <conditions>
             <check_any>
               <event_object_signalled object="player.galaxy" param="'Object Name Updated'" comment="for (initial) signalling from lua"/>
               <event_object_signalled object="player.galaxy" param="'Subordinates Name Updated'" comment="for (initial) signalling from lua"/>
               <event_object_signalled object="player.galaxy" param="'Subordinates Name Updated - bigships'" comment="for (initial) signalling from lua"/>
               <event_object_signalled object="player.galaxy" param="'Subordinates Name Updated - smallships'" comment="for (initial) signalling from lua"/>
-              <event_object_signalled group="$NamedObjectsDynamic" param="'Object Name Updated'" comment="for Update Signalling from other Scripts"/>
-              <event_object_money_updated group="$NamedObjectsDynamic" comment="Name update on account changes"/>
             </check_any>
           </conditions>
           <actions>
-            <do_if value="event.object == player.galaxy" comment="initial Signal from lua (will be depracted at some point - signal Object of which the Name should be updated instead)">
-              <do_if value="event.param == 'Subordinates Name Updated' or event.param == 'Subordinates Name Updated - bigships' or event.param == 'Subordinates Name Updated - smallships'">
-                <!-- Redirect to Cue for Renaming Subordinates, dont update Name of this Object - the include_actions later checks for valadity of $object so not setting it here. -->
-                <set_value name="$subordinates" exact="event.param2.subordinates.clone"/>
-                <do_if value="event.param == 'Subordinates Name Updated - bigships'">
-                  <do_all exact="$subordinates.count" counter="$i" reverse="true">
-                    <do_if value="$subordinates.{$i}.isclass.ship_xl or $subordinates.{$i}.isclass.ship_l" negate="true">
-                      <remove_value name="$subordinates.{$i}"/>
-                    </do_if>
-                  </do_all>
-                </do_if>
-                <do_if value="event.param == 'Subordinates Name Updated - smallhips'">
-                  <do_all exact="$subordinates.count" counter="$i" reverse="true">
-                    <do_if value="$subordinates.{$i}.isclass.ship_m or $subordinates.{$i}.isclass.ship_s or $subordinates.{$i}.isclass.ship_xs" negate="true">
-                      <remove_value name="$subordinates.{$i}"/>
-                    </do_if>
-                  </do_all>
-                </do_if>
-                <do_all exact="$subordinates.count" counter="$i">
-                  <substitute_text text="$objectname" source="event.param3">
-                    <replace string="{5554302,117}" with="$subordinates.count"/>
-                    <replace string="{5554302,118}" with="( if $subordinates.count ge 100 and $i lt 100  then {5554302,122} else '' ) + ( if $subordinates.count ge 10 and $i lt 10  then {5554302,122} else '' ) + $i"/>
-                  </substitute_text>
-                  <do_if value="$subordinates.{$i}.isclass.station">
-                    <set_value name="$subordinates.{$i}.tradenpc.$unformatted_object_name" exact="$objectname"/>
+            <do_if value="event.param == 'Subordinates Name Updated' or event.param == 'Subordinates Name Updated - bigships' or event.param == 'Subordinates Name Updated - smallships'">
+              <!-- Redirect to Cue for Renaming Subordinates, dont update Name of this Object - the include_actions later checks for valadity of $object so not setting it here. -->
+              <set_value name="$subordinates" exact="event.param2.subordinates.clone"/>
+              <do_if value="event.param == 'Subordinates Name Updated - bigships'">
+                <do_all exact="$subordinates.count" counter="$i" reverse="true">
+                  <do_if value="$subordinates.{$i}.isclass.ship_xl or $subordinates.{$i}.isclass.ship_l" negate="true">
+                    <remove_value name="$subordinates.{$i}"/>
                   </do_if>
-                  <do_else>
-                    <set_value name="$subordinates.{$i}.controlentity.$unformatted_object_name" exact="$objectname"/>
-                  </do_else>
-                  <add_to_group groupname="$NamedObjectsDynamic" object="$subordinates.{$i}"/>
-                  <signal_objects object="$subordinates.{$i}" param="'Object Name Updated'"/>
                 </do_all>
-                <remove_value name="$subordinates"/>
-                <remove_value name="$objectname"/>
               </do_if>
-              <do_else>
-                <set_value name="$object" exact="event.param2"/>
-                <add_to_group groupname="$NamedObjectsDynamic" object="$object"/>
-              </do_else>
+              <do_if value="event.param == 'Subordinates Name Updated - smallhips'">
+                <do_all exact="$subordinates.count" counter="$i" reverse="true">
+                  <do_if value="$subordinates.{$i}.isclass.ship_m or $subordinates.{$i}.isclass.ship_s or $subordinates.{$i}.isclass.ship_xs" negate="true">
+                    <remove_value name="$subordinates.{$i}"/>
+                  </do_if>
+                </do_all>
+              </do_if>
+              <do_all exact="$subordinates.count" counter="$i">
+                <substitute_text text="$objectname" source="event.param3">
+                  <replace string="{5554302,117}" with="$subordinates.count"/>
+                  <replace string="{5554302,118}" with="( if $subordinates.count ge 100 and $i lt 100  then {5554302,122} else '' ) + ( if $subordinates.count ge 10 and $i lt 10  then {5554302,122} else '' ) + $i"/>
+                </substitute_text>
+                <do_if value="$subordinates.{$i}.isclass.station">
+                  <set_value name="$subordinates.{$i}.tradenpc.$unformatted_object_name" exact="$objectname"/>
+                </do_if>
+                <do_else>
+                  <set_value name="$subordinates.{$i}.controlentity.$unformatted_object_name" exact="$objectname"/>
+                </do_else>
+                <add_to_group groupname="$NamedObjectsDynamic" object="$subordinates.{$i}"/>
+                <signal_objects object="$subordinates.{$i}" param="'Object Name Updated'"/>
+              </do_all>
+              <remove_value name="$subordinates"/>
+              <remove_value name="$objectname"/>
             </do_if>
             <do_else>
-              <set_value name="$object" exact="event.object"/>
-              <!-- note: In this case event.param2 should contain why the Object Name has to be updated ( currently implemented reasons: Skill ) - skip Update if there is no effecive change when you know how to check for this -->
+              <set_value name="$object" exact="event.param2"/>
+              <add_to_group groupname="$NamedObjectsDynamic" object="$object"/>
             </do_else>
             <do_if value="$object?" comment="not mass renaming">
               <include_actions ref="RenameActions"/>
@@ -96,13 +156,12 @@
     <library name="RenameActions">
       <actions>
         <!-- confirm valadity of Object, saveBlackboard Entity -->
-        <set_value name="$controlentity" exact="if $object == player.occupiedship then $object.assignedpilot else if $object.isclass.station then $object.tradenpc else if $object.isclass.ship then $object.pilot else $object.object.controlentity"/>
-        <do_if value="$object.exists and $controlentity.$unformatted_object_name?">
+        <do_if value="$object.exists and global.$unformatted_names.$object?">
           <do_if value="$keys? or $nameA? or $nameB? or $cargotype? or $type? or $scriptset? or $debug?">
             <debug_text filter="error" text="'Internally used Vars in Included Actions also used by previous Code: $keys: %1 $nameA: %2 $nameB: %3 $cargotype: %4 $type: %5 $scriptset: %6 $debug: %7 - will be overridden and removed!!'.[@$keys,@$nameA,@$nameB,@$cargotype,@$type,@$scriptset,@$debug]"/>
             <debug_to_file text="'[== ERROR ==] Internally used Vars in Included Actions also used by previous Code: $keys: %1 $nameA: %2 $nameB: %3 $cargotype: %4 $type: %5 $scriptset: %6 $debug: %7 - will be overridden and removed!!'.[@$keys,@$nameA,@$nameB,@$cargotype,@$type,@$scriptset,@$debug]" name="'Advanced Renaming.txt'" directory="'..'" output="true"/>
           </do_if>
-          <set_value name="$nameA" exact="$controlentity.$unformatted_object_name"/>
+          <set_value name="$nameA" exact="global.$unformatted_names.$object"/>
           <!-- Check if we have a Debug Expression in the Object Name and activate it (if not deactivate when outside Debug Mode)-->
           <!-- DEBUG OFF (Expression will be removed permanently) -->
           <substitute_text text="$nameB" source="$nameA">
@@ -115,7 +174,7 @@
             <set_value name="$object.engineer.$debug" exact="false" chance="$object.engineer.exists * 100"/>
             <!-- <set_value name="$object.architect.$debug" exact="false" chance="$object.architect.exists * 100"/>
             <set_value name="$object.boardingnpc.$debug" exact="false" chance="$object.boardingnpc.exists * 100"/-->
-            <set_value name="$controlentity.$unformatted_object_name" exact="$nameB"/>
+            <set_value name="global.$unformatted_names.$object" exact="$nameB"/>
             <set_value name="$nameA" exact="$nameB"/>
           </do_if>
           <!-- DEBUG ON (Expression will stay) -->
@@ -130,9 +189,9 @@
             <set_value name="$object.engineer.$debug" exact="true" chance="$object.engineer.exists * 100"/>
             <!-- set_value name="$object.architect.$debug" exact="true" chance="$object.architect.exists * 100"/>
             <set_value name="$object.boardingnpc.$debug" exact="true" chance="$object.boardingnpc.exists * 100"/-->
-            <set_value name="$debug" exact="'%1 Advanced Renaming Name Stages:  // naming Entity: %3\nUNFORM:  %2'.[$object.name,$nameA,$controlentity.name]"/>
+            <set_value name="$debug" exact="'%1 Advanced Renaming Name Stages: \nUNFORM:  %2'.[$object.name,$nameA]"/>
           </do_if>
-          <set_value name="$debug" exact="'%1 Advanced Renaming Name Stages:  // naming Entity: %3\nUNFORM:  %2'.[$object.name,$nameA,$controlentity.name]"/>
+          <set_value name="$debug" exact="'%1 Advanced Renaming Name Stages: \nUNFORM:  %2'.[$object.name,$nameA]"/>
           <!-- ========= -->
           <!-- Perform Static Replacements (Preffered Marking Key / ) -->
           <get_text_ids_in_range result="$keys" page="5554301" start="0" end="1999" factor="2"/>
@@ -144,7 +203,7 @@
           <set_value name="$debug" exact="'%1\nCUSTOM: (Not seperate from next yet)\nLOCAL:   %2'.[$debug,$nameA]" chance="$debug? *100" comment="fill debug output Value"/>
           <!-- If Language-transfer is desired Save name Var back to local Var now, continue with remaining phrases after that -->
           <do_if value="{5554302,1} == 'yes'">
-            <set_value name="$controlentity.$unformatted_object_name" exact="$nameA"/>
+            <set_value name="global.$unformatted_names.$object" exact="$nameA"/>
           </do_if>
           <get_text_ids_in_range result="$keys" page="5554301" start="2000" end="3000" factor="2"/>
           <do_all exact="$keys.count" counter="$i" reverse="false">
@@ -160,44 +219,33 @@
           <!-- Aquire Values which might be put into Object Names but cannt be covered in a single expression -->
           <!-- Freight Class -->
           <do_if value="true" comment="just for better node folding">
-            <!-- Universal or 4 Type Mixed Cargo -->
-            <do_if value="$object.cargo.tags.indexof.{tag.bulk} and $object.cargo.tags.indexof.{tag.container} and $object.cargo.tags.indexof.{tag.liquid}">
-              <!-- Differ between real Universal Cargo and Split Multi  Cargo -->
-              <do_if comment="checking if all Cargo Types have equal amount of Capacity ( C and B , C and L) indicating Universal Cargo (no direct check available)" value="
-                $object.cargo.{ware.energycells}.max * ware.helium.vloume == $object.cargo.{ware.helium}.max and 
-                $object.cargo.{ware.energycells}.max * ware.ice.vloume == $object.cargo.{ware.ice}.max ">
-                <set_value name="$cargotype" exact="{5554302,201}"/>
-              </do_if>
-              <do_else>
-                <set_value name="$cargotype" exact="{5554302,209}"/>
-              </do_else>
+            <set_value name="$cargotype" exact="''"/>
+            <!-- Check if we have Universal Cargo -->
+            <do_if value="$object.cargo.capacity.universal">
+              <set_value name="$cargotype" exact="{5554302,201}"/>
             </do_if>
             <!-- Single/Hybrid Cargo - check each class individually -->
             <do_else>
-              <set_value name="$cargotype" exact="''"/>
-              <do_if value="$object.cargo.tags.indexof.{tag.bulk}">
+              <do_if value="$object.cargo.capacity.solid">
                 <set_value name="$cargotype" operation="add" exact="{5554302,202}"/>
               </do_if>
-              <do_if value="$object.cargo.tags.indexof.{tag.container}">
+              <do_if value="$object.cargo.capacity.container">
                 <set_value name="$cargotype" operation="add" exact="{5554302,203}"/>
               </do_if>
-              <do_if value="$object.cargo.tags.indexof.{tag.energy}">
-                <set_value name="$cargotype" operation="add" exact="{5554302,204}"/>
-              </do_if>
-              <do_if value="$object.cargo.tags.indexof.{tag.liquid}">
+              <do_if value="$object.cargo.capacity.liquid">
                 <set_value name="$cargotype" operation="add" exact="{5554302,205}"/>
               </do_if>
             </do_else>
             <!-- Other/odd Cargo Types - just for completeness -->
             <!-- <do_if value="$object.cargo.tags.indexof.{tag.fuel}">
               <set_value name="$cargotype" operation="add" exact="{5554302,206}"/>
-            </do_if> -->
+            </do_if> 
             <do_if value="$object.cargo.tags.indexof.{tag.ship}">
               <set_value name="$cargotype" operation="add" exact="{5554302,207}"/>
             </do_if>
             <do_if value="$object.cargo.tags.indexof.{tag.inventory}">
               <set_value name="$cargotype" operation="add" exact="{5554302,208}"/>
-            </do_if>
+            </do_if>-->
           </do_if>
           <!--  Ship type (without cargo class variations - already handled by cargo type expression)-->
           <set_value name="$type" exact="$object.macro.name"/>
@@ -208,20 +256,20 @@
             </substitute_text>
           </do_all>
           <!-- Script Set running on this Ship -->
-          <do_if value="true" comment="just for better node folding">
+          <!--do_if value="true" comment="just for better node folding">
             <do_if value="$controlentity.$orderlist?">
               <set_value name="$scriptset" exact="{5554302,400}"/>
             </do_if>
             <do_else comment="Vanilla or Unknown Script Set">
               <set_value name="$scriptset" exact="{5554302,121}"/>
             </do_else>
-          </do_if>
+          </do_if-->
           <!-- - - - - - - - - - - - -->
           <!-- Actual Replacements in the Name -->
           <!-- Expressions which always have the same Result - just change the content of the name Var -->
           <substitute_text text="$nameA">
             <replace string="{5554302,200}" with="$cargotype"/>
-            <replace string="{5554302,100}" with="if $object.commander.controlentity.$shortname then $object.commander.controlentity.$shortname else $object.commander.name"/>
+            <replace string="{5554302,100}" with="if global.$shortname.{$object.commander} then global.$shortname.{$object.commander} else $object.commander.name"/>
             <replace string="{5554302,101}" with="$object.commander.sector.name"/>
             <replace string="{5554302,102}" with="$object.commander.cluster.name"/>
             <replace string="{5554302,103}" with="$object.sector.name"/>
@@ -260,19 +308,19 @@
           
           <!-- Perform Script-Dynamic Replacements ( Marking Key $ ) - no Registration for Automated Update Event, send Signal or Include Actions yourself.-->
           <!-- (feel free to add your own Values to the local table $namereplacement though ;) -->
-          <do_if value="not $controlentity.$namereplacement?">
-            <set_value name="$controlentity.$namereplacement" exact="table[]"/>
+          <do_if value="not global.$namereplacement.$object?">
+            <set_value name="global.$namereplacement.$object" exact="table[]"/>
           </do_if>
-          <set_value name="$keys" exact="$controlentity.$namereplacement.keys.list"/>
+          <set_value name="$keys" exact="global.$namereplacement.$object.keys.list"/>
           <do_all exact="$keys.count" counter="$i" reverse="false">
             <substitute_text text="$nameA">
-              <replace string="$keys.{$i}" with="$controlentity.$namereplacement.{$keys.{$i}}"/>
+              <replace string="$keys.{$i}" with="global.$namereplacement.$object.{$keys.{$i}}"/>
             </substitute_text>
             <substitute_text text="$nameB">
               <replace string="$keys.{$i}" with="''"/>
             </substitute_text>
           </do_all>
-          <set_value name="$debug" exact="'%1\nSCRIPT EXPR: %3\nSCRIPT:  %2'.[$debug,$nameA,$controlentity.$namereplacement]" chance="$debug? *100" comment="fill debug output Value"/>
+          <set_value name="$debug" exact="'%1\nSCRIPT EXPR: %3\nSCRIPT:  %2'.[$debug,$nameA,global.$namereplacement.$object]" chance="$debug? *100" comment="fill debug output Value"/>
           
           <!-- First generate the short Name by replacing all Dynamic Expressions with an empty String ( =removing them) -->
           <substitute_text text="$nameB">
@@ -450,12 +498,12 @@ else 'null'"/>
             <replace string="{5554302,306}" with="$object.builds.queued.count"/>
             <replace string="{5554302,307}" with="$object.builds.inprogress.count"/>
             <!-- Trade relevant Replacements -->
-            <replace string="{5554302,123}" with="if $object.isclass.ship then $object.pilot.money.formatted.{'%s%Cr'} else $object.tradenpc.money.formatted.{'%s%Cr'}"/>
+            <replace string="{5554302,123}" with="$object.money.formatted.{'%s%Cr'}"/>
             <replace string="{5554302,124}" with="if $primarycargo then $primarycargo.name else {5554302,125}"/>
             <replace string="{5554302,126}" with="if $secondarycargo then $secondarycargo.name else {5554302,127}"/>
-            <replace string="{5554302,128}" with="@$object.cargo.free"/>
-            <replace string="{5554302,129}" with="@$object.cargo.capacity"/>
-            <replace string="{5554302,130}" with="@$object.cargo.capacity - @$object.cargo.free"/>
+            <replace string="{5554302,128}" with="@$object.cargo.free.all"/>
+            <replace string="{5554302,129}" with="@$object.cargo.capacity.all"/>
+            <replace string="{5554302,130}" with="@$object.cargo.capacity.all - @$object.cargo.free.all"/>
             <replace string="{5554302,131}" with="$cargolist.count"/>
             
             <!-- Values based on other Scripts -->
@@ -500,7 +548,7 @@ else 'null'"/>
               <replace string="'    '" with="' '"/>
               <replace string="'  '" with="' '"/>
             </substitute_text>
-            <set_value name="$controlentity.$shortname" exact="$nameB"/>
+            <set_value name="global.$shortname.$object" exact="$nameB"/>
           </do_if>
           <do_else>
             <do_all exact="$keys.count" counter="$i" reverse="false">
@@ -508,7 +556,7 @@ else 'null'"/>
                 <replace string="readtext.{5554301}.{$keys.{$i}}" with="readtext.{5554301}.{$keys.{$i}+1}"/>
               </substitute_text>
             </do_all>
-            <remove_value name="$controlentity.$shortname"/>
+            <remove_value name="global.$shortname.$object"/>
           </do_else>
           <set_value name="$debug" exact="'%1\nPOSTDYN: %2    %3'.[$debug,$nameA,@$nameB]" chance="$debug? *100" comment="fill debug output Value"/>
           

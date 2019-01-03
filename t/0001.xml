@@ -170,10 +170,12 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   <t id="20025"></t>
   <t id="20026"> {20111,5301}</t><!-- Basic -->
   <t id="20027"></t>
-  <t id="20028"> {20111,5401}</t><!--  Luxury -->
+  <t id="20028"> {20111,5302}</t><!--  Standard -->
   <t id="20029"></t>
-  <!--<t id="20030"> {20111,6001}</t><!- -  Venture - ->
-  <t id="20031"></t>-->
+  <t id="20030"> {20111,5303}</t><!--  Luxury -->
+  <t id="20031"></t>
+  <!--<t id="20032"> {20111,6001}</t><!- -  Venture - ->
+  <t id="20033"></t>-->
   <!-- shorten overly long Names -->
   <t id="20040">Construction Vessel</t>
   <t id="20041">CVessel</t>
@@ -216,14 +218,14 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   <t id="19">$SBP</t>
   <t id="20">$SCA</t>
   <t id="21">$SCB</t>
-  <t id="22">$SCC</t>
+  <t id="22">$SCC</t>xx
   <t id="23">$SCE</t>
   <t id="24">$SCL</t>
-  <t id="25">$SCM</t>
+  <t id="25">$SCM</t>xx
   <t id="26">$SCN</t>
   <t id="27">$SCO</t>
-  <t id="28">$SCS</t>
-  <t id="29">$SCP</t>
+  <t id="28">$SCS</t>xx
+  <t id="29">$SCP</t>xx
   <t id="30">$SDA</t>
   <t id="31">$SDB</t>
   <t id="32">$SDC</t>
@@ -282,11 +284,10 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   <t id="122">0</t><!-- Leading Sign for %subnumber if there are more than 9 or 99 total subordinates (will be doubled if necesary)-->
   <!-- ##### -->
   <t id="123">$money</t>
-  <t id="124">$cargo.primary</t>
+  <t id="124">$cargo.primary</t>xx
   <t id="125">Empty</t><!-- Text in case there is no primary Cargo -->
-  <t id="126">$cargo.secondary</t>
-  <t id="124"></t><!-- Text in case there is no secondary Cargo -->
-  <t id="127">$cargo.primary</t>
+  <t id="126">$cargo.secondary</t>xx
+  <t id="127"></t><!-- Text in case there is no secondary Cargo -->
   <t id="128">$cargo.free</t>
   <t id="129">$cargo.volume</t>
   <t id="130">$cargo.used</t>
