@@ -27,42 +27,69 @@
           <conditions>
             <check_any>
               <event_player_built_ship/>
-              <event_player_built_station/>
+              <event_player_build_plot_changed/>
+              <!--event_player_built_station/-->
             </check_any>
           </conditions>
           <actions>
             <set_value name="$object" exact="event.param"/>
-            <do_if value="$object.isclass.station">
-              <do_if value="{5554302,3} != ''">
-                <set_value name="player.entity.$unformatted_names.$object" exact="{5554302,3}"/>
+            <do_if value="not player.entity.$unformatted_names.$object?">
+              <do_if value="$object.isclass.station">
+                <do_if value="{5554302,3} != ''">
+                  <set_value name="player.entity.$unformatted_names.$object" exact="{5554302,3}"/>
+                </do_if>
+                <do_else>
+                  <set_value name="$skiprename"/>
+                </do_else>
               </do_if>
+              <do_elseif value="$object.isclass.ship_xl">
+                <do_if value="{5554302,4} != ''">
+                  <set_value name="player.entity.$unformatted_names.$object" exact="{5554302,4}"/>
+                </do_if>
+                <do_else>
+                  <set_value name="$skiprename"/>
+                </do_else>
+              </do_elseif>
+              <do_elseif value="$object.isclass.ship_l">
+                <do_if value="{5554302,5} != ''">
+                  <set_value name="player.entity.$unformatted_names.$object" exact="{5554302,5}"/>
+                </do_if>
+                <do_else>
+                  <set_value name="$skiprename"/>
+                </do_else>
+              </do_elseif>
+              <do_elseif value="$object.isclass.ship_m">
+                <do_if value="{5554302,6} != ''">
+                  <set_value name="player.entity.$unformatted_names.$object" exact="{5554302,6}"/>
+                </do_if>
+                <do_else>
+                  <set_value name="$skiprename"/>
+                </do_else>
+              </do_elseif>
+              <do_elseif value="$object.isclass.ship_s">
+                <do_if value="{5554302,7} != ''">
+                  <set_value name="player.entity.$unformatted_names.$object" exact="{5554302,7}"/>
+                </do_if>
+                <do_else>
+                  <set_value name="$skiprename"/>
+                </do_else>
+              </do_elseif>
+              <do_elseif value="$object.isclass.ship_xs">
+                <do_if value="{5554302,8} != ''">
+                  <set_value name="player.entity.$unformatted_names.$object" exact="{5554302,8}"/>
+                </do_if>
+                <do_else>
+                  <set_value name="$skiprename"/>
+                </do_else>
+              </do_elseif>
               <do_else>
                 <set_value name="$skiprename"/>
+                <debug_text filter="error" text="'New Ship %1 is of unknown class %2 - skippint renaming actions'.[$object.name,$object.class]"/>
+                <debug_to_file text="'[== ERROR ==] New Ship %1 is of unknown class %2 - skippint renaming actions'.[$object.name,$object.class]" name="'Advanced Renaming.txt'" output="true"/>
               </do_else>
-            </do_if>
-            <do_elseif value="$object.isclass.{[ class.ship_xl , class.ship_l ]} ">
-              <do_if value="{5554302,4} != ''">
-                <set_value name="player.entity.$unformatted_names.$object" exact="{5554302,4}"/>
+              <do_if value="not $skiprename?">
+                <include_actions ref="RenameActions"/>
               </do_if>
-              <do_else>
-                <set_value name="$skiprename"/>
-              </do_else>
-            </do_elseif>
-            <do_elseif value="$object.isclass.{[ class.ship_m , class.ship_s , class.ship_xs ]} ">
-              <do_if value="{5554302,5} != ''">
-                <set_value name="player.entity.$unformatted_names.$object" exact="{5554302,5}"/>
-              </do_if>
-              <do_else>
-                <set_value name="$skiprename"/>
-              </do_else>
-            </do_elseif>
-            <do_else>
-              <set_value name="$skiprename"/>
-              <debug_text filter="error" text="'New Ship %1 is of unknown class %2 - skippint renaming actions'.[$object.name,$object.class]"/>
-              <debug_to_file text="'[== ERROR ==] New Ship %1 is of unknown class %2 - skippint renaming actions'.[$object.name,$object.class]" name="'Advanced Renaming.txt'" output="true"/>
-            </do_else>
-            <do_if value="not $skiprename?">
-              <include_actions ref="RenameActions"/>
             </do_if>
             <remove_value name="$object"/>
             <remove_value name="$skiprename"/>
