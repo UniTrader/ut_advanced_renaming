@@ -7,7 +7,7 @@
       </conditions>
 	  <delay exact="1s"/>
       <actions>
-        <open_menu menu="G_Work_Around" param="[0, 0, '.\\extensions\\ut_advanced_renaming\\utrenaming.lua']"/>
+        <signal_cue_instantly cue="md.G_Work_Around.Signal" param="'.\\extensions\\ut_advanced_renaming\\utrenaming.lua'"/>
       </actions>
     </cue>
     <cue name="Init">
