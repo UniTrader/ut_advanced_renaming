@@ -42,15 +42,10 @@
           </conditions>
           <actions>
             <set_value name="$object" exact="event.param"/>
-            <debug_text filter="error" text="'event triggered for %1 of class %2'.[$object.idcode, $object.class]"/>
             <do_if value="@readtext.{5554302}.{1} != '=ReadText5554302-1='" comment="check if custom file is present">
-              <debug_text filter="error" text="'custom file is present'"/>
               <do_if value="not player.entity.$unformatted_names.{$object}?">
-                <debug_text filter="error" text="'not yet in naming list'"/>
                 <do_if value="$object.isrealclass.station">
-                  <debug_text filter="error" text="'is station'"/>
                   <do_if value="{5554302,3} != ''">
-                    <debug_text filter="error" text="'name set'"/>
                     <set_value name="player.entity.$unformatted_names.{$object}" exact="{5554302,3}"/>
                   </do_if>
                   <do_else>
@@ -58,9 +53,7 @@
                   </do_else>
                 </do_if>
                 <do_elseif value="$object.isclass.ship_xl">
-                  <debug_text filter="error" text="'is xl'"/>
                   <do_if value="{5554302,4} != ''">
-                    <debug_text filter="error" text="'name set'"/>
                     <set_value name="player.entity.$unformatted_names.{$object}" exact="{5554302,4}"/>
                   </do_if>
                   <do_else>
@@ -68,9 +61,7 @@
                   </do_else>
                 </do_elseif>
                 <do_elseif value="$object.isclass.ship_l">
-                  <debug_text filter="error" text="'is l'"/>
                   <do_if value="{5554302,5} != ''">
-                    <debug_text filter="error" text="'name set'"/>
                     <set_value name="player.entity.$unformatted_names.{$object}" exact="{5554302,5}"/>
                   </do_if>
                   <do_else>
@@ -78,9 +69,7 @@
                   </do_else>
                 </do_elseif>
                 <do_elseif value="$object.isclass.ship_m">
-                  <debug_text filter="error" text="'is m'"/>
                   <do_if value="{5554302,6} != ''">
-                    <debug_text filter="error" text="'name set'"/>
                     <set_value name="player.entity.$unformatted_names.{$object}" exact="{5554302,6}"/>
                   </do_if>
                   <do_else>
@@ -88,9 +77,7 @@
                   </do_else>
                 </do_elseif>
                 <do_elseif value="$object.isclass.ship_s">
-                  <debug_text filter="error" text="'is s'"/>
                   <do_if value="{5554302,7} != ''">
-                    <debug_text filter="error" text="'name set'"/>
                     <set_value name="player.entity.$unformatted_names.{$object}" exact="{5554302,7}"/>
                   </do_if>
                   <do_else>
@@ -99,7 +86,6 @@
                 </do_elseif>
                 <do_elseif value="$object.isclass.ship_xs">
                   <do_if value="{5554302,8} != ''">
-                    <debug_text filter="error" text="'name set'"/>
                     <set_value name="player.entity.$unformatted_names.{$object}" exact="{5554302,8}"/>
                   </do_if>
                   <do_else>
