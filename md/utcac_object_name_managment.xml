@@ -42,7 +42,7 @@
           </conditions>
           <actions>
             <set_value name="$object" exact="event.param"/>
-            <debug_text filter="error" text="'Event triggered for %1'.[$object.idcode]"/>
+            <debug_text filter="error" text="'Event triggered for %1 // %2'.[$object.idcode,{5554302,1}]"/>
             <do_if value="not player.entity.$unformatted_names.$object?">
               <do_if value="$object.isclass.station">
                 <do_if value="{5554302,3} != ''">

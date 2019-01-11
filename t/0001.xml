@@ -181,14 +181,6 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   <t id="20041">CVessel</t>
 </page>
 <page id="5554302" title="UT Advanced Renaming" descr="Object Name Dynamic Expressions and Internally used Text" voice="no">
-  <t id="1" comment="Setting:  Version Number of the Custom Expressions File - change this Entry to update the Result on all Objects upon loading a Savegame">0</t>
-  <t id="2" comment="Setting:  Safe Expression converted into English? (default no, set to yes if you want to transfer your Save from another language than english to a Game in another Language)">no</t>
-  <t id="3" comment="Name Template for Stations (will be applied when Plot is created or changed if there is no Advanced name set yet, leave empty to not use this)"></t>
-  <t id="4" comment="Name Template for XL Ships (will be applied when built, leave empty to not use this)"></t>
-  <t id="5" comment="Name Template for L Ships (will be applied when built, leave empty to not use this)"></t>
-  <t id="6" comment="Name Template for M Ships (will be applied when built, leave empty to not use this)"></t>
-  <t id="7" comment="Name Template for S Ships (will be applied when built, leave empty to not use this)"></t>
-  <t id="8" comment="Name Template for XS Ships (will be applied when built, leave empty to not use this)"></t>
   <!-- NPC Skills
   S => Skill
   +
