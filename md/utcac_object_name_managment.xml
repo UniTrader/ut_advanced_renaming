@@ -46,7 +46,7 @@
             <do_if value="@readtext.{5554302}.{1} != '=ReadText5554302-1='" comment="check if custom file is present">
               <debug_text filter="error" text="'custom file is present'"/>
               <do_if value="not player.entity.$unformatted_names.$object?">
-                <do_if value="$object.isclass.station">
+                <do_if value="$object.isrealclass.station">
                   <debug_text filter="error" text="'is station'"/>
                   <do_if value="{5554302,3} != ''">
                     <debug_text filter="error" text="'name set'"/>
