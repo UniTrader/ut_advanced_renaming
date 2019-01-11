@@ -44,6 +44,7 @@
             <set_value name="$object" exact="event.param"/>
             <debug_text filter="error" text="'event triggered for %1 of class %2'.[$object.idcode, $object.class]"/>
             <do_if value="@readtext.{5554302}.{1} != '=ReadText5554302-1='" comment="check if custom file is present">
+              <debug_text filter="error" text="'custom file is present'"/>
               <do_if value="not player.entity.$unformatted_names.$object?">
                 <do_if value="$object.isclass.station">
                   <debug_text filter="error" text="'is station'"/>
