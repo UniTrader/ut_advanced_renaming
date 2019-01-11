@@ -42,7 +42,7 @@
           </conditions>
           <actions>
             <set_value name="$object" exact="event.param"/>
-            <do_if value="@{5554302,1} != '=ReadText5554302-1='" comment="check if custom file is present">
+            <do_if value="@readtext.{5554302}.{1} != '=ReadText5554302-1='" comment="check if custom file is present">
               <do_if value="not player.entity.$unformatted_names.$object?">
                 <do_if value="$object.isclass.station">
                   <do_if value="{5554302,3} != ''">
@@ -177,7 +177,7 @@
             <check_any>
               <check_all>
                 <event_game_loaded/>
-                <check_value value="@{5554302,1} != '=ReadText5554302-1=' and {5554302,1} != @$customversion" comment="only update when Custom (User) Version file is present and has changed"/>
+                <check_value value="@readtext.{5554302}.{1} != '=ReadText5554302-1=' and {5554302,1} != @$customversion" comment="only update when Custom (User) Version file is present and has changed"/>
               </check_all>
             </check_any>
           </conditions>
@@ -242,7 +242,7 @@
           </do_all>
           <set_value name="$debug" exact="'%1\nCUSTOM: (Not seperate from next yet)\nLOCAL:   %2'.[$debug,$nameA]" chance="$debug? *100" comment="fill debug output Value"/>
           <!-- If Language-transfer is desired Save name Var back to local Var now, continue with remaining phrases after that -->
-          <do_if value="@{5554302,1} != '=ReadText5554302-1=' and {5554302,1} == 'yes'">
+          <do_if value="@readtext.{5554302}.{1} != '=ReadText5554302-1=' and {5554302,1} == 'yes'">
             <set_value name="player.entity.$unformatted_names.$object" exact="$nameA"/>
           </do_if>
           <get_text_ids_in_range result="$keys" page="5554301" start="2000" end="3000" factor="2"/>
