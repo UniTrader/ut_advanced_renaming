@@ -45,13 +45,13 @@
             <debug_text filter="error" text="'event triggered for %1 of class %2'.[$object.idcode, $object.class]"/>
             <do_if value="@readtext.{5554302}.{1} != '=ReadText5554302-1='" comment="check if custom file is present">
               <debug_text filter="error" text="'custom file is present'"/>
-              <do_if value="not player.entity.$unformatted_names.$object?">
+              <do_if value="not player.entity.$unformatted_names.{$object}?">
                 <debug_text filter="error" text="'not yet in naming list'"/>
                 <do_if value="$object.isrealclass.station">
                   <debug_text filter="error" text="'is station'"/>
                   <do_if value="{5554302,3} != ''">
                     <debug_text filter="error" text="'name set'"/>
-                    <set_value name="player.entity.$unformatted_names.$object" exact="{5554302,3}"/>
+                    <set_value name="player.entity.$unformatted_names.{$object}" exact="{5554302,3}"/>
                   </do_if>
                   <do_else>
                     <set_value name="$skiprename"/>
@@ -61,7 +61,7 @@
                   <debug_text filter="error" text="'is xl'"/>
                   <do_if value="{5554302,4} != ''">
                     <debug_text filter="error" text="'name set'"/>
-                    <set_value name="player.entity.$unformatted_names.$object" exact="{5554302,4}"/>
+                    <set_value name="player.entity.$unformatted_names.{$object}" exact="{5554302,4}"/>
                   </do_if>
                   <do_else>
                     <set_value name="$skiprename"/>
@@ -71,7 +71,7 @@
                   <debug_text filter="error" text="'is l'"/>
                   <do_if value="{5554302,5} != ''">
                     <debug_text filter="error" text="'name set'"/>
-                    <set_value name="player.entity.$unformatted_names.$object" exact="{5554302,5}"/>
+                    <set_value name="player.entity.$unformatted_names.{$object}" exact="{5554302,5}"/>
                   </do_if>
                   <do_else>
                     <set_value name="$skiprename"/>
@@ -81,7 +81,7 @@
                   <debug_text filter="error" text="'is m'"/>
                   <do_if value="{5554302,6} != ''">
                     <debug_text filter="error" text="'name set'"/>
-                    <set_value name="player.entity.$unformatted_names.$object" exact="{5554302,6}"/>
+                    <set_value name="player.entity.$unformatted_names.{$object}" exact="{5554302,6}"/>
                   </do_if>
                   <do_else>
                     <set_value name="$skiprename"/>
@@ -91,7 +91,7 @@
                   <debug_text filter="error" text="'is s'"/>
                   <do_if value="{5554302,7} != ''">
                     <debug_text filter="error" text="'name set'"/>
-                    <set_value name="player.entity.$unformatted_names.$object" exact="{5554302,7}"/>
+                    <set_value name="player.entity.$unformatted_names.{$object}" exact="{5554302,7}"/>
                   </do_if>
                   <do_else>
                     <set_value name="$skiprename"/>
@@ -100,7 +100,7 @@
                 <do_elseif value="$object.isclass.ship_xs">
                   <do_if value="{5554302,8} != ''">
                     <debug_text filter="error" text="'name set'"/>
-                    <set_value name="player.entity.$unformatted_names.$object" exact="{5554302,8}"/>
+                    <set_value name="player.entity.$unformatted_names.{$object}" exact="{5554302,8}"/>
                   </do_if>
                   <do_else>
                     <set_value name="$skiprename"/>
@@ -111,7 +111,7 @@
                   <debug_text filter="error" text="'New Ship %1 is of unknown class %2 - skippint renaming actions'.[$object.name,$object.class]"/>
                   <debug_to_file text="'[== ERROR ==] New Ship %1 is of unknown class %2 - skippint renaming actions'.[$object.name,$object.class]" name="'Advanced Renaming.txt'" output="true"/>
                 </do_else>
-                <debug_text filter="error" text="'Name set to %1'.[player.entity.$unformatted_names.$object]"/>
+                <debug_text filter="error" text="'Name set to %1'.[player.entity.$unformatted_names.{$object}]"/>
                 <do_if value="not $skiprename?">
                   <include_actions ref="RenameActions"/>
                 </do_if>
@@ -179,7 +179,7 @@
             </do_if>
             <do_else>
               <set_value name="$object" exact="event.param2"/>
-              <set_value name="player.entity.$unformatted_names.$object" exact="event.param3"/>
+              <set_value name="player.entity.$unformatted_names.{$object}" exact="event.param3"/>
               <add_to_group groupname="$NamedObjectsDynamic" object="$object"/>
               <include_actions ref="RenameActions"/>
               <remove_value name="$object"/>
@@ -210,12 +210,12 @@
     <library name="RenameActions">
       <actions>
         <!-- confirm valadity of Object, saveBlackboard Entity -->
-        <do_if value="$object.exists and player.entity.$unformatted_names.$object?">
+        <do_if value="$object.exists and player.entity.$unformatted_names.{$object}?">
           <do_if value="$keys? or $nameA? or $nameB? or $cargotype? or $type? or $scriptset? or $debug?">
             <debug_text filter="error" text="'Internally used Vars in Included Actions also used by previous Code: $keys: %1 $nameA: %2 $nameB: %3 $cargotype: %4 $type: %5 $scriptset: %6 $debug: %7 - will be overridden and removed!!'.[@$keys,@$nameA,@$nameB,@$cargotype,@$type,@$scriptset,@$debug]"/>
             <debug_to_file text="'[== ERROR ==] Internally used Vars in Included Actions also used by previous Code: $keys: %1 $nameA: %2 $nameB: %3 $cargotype: %4 $type: %5 $scriptset: %6 $debug: %7 - will be overridden and removed!!'.[@$keys,@$nameA,@$nameB,@$cargotype,@$type,@$scriptset,@$debug]" name="'Advanced Renaming.txt'" output="true"/>
           </do_if>
-          <set_value name="$nameA" exact="player.entity.$unformatted_names.$object"/>
+          <set_value name="$nameA" exact="player.entity.$unformatted_names.{$object}"/>
           <!-- Check if we have a Debug Expression in the Object Name and activate it (if not deactivate when outside Debug Mode)-->
           <!-- DEBUG OFF (Expression will be removed permanently) -->
           <substitute_text text="$nameB" source="$nameA">
@@ -228,7 +228,7 @@
             <set_value name="$object.engineer.$debug" exact="false" chance="$object.engineer.exists * 100"/>
             <!-- <set_value name="$object.architect.$debug" exact="false" chance="$object.architect.exists * 100"/>
             <set_value name="$object.boardingnpc.$debug" exact="false" chance="$object.boardingnpc.exists * 100"/-->
-            <set_value name="player.entity.$unformatted_names.$object" exact="$nameB"/>
+            <set_value name="player.entity.$unformatted_names.{$object}" exact="$nameB"/>
             <set_value name="$nameA" exact="$nameB"/>
           </do_if>
           <!-- DEBUG ON (Expression will stay) -->
@@ -257,7 +257,7 @@
           <set_value name="$debug" exact="'%1\nCUSTOM: (Not seperate from next yet)\nLOCAL:   %2'.[$debug,$nameA]" chance="$debug? *100" comment="fill debug output Value"/>
           <!-- If Language-transfer is desired Save name Var back to local Var now, continue with remaining phrases after that -->
           <do_if value="@readtext.{5554302}.{1} != '=ReadText5554302-1=' and {5554302,1} == 'yes'">
-            <set_value name="player.entity.$unformatted_names.$object" exact="$nameA"/>
+            <set_value name="player.entity.$unformatted_names.{$object}" exact="$nameA"/>
           </do_if>
           <get_text_ids_in_range result="$keys" page="5554301" start="2000" end="3000" factor="2"/>
           <do_all exact="$keys.count" counter="$i" reverse="false">
