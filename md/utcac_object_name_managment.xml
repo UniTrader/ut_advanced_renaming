@@ -42,6 +42,7 @@
           </conditions>
           <actions>
             <set_value name="$object" exact="event.param"/>
+            <debug_text filter="error" text="'Event triggered for %1'.[$object.idcode]"/>
             <do_if value="not player.entity.$unformatted_names.$object?">
               <do_if value="$object.isclass.station">
                 <do_if value="{5554302,3} != ''">
@@ -96,6 +97,7 @@
                 <debug_text filter="error" text="'New Ship %1 is of unknown class %2 - skippint renaming actions'.[$object.name,$object.class]"/>
                 <debug_to_file text="'[== ERROR ==] New Ship %1 is of unknown class %2 - skippint renaming actions'.[$object.name,$object.class]" name="'Advanced Renaming.txt'" output="true"/>
               </do_else>
+              <debug_text filter="error" text="'Name set to %1'.[player.entity.$unformatted_names.$object]"/>
               <do_if value="not $skiprename?">
                 <include_actions ref="RenameActions"/>
               </do_if>
