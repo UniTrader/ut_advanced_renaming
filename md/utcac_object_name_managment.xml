@@ -5,9 +5,18 @@
       <conditions>
         <event_cue_completed cue="md.G_Work_Around.Init"/>
       </conditions>
-	  <delay exact="1s"/>
       <actions>
         <raise_lua_event name="'RegisterAddon'" param="'extensions.ut_advanced_renaming.utrenaming'"/>
+      </actions>
+    </cue>
+    <cue name="RegisterUI020" version="1" instantiate="true">
+      <conditions>
+        <event_game_loaded />
+        <check_value value="md.md.G_Work_Around.Signal.exists"/>
+      </conditions>
+	  <delay exact="1s"/>
+      <actions>
+        <signal_cue_instantly cue="md.G_Work_Around.Signal" param="'.\\extensions\\ut_advanced_renaming\\utrenaming.lua'"/>
       </actions>
     </cue>
     <cue name="Init">
