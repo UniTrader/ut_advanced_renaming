@@ -3,11 +3,11 @@
   <cues>
     <cue name="RegisterUI" version="1" instantiate="true">
       <conditions>
-        <event_game_loaded />
+        <event_cue_completed cue="md.G_Work_Around.Init"/>
       </conditions>
 	  <delay exact="1s"/>
       <actions>
-        <signal_cue_instantly cue="md.G_Work_Around.Signal" param="'.\\extensions\\ut_advanced_renaming\\utrenaming.lua'"/>
+        <raise_lua_event name="'RegisterAddon'" param="'.\\extensions\\ut_advanced_renaming\\utrenaming.lua'"/>
       </actions>
     </cue>
     <cue name="Init">
