@@ -7,7 +7,7 @@
       </conditions>
 	  <delay exact="1s"/>
       <actions>
-        <raise_lua_event name="'RegisterAddon'" param="'.\\extensions\\ut_advanced_renaming\\utrenaming.lua'"/>
+        <raise_lua_event name="'RegisterAddon'" param="'extensions.ut_advanced_renaming.utrenaming'"/>
       </actions>
     </cue>
     <cue name="Init">
