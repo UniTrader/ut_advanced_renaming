@@ -28,7 +28,7 @@
         <set_value name="player.entity.$namereplacement" exact="table[]"/>
         <set_value name="player.entity.$shortname" exact="table[]"/>
         <!-- set current User Expression Version so Update on load only happens when it changed -->
-        <set_value name="$customversion" exact="{5554302,1}"/>
+        <set_value name="$customversion" exact="if @readtext.{5554302}.{1} != '=ReadText5554302-1=' then readtext.{5554302}.{1} else null"/>
       </actions>
       <cues>
         <cue name="EventObjectDestroyed" instantiate="true">
@@ -54,48 +54,48 @@
             <do_if value="@readtext.{5554302}.{1} != '=ReadText5554302-1='" comment="check if custom file is present">
               <do_if value="not player.entity.$unformatted_names.{$object}?">
                 <do_if value="$object.isrealclass.station">
-                  <do_if value="{5554302,3} != ''">
-                    <set_value name="player.entity.$unformatted_names.{$object}" exact="{5554302,3}"/>
+                  <do_if value="@readtext.{5554302}.{3} != ''">
+                    <set_value name="player.entity.$unformatted_names.{$object}" exact="@readtext.{5554302}.{3}"/>
                   </do_if>
                   <do_else>
                     <set_value name="$skiprename"/>
                   </do_else>
                 </do_if>
                 <do_elseif value="$object.isclass.ship_xl">
-                  <do_if value="{5554302,4} != ''">
-                    <set_value name="player.entity.$unformatted_names.{$object}" exact="{5554302,4}"/>
+                  <do_if value="@readtext.{5554302}.{4} != ''">
+                    <set_value name="player.entity.$unformatted_names.{$object}" exact="@readtext.{5554302}.{4}"/>
                   </do_if>
                   <do_else>
                     <set_value name="$skiprename"/>
                   </do_else>
                 </do_elseif>
                 <do_elseif value="$object.isclass.ship_l">
-                  <do_if value="{5554302,5} != ''">
-                    <set_value name="player.entity.$unformatted_names.{$object}" exact="{5554302,5}"/>
+                  <do_if value="@readtext.{5554302}.{5} != ''">
+                    <set_value name="player.entity.$unformatted_names.{$object}" exact="@readtext.{5554302}.{5}"/>
                   </do_if>
                   <do_else>
                     <set_value name="$skiprename"/>
                   </do_else>
                 </do_elseif>
                 <do_elseif value="$object.isclass.ship_m">
-                  <do_if value="{5554302,6} != ''">
-                    <set_value name="player.entity.$unformatted_names.{$object}" exact="{5554302,6}"/>
+                  <do_if value="@readtext.{5554302}.{6} != ''">
+                    <set_value name="player.entity.$unformatted_names.{$object}" exact="@readtext.{5554302}.{6}"/>
                   </do_if>
                   <do_else>
                     <set_value name="$skiprename"/>
                   </do_else>
                 </do_elseif>
                 <do_elseif value="$object.isclass.ship_s">
-                  <do_if value="{5554302,7} != ''">
-                    <set_value name="player.entity.$unformatted_names.{$object}" exact="{5554302,7}"/>
+                  <do_if value="@readtext.{5554302}.{7} != ''">
+                    <set_value name="player.entity.$unformatted_names.{$object}" exact="@readtext.{5554302}.{7}"/>
                   </do_if>
                   <do_else>
                     <set_value name="$skiprename"/>
                   </do_else>
                 </do_elseif>
                 <do_elseif value="$object.isclass.ship_xs">
-                  <do_if value="{5554302,8} != ''">
-                    <set_value name="player.entity.$unformatted_names.{$object}" exact="{5554302,8}"/>
+                  <do_if value="@readtext.{5554302}.{8} != ''">
+                    <set_value name="player.entity.$unformatted_names.{$object}" exact="@readtext.{5554302}.{8}"/>
                   </do_if>
                   <do_else>
                     <set_value name="$skiprename"/>
@@ -251,7 +251,7 @@
           </do_all>
           <set_value name="$debug" exact="'%1\nCUSTOM: (Not seperate from next yet)\nLOCAL:   %2'.[$debug,$nameA]" chance="$debug? *100" comment="fill debug output Value"/>
           <!-- If Language-transfer is desired Save name Var back to local Var now, continue with remaining phrases after that -->
-          <do_if value="@readtext.{5554302}.{1} != '=ReadText5554302-1=' and {5554302,1} == 'yes'">
+          <do_if value="@readtext.{5554302}.{1} == 'yes'">
             <set_value name="player.entity.$unformatted_names.{$object}" exact="$nameA"/>
           </do_if>
           <get_text_ids_in_range result="$keys" page="5554301" start="2000" end="3000" factor="2"/>
