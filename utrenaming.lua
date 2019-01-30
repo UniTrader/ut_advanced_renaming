@@ -702,7 +702,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 				-- Original Line:
 				-- row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = objectname })
 				local editname = ((GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names"))[inputobject]) or objectname
-				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight}):setText(editname)
+				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = editname })
 				-- End change by UniTrader
 				row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
 			else
@@ -1760,7 +1760,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 				-- Original Line:
 				-- row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = objectname })
 				local editname = ((GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names"))[inputobject]) or objectname
-				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight}):setText(editname)
+				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = editname })
 				-- End change by UniTrader
 				row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
 			else
@@ -2370,12 +2370,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 				row = inputtable:addRow(locrowdata[1], { bgColor = Helper.color.transparent })
 				row[1]:setBackgroundColSpan(13)
 				row[2]:setColSpan(2):createText(locrowdata[2], { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = Helper.standardFont, x = Helper.standardTextOffsetx + (1 * indentsize) })
-				-- Changed by UniTrader: Edit Unformatted Name if available
-				-- Original Line:
-				-- row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = objectname })
-				local editname = ((GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names"))[inputobject]) or objectname
-				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight}):setText(editname)
-				-- End change by UniTrader
+				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = objectname })
 				row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
 			else
 				row = orig.menu.addInfoSubmenuRow(inputtable, row, locrowdata, false, false, false, 1, indentsize)
@@ -2480,12 +2475,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 				row = inputtable:addRow(locrowdata[1], { bgColor = Helper.color.transparent })
 				row[1]:setBackgroundColSpan(13)
 				row[2]:setColSpan(2):createText(locrowdata[2], { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = Helper.standardFont, x = Helper.standardTextOffsetx + (1 * indentsize) })
-				-- Changed by UniTrader: Edit Unformatted Name if available
-				-- Original Line:
-				-- row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = objectname })
-				local editname = ((GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names"))[inputobject]) or objectname
-				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight}):setText(editname)
-				-- End change by UniTrader
+				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = objectname })
 				row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
 			else
 				row = orig.menu.addInfoSubmenuRow(inputtable, row, locrowdata, false, false, false, 1, indentsize)
