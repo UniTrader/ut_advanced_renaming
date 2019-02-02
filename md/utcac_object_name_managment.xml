@@ -52,6 +52,7 @@
               <event_navbeacon_launched space="player.galaxy"/>
               <event_satellite_launched space="player.galaxy"/>
               <event_resourceprobe_launched space="player.galaxy"/>
+              <event_contained_object_changed_owner space="player.galaxy" owner="faction.player"/>
             </check_any>
           </conditions>
           <actions>
