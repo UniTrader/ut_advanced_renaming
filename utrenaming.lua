@@ -701,7 +701,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 				-- Changed by UniTrader: Edit Unformatted Name if available
 				-- Original Line:
 				-- row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = objectname })
-				local editname = ((GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names"))[inputobject]) or objectname
+				local editname = GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname
 				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight}):setText(editname)
 				-- End change by UniTrader
 				row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
@@ -1759,7 +1759,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 				-- Changed by UniTrader: Edit Unformatted Name if available
 				-- Original Line:
 				-- row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = objectname })
-				local editname = ((GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names"))[inputobject]) or objectname
+				local editname = GetNPCBlackboard(C.GetPlayerID() , "$unformatted_names")[inputobject] or objectname
 				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight}):setText(editname)
 				-- End change by UniTrader
 				row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
@@ -2373,7 +2373,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 				-- Changed by UniTrader: Edit Unformatted Name if available
 				-- Original Line:
 				-- row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = objectname })
-				local editname = ((GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names"))[inputobject]) or objectname
+				local editname = GetNPCBlackboard(C.GetPlayerID() , "$unformatted_names")[inputobject] or objectname
 				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight}):setText(editname)
 				-- End change by UniTrader
 				row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
@@ -2483,7 +2483,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 				-- Changed by UniTrader: Edit Unformatted Name if available
 				-- Original Line:
 				-- row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = objectname })
-				local editname = ((GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names"))[inputobject]) or objectname
+				local editname = GetNPCBlackboard(C.GetPlayerID() , "$unformatted_names")[inputobject] or objectname
 				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight}):setText(editname)
 				-- End change by UniTrader
 				row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
@@ -2597,7 +2597,7 @@ function utRenaming.infoChangeObjectName(objectid, text, textchanged)
 		SetComponentName(objectid, text)
 	end
     -- UniTrader change: Set Signal Universe/Object instead of actual renaming (whih is handled in MD)
-    SignalObject(GetComponentData(objectid, "galaxyid" ) , "Object Name Updated" , ConvertStringToLuaID(tostring(objectid)) , text)
+    SignalObject(GetComponentData(objectid, "galaxyid" ) , "Object Name Updated" , { ConvertStringToLuaID(tostring(objectid)) , objectid } , text)
     -- UniTrader Changes end (next line was a if before, but i have some diffrent conditions)
 
 	orig.menu.noupdate = false

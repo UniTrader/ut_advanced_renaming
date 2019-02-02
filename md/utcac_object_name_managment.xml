@@ -173,8 +173,9 @@
               <remove_value name="$objectname"/>
             </do_if>
             <do_else>
-              <set_value name="$object" exact="event.param2"/>
+              <set_value name="$object" exact="event.param2.{1}"/>
               <set_value name="player.entity.$unformatted_names.{$object}" exact="event.param3"/>
+              <set_value name="player.entity.$unformatted_names.{event.param2.{2}}" exact="event.param3" comment="Specifically for lua because it refuses to retriee the unformatted name otherwise - screw lua!!!"/>
               <add_to_group groupname="$NamedObjectsDynamic" object="$object"/>
               <include_actions ref="RenameActions"/>
               <remove_value name="$object"/>
@@ -617,6 +618,7 @@ else 'null'"/>
           <set_object_name object="$object" name="$nameA + {5554301,2017}" comment="adding neutral Color Tag at the end"/>
           <add_to_group groupname="md.UT_CAC_Object_Name_Managment.Init.$NamedObjects" object="$object"/>
           <!-- for the short name / $nameB look in the Code Group before - more economic there -->
+          <set_value name="$debug" exact="'%1\nNaming Table: %2'.[$debug,player.entity.$unformatted_names]" chance="$debug? *100" comment="fill debug output Value"/>
           <debug_to_file text="$debug" name="'Advanced Renaming.txt'" output="true"/>
           <remove_value name="$keys"/>
           <remove_value name="$nameA"/>
