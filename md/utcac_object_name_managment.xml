@@ -47,6 +47,11 @@
               <event_player_built_ship/>
               <event_player_build_plot_changed/>
               <!--event_player_built_station/-->
+              <event_lasertower_launched space="player.galaxy"/>
+              <event_mine_launched space="player.galaxy"/>
+              <event_navbeacon_launched space="player.galaxy"/>
+              <event_satellite_launched space="player.galaxy"/>
+              <event_resourceprobe_launched space="player.galaxy"/>
             </check_any>
           </conditions>
           <actions>
@@ -102,11 +107,14 @@
                   </do_else>
                 </do_elseif>
                 <do_else>
-                  <set_value name="$skiprename"/>
-                  <debug_text filter="error" text="'New Ship %1 is of unknown class %2 - skippint renaming actions'.[$object.name,$object.class]"/>
-                  <debug_to_file text="'[== ERROR ==] New Ship %1 is of unknown class %2 - skippint renaming actions'.[$object.name,$object.class]" name="'Advanced Renaming.txt'" output="true"/>
+                <do_if value="@readtext.{5554302}.{8} != ''">
+                    <set_value name="player.entity.$unformatted_names.{$object}" exact="@readtext.{5554302}.{8}"/>
+                  </do_if>
+                  <do_else>
+                    <set_value name="$skiprename"/>
+                  </do_else>
                 </do_else>
-                <debug_text filter="error" text="'Name set to %1'.[player.entity.$unformatted_names.{$object}]"/>
+                <debug_text filter="general" text="'Name set to %1'.[player.entity.$unformatted_names.{$object}]" chance="0"/>
                 <do_if value="not $skiprename?">
                   <include_actions ref="RenameActions"/>
                 </do_if>
@@ -241,7 +249,6 @@
             <set_value name="$object.boardingnpc.$debug" exact="true" chance="$object.boardingnpc.exists * 100"/-->
             <set_value name="$debug" exact="'%1 Advanced Renaming Name Stages: \nUNFORM:  %2'.[$object.name,$nameA]"/>
           </do_if>
-          <set_value name="$debug" exact="'%1 Advanced Renaming Name Stages: \nUNFORM:  %2'.[$object.name,$nameA]"/>
           <!-- ========= -->
           <!-- Perform Static Replacements (Preffered Marking Key / ) -->
           <get_text_ids_in_range result="$keys" page="5554301" start="0" end="1999" factor="2"/>
@@ -619,7 +626,7 @@ else 'null'"/>
           <add_to_group groupname="md.UT_CAC_Object_Name_Managment.Init.$NamedObjects" object="$object"/>
           <!-- for the short name / $nameB look in the Code Group before - more economic there -->
           <set_value name="$debug" exact="'%1\nNaming Table: %2'.[$debug,player.entity.$unformatted_names]" chance="$debug? *100" comment="fill debug output Value"/>
-          <debug_to_file text="$debug" name="'Advanced Renaming.txt'" output="true"/>
+          <debug_to_file text="$debug" name="'Advanced Renaming.txt'" output="true" chance="$debug? *100"/>
           <remove_value name="$keys"/>
           <remove_value name="$nameA"/>
           <remove_value name="$nameB"/>
