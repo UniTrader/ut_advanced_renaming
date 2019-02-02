@@ -179,6 +179,8 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   <!-- shorten overly long Names -->
   <t id="20040">Construction Vessel</t>
   <t id="20041">CVessel</t>
+  <t id="20050"> Hauler</t><!-- Mod compatibility with TomSanford for new Variations -->
+  <t id="20051"></t>
 </page>
 <page id="5554302" title="UT Advanced Renaming" descr="Object Name Dynamic Expressions and Internally used Text" voice="no">
   <!-- NPC Skills
