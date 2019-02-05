@@ -182,6 +182,8 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   <!-- Mod compattibility -->
   <t id="20050"> Hauler</t><!-- New Variation from TomSanford -->
   <t id="20051"></t>
+  <t id="20052"> Prototype</t><!-- New Variation from TomSanford -->
+  <t id="20053"></t>
 </page>
 <page id="5554302" title="UT Advanced Renaming" descr="Object Name Dynamic Expressions and Internally used Text" voice="no">
   <!-- NPC Skills
