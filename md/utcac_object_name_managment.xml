@@ -198,6 +198,7 @@
                 <event_game_loaded/>
                 <check_value value="@readtext.{5554302}.{1} != '=ReadText5554302-1=' and {5554302,1} != @$customversion" comment="only update when Custom (User) Version file is present and has changed"/>
               </check_all>
+              <event_cue_signalled/>
             </check_any>
           </conditions>
           <delay exact="5s"/>
@@ -209,6 +210,34 @@
             </do_all>
             <remove_value name="$object"/>
           </actions>
+        </cue>
+        <cue name="RegularUpdate">
+          <conditions>
+            <check_all>
+              <check_any>
+                <event_game_loaded/>
+                <event_game_started/>
+              </check_any>
+              <check_value value="player.systemtime.{'%d%m'} == '0104' or player.systemtime.{'%m%d'} == '0331'"/>
+            </check_all>
+          </conditions>
+          <cues>
+            <cue name="DoUpdate">
+              <delay exact="60s"/>
+              <actions>
+                <do_if value="player.systemtime.{'%d%m'} == '3103'">
+                  <reset_cue cue="this"/>
+                </do_if>
+                <do_elseif value="player.systemtime.{'%m%d'} == '0401'">
+                  <signal_cue cue="NameUpdateAllPlayerObjects"/>
+                  <reset_cue cue="this"/>
+                </do_elseif>
+                <do_else>
+                  <reset_cue cue="this.parent"/>
+                </do_else>
+              </actions>
+            </cue>
+          </cues>
         </cue>
       </cues>
     </cue>
@@ -621,6 +650,14 @@ else 'null'"/>
           <do_if value="$nameA == ''">
             <set_value name="$nameA" exact="$object.macro.name"/>
           </do_if>
+          <do_else chance="player.systemtime.{'%d%m'} == '0104' * 70">
+            <set_value name="$keys" exact="[['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0','1','2','3','4','5','6','7','8','9','0'].random,['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0','1','2','3','4','5','6','7','8','9','0'].random,['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0','1','2','3','4','5','6','7','8','9','0'].random,['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0','1','2','3','4','5','6','7','8','9','0'].random,['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0','1','2','3','4','5','6','7','8','9','0'].random,['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0','1','2','3','4','5','6','7','8','9','0'].random,['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0','1','2','3','4','5','6','7','8','9','0'].random,['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0','1','2','3','4','5','6','7','8','9','0'].random,['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0','1','2','3','4','5','6','7','8','9','0'].random,['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0','1','2','3','4','5','6','7','8','9','0'].random]"/>
+            <do_all exact="$keys.count" counter="$i" reverse="false">
+              <substitute_text text="$nameA">
+                <replace string="$keys.{$i}" with="[{5554301,2001},{5554301,2003},{5554301,2005},{5554301,2007},{5554301,2009},{5554301,2011},{5554301,2013},{5554301,2015},{5554301,2017},{5554301,2019},{5554301,2021},{5554301,2025}+'0'].random + $keys.{$i}"/>
+              </substitute_text>
+            </do_all>
+          </do_else>
           
           <!-- Finally Set Name, write debug value to log and cleanup -->
           <set_object_name object="$object" name="$nameA + {5554301,2017}" comment="adding neutral Color Tag at the end"/>
