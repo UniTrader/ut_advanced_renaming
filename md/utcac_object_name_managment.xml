@@ -31,6 +31,28 @@
         <set_value name="$customversion" exact="if @readtext.{5554302}.{1} != '=ReadText5554302-1=' then readtext.{5554302}.{1} else null"/>
       </actions>
       <cues>
+        <cue name="Install_Initialize">
+          <conditions>
+            <event_game_loaded/>
+            <check_value value="@readtext.{5554302}.{1} != '=ReadText5554302-1='" comment="check if custom file is present"/>
+          </conditions>
+          <actions>
+            <find_ship name="$allships" space="player.galaxy" owner="faction.player" multiple="true"/>
+            <do_all exact="$allships.count" counter="$i">
+              <do_if value="$allships.{$i}.name == '' or $allships.{$i}.name == $allships.{$i}.macro.name">
+                <signal_cue_instantly cue="NameUpdate_Initialize" param="$allships.{$i}"/>
+              </do_if>
+            </do_all>
+            <remove_value name="$allships"/>
+            <find_station name="$allstations" space="player.galaxy" owner="faction.player" multiple="true"/>
+            <do_all exact="$allstations.count" counter="$i">
+              <do_if value="$allstations.{$i}.name == '' or $allstations.{$i}.name == $allstations.{$i}.macro.name">
+                <signal_cue_instantly cue="NameUpdate_Initialize" param="$allstations.{$i}"/>
+              </do_if>
+            </do_all>
+            <remove_value name="$allstations"/>
+          </actions>
+        </cue>
         <cue name="EventObjectDestroyed" instantiate="true">
           <conditions>
             <event_object_destroyed group="$NamedObjects"/>
@@ -53,6 +75,7 @@
               <event_satellite_launched space="player.galaxy"/>
               <event_resourceprobe_launched space="player.galaxy"/>
               <event_contained_object_changed_owner space="player.galaxy" owner="faction.player"/>
+              <event_cue_signalled/>
             </check_any>
           </conditions>
           <delay exact="100ms"/>
@@ -185,9 +208,15 @@
             <do_else>
               <set_value name="$object" exact="event.param2.{1}"/>
               <set_value name="player.entity.$unformatted_names.{$object}" exact="event.param3"/>
-              <set_value name="player.entity.$unformatted_names.{event.param2.{2}}" exact="event.param3" comment="Specifically for lua because it refuses to retriee the unformatted name otherwise - screw lua!!!"/>
+              <set_value name="player.entity.$unformatted_names.{event.param2.{2}}" exact="event.param3" comment="Specifically for lua because it refuses to retrieve the unformatted name otherwise - screw lua!!!"/>
               <add_to_group groupname="$NamedObjectsDynamic" object="$object"/>
-              <include_actions ref="RenameActions"/>
+              <do_if value="event.param3 == ''" comment="If the set Name is empty - use/re-set default name according to custom file">
+                <remove_value name="player.entity.$unformatted_names.{$object}"/>
+                <signal_cue_instantly cue="NameUpdate_Initialize" param="$object"/>
+              </do_if>
+              <do_else>
+                <include_actions ref="RenameActions"/>
+              </do_else>
               <remove_value name="$object"/>
             </do_else>
           </actions>
