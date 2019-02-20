@@ -55,6 +55,7 @@
               <event_contained_object_changed_owner space="player.galaxy" owner="faction.player"/>
             </check_any>
           </conditions>
+          <delay exact="100ms"/>
           <actions>
             <set_value name="$object" exact="event.param"/>
             <do_if value="$object.owner == faction.player and @readtext.{5554302}.{1} != '=ReadText5554302-1='" comment="check if the Object is really owned by the player and if custom file is present">
