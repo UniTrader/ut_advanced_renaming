@@ -11,10 +11,10 @@
     </cue>
     <cue name="RegisterUI020" version="1" instantiate="true">
       <conditions>
-        <event_game_loaded />
+        <event_game_loaded/>
         <check_value value="md.md.G_Work_Around.Signal.exists"/>
       </conditions>
-	  <delay exact="1s"/>
+      <delay exact="1s"/>
       <actions>
         <signal_cue_instantly cue="md.G_Work_Around.Signal" param="'.\\extensions\\ut_advanced_renaming\\utrenaming.lua'"/>
       </actions>
@@ -31,6 +31,20 @@
         <set_value name="$customversion" exact="if @readtext.{5554302}.{1} != '=ReadText5554302-1=' then readtext.{5554302}.{1} else null"/>
       </actions>
       <cues>
+        <cue name="Check_Redundant_Mods" instantiate="true">
+          <conditions>
+            <check_any>
+              <event_game_started/>
+              <event_game_loaded/>
+            </check_any>
+          </conditions>
+          <delay exact="10s"/>
+          <actions>
+            <do_if value="md.PlayerFactionTag.InitPlayerTag.exists">
+              <show_notification text="'Advanced Renaming detected that the Player Faction Tag Mod is also present.\nBoth overlap functionally, so one of them is not really needed.'"/>
+            </do_if>
+          </actions>
+        </cue>
         <cue name="Install_Initialize">
           <conditions>
             <event_game_loaded/>
@@ -132,7 +146,7 @@
                   </do_else>
                 </do_elseif>
                 <do_else>
-                <do_if value="@readtext.{5554302}.{8} != ''">
+                  <do_if value="@readtext.{5554302}.{8} != ''">
                     <set_value name="player.entity.$unformatted_names.{$object}" exact="@readtext.{5554302}.{8}"/>
                   </do_if>
                   <do_else>
@@ -329,7 +343,6 @@
             </substitute_text>
           </do_all>
           <set_value name="$debug" exact="'%1\nSTATIC:  %2'.[$debug,$nameA]" chance="$debug? *100" comment="fill debug output Value"/>
-          
           <!-- ========= -->
           <!-- Perform Engine-based Dynamic Replacements ( Marking Key % ) and also add them to Update Group if used-->
           <!-- - - - - - - - - - - - -->
@@ -394,9 +407,12 @@
             <replace string="{5554302,105}" with="$type"/>
             <replace string="{5554302,106}" with="$object.macro.name"/>
             <replace string="{5554302,107}" with="$object.macro.name"/>
-            <replace string="{5554302,108}" with="{5554301,11001} + $object.primarypurpose"/> <!-- will be post-dynamic replaced with proper Purpose Name -->
-            <replace string="{5554302,109}" with="{5554301,11015} + $object.class"/> <!-- will be post-dynamic replaced with proper Class Name -->
-            <replace string="{5554302,110}" with="$object.idcode"/> <!-- will be post-dynamic replaced with proper Class Name -->
+            <replace string="{5554302,108}" with="{5554301,11001} + $object.primarypurpose"/>
+            <!-- will be post-dynamic replaced with proper Purpose Name -->
+            <replace string="{5554302,109}" with="{5554301,11015} + $object.class"/>
+            <!-- will be post-dynamic replaced with proper Class Name -->
+            <replace string="{5554302,110}" with="$object.idcode"/>
+            <!-- will be post-dynamic replaced with proper Class Name -->
             <!-- Random Color (cannot be done from t-file directly) -->
             <replace string="{5554302,119}+'0'" with="[{5554301,2001},{5554301,2003},{5554301,2005},{5554301,2007},{5554301,2009},{5554301,2011},{5554301,2013},{5554301,2015},{5554301,2017},{5554301,2019},{5554301,2021},{5554301,2025}+'0'].random"/>
             <replace string="{5554302,119}+'1'" with="[{5554301,2001},{5554301,2003},{5554301,2005},{5554301,2007},{5554301,2009},{5554301,2011},{5554301,2013},{5554301,2015},{5554301,2017},{5554301,2019},{5554301,2021},{5554301,2025}+'0'].random"/>
@@ -418,12 +434,9 @@
             <replace string="{5554302,115}" with="$object.cluster.shortname"/>
             <replace string="{5554302,116}" with="$object.macro.shortname"/>
             -->
-            
           </substitute_text>
-          
           <!-- From here on $nameA contains the visible name (with frequently changing content) and $nameB the short variation without frequently changing content - if both are identical after this there is no need for Updates -->
           <set_value name="$nameB" exact="$nameA"/>
-          
           <!-- Perform Script-Dynamic Replacements ( Marking Key $ ) - no Registration for Automated Update Event, send Signal or Include Actions yourself.-->
           <!-- (feel free to add your own Values to the local table $namereplacement though ;) -->
           <do_if value="not player.entity.$namereplacement.$object?">
@@ -439,7 +452,6 @@
             </substitute_text>
           </do_all>
           <set_value name="$debug" exact="'%1\nSCRIPT EXPR: %3\nSCRIPT:  %2'.[$debug,$nameA,player.entity.$namereplacement.$object]" chance="$debug? *100" comment="fill debug output Value"/>
-          
           <!-- First generate the short Name by replacing all Dynamic Expressions with an empty String ( =removing them) -->
           <substitute_text text="$nameB">
             <!-- Skill-based Expressions -->
@@ -520,7 +532,7 @@
           <!-- Generate the Long Name -->
           <!-- Find Primary and Secondary Ware in Cargo -->
           <set_value name="$cargolist" exact="@$object.cargo.list"/>
-		  <!-- Old Code from XR
+          <!-- Old Code from XR
 		  <do_if value="$cargolist.indexof.{ware.fuelcells}">
             <remove_value name="$cargolist.{$cargolist.indexof.{ware.fuelcells}}"/>
           </do_if-->
@@ -560,11 +572,7 @@ else 'null'"/-->
             <replace string="{5554302,26}" with="@$object.pilot.skill.navigation"/>
             <replace string="{5554302,27}" with="@$object.pilot.skill.morale"/>
             <replace string="{5554302,28}" with="@$object.pilot.skill.science"/>
-            <replace string="{5554302,29}" with="if $object.pilot.exists then ( '' + 
-$object.pilot.skill.{$object.pilot.type.skilltypes.{1}} + 
-( if $object.pilot.type.skilltypes.{2}? then  + $object.pilot.skill.{$object.pilot.type.skilltypes.{2}} else '' ) +  
-( if $object.pilot.type.skilltypes.{3}? then  + $object.pilot.skill.{$object.pilot.type.skilltypes.{3}} else '' ) )
-else 'null'"/>
+            <replace string="{5554302,29}" with="if $object.pilot.exists then ( '' +  $object.pilot.skill.{$object.pilot.type.skilltypes.{1}} +  ( if $object.pilot.type.skilltypes.{2}? then  + $object.pilot.skill.{$object.pilot.type.skilltypes.{2}} else '' ) +   ( if $object.pilot.type.skilltypes.{3}? then  + $object.pilot.skill.{$object.pilot.type.skilltypes.{3}} else '' ) ) else 'null'"/>
             <replace string="{5554302,30}" with="@$object.defencenpc.combinedskill"/>
             <replace string="{5554302,31}" with="@$object.defencenpc.skill.boarding"/>
             <replace string="{5554302,32}" with="@$object.defencenpc.skill.combat"/>
@@ -574,11 +582,7 @@ else 'null'"/>
             <replace string="{5554302,36}" with="@$object.defencenpc.skill.navigation"/>
             <replace string="{5554302,37}" with="@$object.defencenpc.skill.morale"/>
             <replace string="{5554302,38}" with="@$object.defencenpc.skill.science"/>
-            <replace string="{5554302,39}" with="if $object.defencenpc.exists then ( '' + 
-$object.defencenpc.skill.{$object.defencenpc.type.skilltypes.{1}} + 
-( if $object.defencenpc.type.skilltypes.{2}? then  + $object.defencenpc.skill.{$object.defencenpc.type.skilltypes.{2}} else '' ) +  
-( if $object.defencenpc.type.skilltypes.{3}? then  + $object.defencenpc.skill.{$object.defencenpc.type.skilltypes.{3}} else '' ) )
-else 'null'"/>
+            <replace string="{5554302,39}" with="if $object.defencenpc.exists then ( '' +  $object.defencenpc.skill.{$object.defencenpc.type.skilltypes.{1}} +  ( if $object.defencenpc.type.skilltypes.{2}? then  + $object.defencenpc.skill.{$object.defencenpc.type.skilltypes.{2}} else '' ) +   ( if $object.defencenpc.type.skilltypes.{3}? then  + $object.defencenpc.skill.{$object.defencenpc.type.skilltypes.{3}} else '' ) ) else 'null'"/>
             <replace string="{5554302,40}" with="@$object.engineer.combinedskill"/>
             <replace string="{5554302,41}" with="@$object.engineer.skill.boarding"/>
             <replace string="{5554302,42}" with="@$object.engineer.skill.combat"/>
@@ -588,11 +592,7 @@ else 'null'"/>
             <replace string="{5554302,46}" with="@$object.engineer.skill.navigation"/>
             <replace string="{5554302,47}" with="@$object.engineer.skill.morale"/>
             <replace string="{5554302,48}" with="@$object.engineer.skill.science"/>
-            <replace string="{5554302,49}" with="if $object.engineer.exists then ( '' + 
-$object.engineer.skill.{$object.engineer.type.skilltypes.{1}} + 
-( if $object.engineer.type.skilltypes.{2}? then  + $object.engineer.skill.{$object.engineer.type.skilltypes.{2}} else '' ) +  
-( if $object.engineer.type.skilltypes.{3}? then  + $object.engineer.skill.{$object.engineer.type.skilltypes.{3}} else '' ) )
-else 'null'"/>
+            <replace string="{5554302,49}" with="if $object.engineer.exists then ( '' +  $object.engineer.skill.{$object.engineer.type.skilltypes.{1}} +  ( if $object.engineer.type.skilltypes.{2}? then  + $object.engineer.skill.{$object.engineer.type.skilltypes.{2}} else '' ) +   ( if $object.engineer.type.skilltypes.{3}? then  + $object.engineer.skill.{$object.engineer.type.skilltypes.{3}} else '' ) ) else 'null'"/>
             <replace string="{5554302,50}" with="@$object.tradenpc.combinedskill"/>
             <replace string="{5554302,51}" with="@$object.tradenpc.skill.boarding"/>
             <replace string="{5554302,52}" with="@$object.tradenpc.skill.combat"/>
@@ -602,11 +602,7 @@ else 'null'"/>
             <replace string="{5554302,56}" with="@$object.tradenpc.skill.navigation"/>
             <replace string="{5554302,57}" with="@$object.tradenpc.skill.morale"/>
             <replace string="{5554302,58}" with="@$object.tradenpc.skill.science"/>
-            <replace string="{5554302,59}" with="if $object.tradenpc.exists then ( '' + 
-$object.tradenpc.skill.{$object.tradenpc.type.skilltypes.{1}} + 
-( if $object.tradenpc.type.skilltypes.{2}? then  + $object.tradenpc.skill.{$object.tradenpc.type.skilltypes.{2}} else '' ) +  
-( if $object.tradenpc.type.skilltypes.{3}? then  + $object.tradenpc.skill.{$object.tradenpc.type.skilltypes.{3}} else '' ) )
-else 'null'"/>
+            <replace string="{5554302,59}" with="if $object.tradenpc.exists then ( '' +  $object.tradenpc.skill.{$object.tradenpc.type.skilltypes.{1}} +  ( if $object.tradenpc.type.skilltypes.{2}? then  + $object.tradenpc.skill.{$object.tradenpc.type.skilltypes.{2}} else '' ) +   ( if $object.tradenpc.type.skilltypes.{3}? then  + $object.tradenpc.skill.{$object.tradenpc.type.skilltypes.{3}} else '' ) ) else 'null'"/>
             <!-- Station Build Progress -->
             <replace string="{5554302,301}" with="if $object.buildingprocessor.exists and $object.buildingprocessor.isbuilding then $object.buildingprocessor.elapsedtime else ''"/>
             <replace string="{5554302,302}" with="if $object.buildingprocessor.exists and $object.buildingprocessor.isbuilding then $object.buildingprocessor.totaltime else ''"/>
@@ -623,19 +619,16 @@ else 'null'"/>
             <replace string="{5554302,129}" with="@$object.cargo.capacity.all"/>
             <replace string="{5554302,130}" with="@$object.cargo.capacity.all - @$object.cargo.free.all"/>
             <replace string="{5554302,131}" with="$cargolist.count"/>
-            
             <!-- Values based on other Scripts -->
             <replace string="{5554302,120}" with="$scriptset"/>
             <!-- UT CaC Functionality -->
             <replace string="{5554302,401}" with="if $object.controlentity.$orderlist? then $object.controlentity.$orderlist.{1}.$displayname else ''"/>
             <replace string="{5554302,402}" with="if $object.controlentity.$orderlist? then $object.controlentity.$orderlist.count else ''"/>
           </substitute_text>
-          
           <!-- remove temp Values for Cargo Expression -->
           <remove_value name="$primarycargo"/>
           <remove_value name="$secondarycargo"/>
           <remove_value name="$cargolist"/>
-          
           <!-- if the Name contains something dynamic - add it to the Update-Group, otherwise remove it -->
           <do_if value="$nameA != $nameB">
             <add_to_group groupname="md.UT_CAC_Object_Name_Managment.Init.$NamedObjectsDynamic" object="$object" comment="since this code might be included elsewhere refer to this var with mdscript/cue"/>
@@ -645,7 +638,6 @@ else 'null'"/>
             <remove_value name="$nameB"/>
           </do_else>
           <set_value name="$debug" exact="'%1\nDYNAMIC: %2 %4 %3'.[$debug,$nameA,@$nameB,if $nameA == @$nameB then '==' else '!=' ]" chance="$debug? *100" comment="fill debug output Value"/>
-          
           <!-- Post-dynamic substitutions -->
           <get_text_ids_in_range result="$keys" page="5554301" start="10000" end="12000" factor="2"/>
           <do_if value="$nameB?">
@@ -688,7 +680,6 @@ else 'null'"/>
               </substitute_text>
             </do_all>
           </do_else>
-          
           <!-- Finally Set Name, write debug value to log and cleanup -->
           <set_object_name object="$object" name="$nameA + {5554301,2017}" comment="adding neutral Color Tag at the end"/>
           <add_to_group groupname="md.UT_CAC_Object_Name_Managment.Init.$NamedObjects" object="$object"/>
