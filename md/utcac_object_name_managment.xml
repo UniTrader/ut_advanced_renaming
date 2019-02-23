@@ -439,19 +439,19 @@
           <set_value name="$nameB" exact="$nameA"/>
           <!-- Perform Script-Dynamic Replacements ( Marking Key $ ) - no Registration for Automated Update Event, send Signal or Include Actions yourself.-->
           <!-- (feel free to add your own Values to the local table $namereplacement though ;) -->
-          <do_if value="not player.entity.$namereplacement.$object?">
-            <set_value name="player.entity.$namereplacement.$object" exact="table[]"/>
+          <do_if value="not player.entity.$namereplacement.{$object}?">
+            <set_value name="player.entity.$namereplacement.{$object}" exact="table[]"/>
           </do_if>
-          <set_value name="$keys" exact="player.entity.$namereplacement.$object.keys.list"/>
+          <set_value name="$keys" exact="player.entity.$namereplacement.{$object}.keys.list"/>
           <do_all exact="$keys.count" counter="$i" reverse="false">
             <substitute_text text="$nameA">
-              <replace string="$keys.{$i}" with="player.entity.$namereplacement.$object.{$keys.{$i}}"/>
+              <replace string="$keys.{$i}" with="player.entity.$namereplacement.{$object}.{$keys.{$i}}"/>
             </substitute_text>
             <substitute_text text="$nameB">
               <replace string="$keys.{$i}" with="''"/>
             </substitute_text>
           </do_all>
-          <set_value name="$debug" exact="'%1\nSCRIPT EXPR: %3\nSCRIPT:  %2'.[$debug,$nameA,player.entity.$namereplacement.$object]" chance="$debug? *100" comment="fill debug output Value"/>
+          <set_value name="$debug" exact="'%1\nSCRIPT EXPR: %3\nSCRIPT:  %2'.[$debug,$nameA,player.entity.$namereplacement.{$object}]" chance="$debug? *100" comment="fill debug output Value"/>
           <!-- First generate the short Name by replacing all Dynamic Expressions with an empty String ( =removing them) -->
           <substitute_text text="$nameB">
             <!-- Skill-based Expressions -->
