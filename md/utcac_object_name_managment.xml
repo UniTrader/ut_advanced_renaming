@@ -40,7 +40,7 @@
           </conditions>
           <delay exact="10s"/>
           <actions>
-            <do_if value="md.PlayerFactionTag.InitPlayerTag.exists">
+            <do_if value="md.PlayerFactionTag.InitPlayerTag?">
               <show_notification text="'Advanced Renaming detected that the Player Faction Tag Mod is also present.\nBoth can be used to add a Faction Tag to all Player Property.\nSo its recommended you remove/disable one of them.'"/>
             </do_if>
           </actions>
