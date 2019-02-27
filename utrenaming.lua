@@ -520,7 +520,6 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 				local editname = GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname
 				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight}):setText(editname)
 				-- End change by UniTrader
-
 				row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
 			else
 				row = orig.menu.addInfoSubmenuRow(inputtable, row, locrowdata, false, false, false, 1, indentsize)
@@ -545,12 +544,12 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 			locrowdata = { false, ReadText(1001, 94), objecttype }	-- Model
 			row = orig.menu.addInfoSubmenuRow(inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
-			local hull_max = defenceinfo_low and ConvertIntegerString(Helper.round(GetComponentData(object64, "hullmax")), true, 0, true) or unknowntext
-			locrowdata = { false, ReadText(1001, 1), (defenceinfo_high and (function() return (ConvertIntegerString(Helper.round(GetComponentData(object64, "hull")), true, 0, true) .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" .. GetComponentData(object64, "hullpercent") .. "%)") end) or (unknowntext .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" .. unknowntext .. "%)")) }	-- Hull, MJ
+			local hull_max = defenceinfo_low and ConvertIntegerString(Helper.round(GetComponentData(object64, "hullmax")), true, 4, true, true, true) or unknowntext
+			locrowdata = { false, ReadText(1001, 1), (defenceinfo_high and (function() return (ConvertIntegerString(Helper.round(GetComponentData(object64, "hull")), true, 4, true, true, true) .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" .. GetComponentData(object64, "hullpercent") .. "%)") end) or (unknowntext .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" .. unknowntext .. "%)")) }	-- Hull, MJ
 			row = orig.menu.addInfoSubmenuRow(inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
-			local shield_max = defenceinfo_low and ConvertIntegerString(Helper.round(GetComponentData(object64, "shieldmax")), true, 0, true) or unknowntext
-			locrowdata = { false, ReadText(1001, 2), (defenceinfo_high and (function() return (ConvertIntegerString(Helper.round(GetComponentData(object64, "shield")), true, 0, true) .. " / " .. shield_max .. " " .. ReadText(1001, 118) .. " (" .. GetComponentData(object64, "shieldpercent") .. "%)") end) or (unknowntext .. " / " .. shield_max .. " " .. ReadText(1001, 118) .. " (" .. unknowntext .. "%)")) }	-- Hull, MJ
+			local shield_max = defenceinfo_low and ConvertIntegerString(Helper.round(GetComponentData(object64, "shieldmax")), true, 4, true, true, true) or unknowntext
+			locrowdata = { false, ReadText(1001, 2), (defenceinfo_high and (function() return (ConvertIntegerString(Helper.round(GetComponentData(object64, "shield")), true, 4, true, true, true) .. " / " .. shield_max .. " " .. ReadText(1001, 118) .. " (" .. GetComponentData(object64, "shieldpercent") .. "%)") end) or (unknowntext .. " / " .. shield_max .. " " .. ReadText(1001, 118) .. " (" .. unknowntext .. "%)")) }	-- Hull, MJ
 			row = orig.menu.addInfoSubmenuRow(inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
 			locrowdata = { false, ReadText(1001, 9076), defenceinfo_low and (function() return (ConvertIntegerString(Helper.round(GetComponentData(object64, "maxunboostedforwardspeed")), true, 0, true) .. " " .. ReadText(1001, 113)) end) or (unknowntext .. " " .. ReadText(1001, 113)) }	-- Cruising Speed, m/s
@@ -580,13 +579,12 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 			locrowdata = { false, ReadText(1001, 2426), (radarrange .. " " .. ReadText(1001, 108)) }	-- Radar Range, km
 			row = orig.menu.addInfoSubmenuRow(inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
-			local shipcombinedskill = math.floor(C.GetShipCombinedSkill(inputobject) * 5 / 100)
+			local shipcombinedskill = math.floor(C.GetShipCombinedSkill(inputobject) * 15 / 100)
 			local printedshipcombinedskill = unknowntext
 			local locfont = inputfont
 			local locfontcolor = Helper.standardColor
 			if operatorinfo_details then
-				printedshipcombinedskill = (string.rep(utf8.char(9733), shipcombinedskill) .. string.rep(utf8.char(9734), 5 - shipcombinedskill))
-				locfont = Helper.starFont
+				printedshipcombinedskill = Helper.displaySkill(shipcombinedskill)
 				locfontcolor = Helper.color.brightyellow
 			end
 			locrowdata = { false, ReadText(1001, 9427), printedshipcombinedskill }	-- Crew Skill
@@ -629,8 +627,8 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 			local printedpilotname = operatorinfo and (pilot and tostring(GetComponentData(pilot, "name")) or "") or unknowntext
 			if (pilot or isplayerowned) and orig.menu.extendedinfo[locrowdata[1]] then
 				if pilot then
-					local adjustedskill = math.floor(C.GetEntityCombinedSkill(pilot, nil, "aipilot") * 5 / 100)
-					local printedskill = operatorinfo_details and (string.rep(utf8.char(9733), adjustedskill) .. string.rep(utf8.char(9734), 5 - adjustedskill)) or unknowntext
+					local adjustedskill = math.floor(C.GetEntityCombinedSkill(pilot, nil, "aipilot") * 15 / 100)
+					local printedskill = operatorinfo_details and Helper.displaySkill(adjustedskill) or unknowntext
 					local skilltable = GetComponentData(pilot, "skills")
 					locrowdata = { { pilot, pilot, inputobject }, printedpilotname }
 					if (pilot == C.GetPlayerID()) or not operatorinfo or C.IsUnit(inputobject) then
@@ -640,7 +638,6 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 					local locfont = inputfont
 					local locfontcolor = Helper.standardColor
 					if operatorinfo_details then
-						locfont = Helper.starFont
 						locfontcolor = Helper.color.brightyellow
 					end
 					row[2]:setColSpan(2)
@@ -650,14 +647,13 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 					if pilot ~= C.GetPlayerID() then
 						for _, skillproperties in ipairs(skilltable) do
 							local skillname = ReadText(1013, skillproperties.textid)
-							local adjustedskill = math.floor(skillproperties.value * 5 / 15)
-							local printedskill = operatorinfo_details and (string.rep(utf8.char(9733), adjustedskill) .. string.rep(utf8.char(9734), 5 - adjustedskill)) or unknowntext
+							local adjustedskill = math.floor(skillproperties.value * 15 / 15)
+							local printedskill = operatorinfo_details and Helper.displaySkill(adjustedskill) or unknowntext
 							row = inputtable:addRow(false, { bgColor = Helper.color.transparent })
 							row[2]:setColSpan(2):createText(skillname, { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = (skillproperties.relevance > 0) and Helper.standardFontBold or inputfont, x = Helper.standardTextOffsetx + (3 * indentsize) })
 							local locfont = inputfont
 							local locfontcolor = Helper.standardColor
 							if operatorinfo_details then
-								locfont = Helper.starFont
 								locfontcolor = Helper.color.brightyellow
 							end
 							row[4]:setColSpan(10):createText(printedskill, { halign = "right", minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = locfont, color = locfontcolor })
@@ -795,14 +791,14 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 					if aipilot and orig.menu.extendedinfo[locrowdata[1]] then
 						local name = GetComponentData(aipilot, "name")
 						local printedname = operatorinfo and tostring(name) or unknowntext
-						local adjustedcombinedskill = math.floor(GetComponentData(aipilot, "combinedskill") * 5 / 100)
+						local adjustedcombinedskill = math.floor(GetComponentData(aipilot, "combinedskill") * 15 / 100)
 						local extendinfoid = "info_crewpilot_full"
 						local locrowdata = { "info_crewpilot_full", aipilot, inputobject }
-						local printedskill = string.rep(utf8.char(9733), adjustedcombinedskill) .. string.rep(utf8.char(9734), 5 - adjustedcombinedskill)
+						local printedskill = Helper.displaySkill(adjustedcombinedskill)
 						local indent = 4 * indentsize
 						row = inputtable:addRow(locrowdata, { bgColor = Helper.color.transparent })
 						row[2]:setColSpan(2):createText(printedname, { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = inputfont, x = Helper.standardTextOffsetx + indent })
-						row[4]:setColSpan(10):createText(printedskill, { halign = "right", minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = Helper.starFont, color = Helper.color.brightyellow })
+						row[4]:setColSpan(10):createText(printedskill, { halign = "right", minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, color = Helper.color.brightyellow })
 						row[1]:createButton({ height = config.mapRowHeight }):setText(function() return orig.menu.extendedinfo[extendinfoid] and "-" or "+" end, { halign = "center" })
 						row[1].handlers.onClick = function() return orig.menu.buttonExtendInfo(extendinfoid) end
 						if orig.menu.extendedinfo[extendinfoid] then
@@ -810,14 +806,12 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 							table.sort(skilltable, function(a, b) return a.relevance > b.relevance end)
 							for _, skillproperties in ipairs(skilltable) do
 								local skillname = ReadText(1013, skillproperties.textid)
-								local adjustedskill = math.floor(skillproperties.value * 5 / 15)
-								local printedskill = operatorinfo_details and (string.rep(utf8.char(9733), adjustedskill) .. string.rep(utf8.char(9734), 5 - adjustedskill)) or unknowntext
+								local printedskill = operatorinfo_details and Helper.displaySkill(skillproperties.value) or unknowntext
 								row = inputtable:addRow(false, { bgColor = Helper.color.transparent })
 								row[2]:setColSpan(2):createText(skillname, { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = (skillproperties.relevance > 0) and Helper.standardFontBold or inputfont, x = Helper.standardTextOffsetx + (5 * indentsize) })
 								local locfont = inputfont
 								local locfontcolor = Helper.standardColor
 								if operatorinfo_details then
-									locfont = Helper.starFont
 									locfontcolor = Helper.color.brightyellow
 								end
 								row[4]:setColSpan(10):createText(printedskill, { halign = "right", minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = locfont, color = locfontcolor })
@@ -838,16 +832,16 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 									if orig.menu.extendedinfo[locrowdata[1]] then
 										for k, person in ipairs(tiertable.persons) do
 											-- NB: adjusted to 5 points at the moment because more than 5 doesn't fit very comfortably in this orig.menu.
-											local adjustedcombinedskill = math.floor(C.GetPersonCombinedSkill(inputobject, person, nil, nil) * 5 / 100)
+											local adjustedcombinedskill = math.floor(C.GetPersonCombinedSkill(inputobject, person, nil, nil) * 15 / 100)
 											-- Note: extendinfoid and locrowdata[1] can be different - that wouldn't work when using orig.menu.addInfoSubmenuRow() though
 											local extendinfoid = string.format("info_crewperson_r%d_t%d_p%d", i, j, k)
 											local locrowdata = { "info_crewperson", person, inputobject }
 											local printedname = ffi.string(C.GetPersonName(person, inputobject))
-											local printedskill = string.rep(utf8.char(9733), adjustedcombinedskill) .. string.rep(utf8.char(9734), 5 - adjustedcombinedskill)
+											local printedskill = Helper.displaySkill(adjustedcombinedskill)
 											local indent = (roletable.numtiers > 1) and (5 * indentsize) or (4 * indentsize)
 											row = inputtable:addRow(locrowdata, { bgColor = Helper.color.transparent })
 											row[2]:setColSpan(2):createText(printedname, { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = inputfont, x = Helper.standardTextOffsetx + indent })
-											row[4]:setColSpan(10):createText(printedskill, { halign = "right", minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = Helper.starFont, color = Helper.color.brightyellow })
+											row[4]:setColSpan(10):createText(printedskill, { halign = "right", minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, color = Helper.color.brightyellow })
 											row[1]:createButton({ height = config.mapRowHeight }):setText(function() return orig.menu.extendedinfo[extendinfoid] and "-" or "+" end, { halign = "center" })
 											row[1].handlers.onClick = function() return orig.menu.buttonExtendInfo(extendinfoid) end
 											if orig.menu.extendedinfo[extendinfoid] then
@@ -861,12 +855,11 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 												table.sort(sortedskilltable, function(a, b) return a.relevance > b.relevance end)
 												for i, skill in ipairs(sortedskilltable) do
 													local skillname = ReadText(1013, skill.textid)
-													local skillvalue = math.floor(skill.value * 5 / 15)
 													local indent = (roletable.numtiers > 1) and (6 * indentsize) or (5 * indentsize)
-													local printedskill = string.rep(utf8.char(9733), skillvalue) .. string.rep(utf8.char(9734), 5 - skillvalue)
+													local printedskill = Helper.displaySkill(skill.value)
 													row = inputtable:addRow(false, { bgColor = Helper.color.transparent })
 													row[2]:setColSpan(2):createText(skillname, { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = (skill.relevance > 0) and Helper.standardFontBold or inputfont, x = Helper.standardTextOffsetx + indent })
-													row[4]:setColSpan(10):createText(printedskill, { halign = "right", minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = Helper.starFont, color = Helper.color.brightyellow })
+													row[4]:setColSpan(10):createText(printedskill, { halign = "right", minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, color = Helper.color.brightyellow })
 												end
 											end
 										end
@@ -903,6 +896,18 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 			(storagemodules.estimated and unknowntext or (locamount .. " / " .. loccapacity .. " " .. ReadText(1001, 110))) }	-- Storage, Ware, Wares, Filled Capacity, :, m^3
 		row = orig.menu.addInfoSubmenuRow(inputtable, row, locrowdata, true, true, (storageinfo_warelist and numwares > 0) and true or false)
 		if storageinfo_warelist and (numwares > 0) and orig.menu.extendedinfo[locrowdata[1]] then
+			if isplayerowned then
+				local numtrips = GetComponentData(object64, "numtrips")
+				if numtrips > 0 then
+					local cargoaftertrades = GetCargoAfterTradeOrders(object64, true)
+					local totalvolume = 0
+					for ware, amount in pairs(cargoaftertrades) do
+						totalvolume = totalvolume + amount * GetWareData(ware, "volume")
+					end
+					locrowdata = { "FutureStorage", ReadText(1001, 8374) .. ReadText(1001, 120), ConvertIntegerString(totalvolume, true, 0, true) .. " / " .. loccapacity .. " " .. ReadText(1001, 110) }
+					row = orig.menu.addInfoSubmenuRow(inputtable, row, locrowdata, false, false, false, 1, indentsize)
+				end
+			end
 			-- TEMP for testing
 			if isplayerowned then
 				local stufftodrop = false
@@ -1469,11 +1474,11 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 				end
 			end
 			-- turret
-			for _, turret in ipairs(loadout.component.turret) do
+			for i, turret in ipairs(loadout.component.turret) do
 				local hasinstalledmod, installedmod = Helper.getInstalledModInfo("turret", turret)
 				if hasinstalledmod then
 					locrowdata = { ("EquipmentModsTurret" .. i), ffi.string(C.GetComponentName(turret)), installedmod.Name }
-					row = orig.menu.addEquipmentModInfoRow(inputtable, row, locrowdata, "turret", installedmod, false, true, true, 1, indentsize)
+					row = orig.menu.addEquipmentModInfoRow(inputtable, row, locrowdata, "weapon", installedmod, false, true, true, 1, indentsize)
 				end
 			end
 			-- shield
@@ -1579,7 +1584,6 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 				local editname = GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname
 				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight}):setText(editname)
 				-- End change by UniTrader
-
 				row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
 			else
 				row = orig.menu.addInfoSubmenuRow(inputtable, row, locrowdata, false, false, false, 1, indentsize)
@@ -1591,8 +1595,8 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 			locrowdata = { false, ReadText(1001, 2943), GetComponentData(object64, "sector") }	-- Location
 			row = orig.menu.addInfoSubmenuRow(inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
-			local hull_max = defenceinfo_low and ConvertIntegerString(Helper.round(GetComponentData(object64, "hullmax")), true, 0, true) or unknowntext
-			locrowdata = { false, ReadText(1001, 1), (defenceinfo_high and (function() return (ConvertIntegerString(Helper.round(GetComponentData(object64, "hull")), true, 0, true) .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" .. GetComponentData(object64, "hullpercent") .. "%)") end) or (unknowntext .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" .. unknowntext .. "%)")) }	-- Hull, MJ
+			local hull_max = defenceinfo_low and ConvertIntegerString(Helper.round(GetComponentData(object64, "hullmax")), true, 4, true, true, true) or unknowntext
+			locrowdata = { false, ReadText(1001, 1), (defenceinfo_high and (function() return (ConvertIntegerString(Helper.round(GetComponentData(object64, "hull")), true, 4, true, true, true) .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" .. GetComponentData(object64, "hullpercent") .. "%)") end) or (unknowntext .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" .. unknowntext .. "%)")) }	-- Hull, MJ
 			row = orig.menu.addInfoSubmenuRow(inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
 			local radarrange = defenceinfo_low and (Helper.round(GetComponentData(object64, "maxradarrange")) / 1000) or unknowntext
@@ -1634,15 +1638,13 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 				if (manager ~= C.GetPlayerID()) then
 					for _, subtable in ipairs(skilltable) do
 						local skillname = ReadText(1013, subtable.textid)
-						local adjustedskill = math.floor(subtable.value * 5 / 15)
-						local printedskill = operatorinfo_details and (string.rep(utf8.char(9733), adjustedskill) .. string.rep(utf8.char(9734), 5 - adjustedskill)) or unknowntext
+						local printedskill = operatorinfo_details and Helper.displaySkill(subtable.value) or unknowntext
 						row = inputtable:addRow(false, { bgColor = Helper.color.transparent })
 						row[2]:setColSpan(2):createText(skillname, { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = (subtable.relevance > 0) and Helper.standardFontBold or inputfont, x = Helper.standardTextOffsetx + (3 * indentsize) })
 						--row[2]:setColSpan(7):createText(skillname, { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = (subtable.relevance > 0) and Helper.standardFontBold or inputfont, x = Helper.standardTextOffsetx + (3 * indentsize) })
 						local locfont = inputfont
 						local locfontcolor = Helper.standardColor
 						if operatorinfo_details then
-							locfont = Helper.starFont
 							locfontcolor = Helper.color.brightyellow
 						end
 						row[4]:setColSpan(10):createText(printedskill, { halign = "right", minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = locfont, color = locfontcolor })
@@ -1750,8 +1752,8 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 		locrowdata = { "info_station_buildstorage", ReadText(20104, 80101) }
 		row = orig.menu.addInfoSubmenuRow(inputtable, row, locrowdata, true, true, storageinfo_warelist and (numwares > 0))
 		if storageinfo_warelist and (numwares > 0) and orig.menu.extendedinfo[locrowdata[1]] then
-			local hull_max = defenceinfo_low and ConvertIntegerString(Helper.round(GetComponentData(buildstorage, "hullmax")), true, 0, true) or unknowntext
-			locrowdata = { false, ReadText(1001, 1), (defenceinfo_high and (function() return (ConvertIntegerString(Helper.round(GetComponentData(buildstorage, "hull")), true, 0, true) .. " / " .. hull_max .. " (" .. GetComponentData(buildstorage, "hullpercent") .. "%)") end) or (unknowntext .. " / " .. hull_max .. " (" .. unknowntext .. "%)")) }	-- Hull
+			local hull_max = defenceinfo_low and ConvertIntegerString(Helper.round(GetComponentData(buildstorage, "hullmax")), true, 4, true, true, true) or unknowntext
+			locrowdata = { false, ReadText(1001, 1), (defenceinfo_high and (function() return (ConvertIntegerString(Helper.round(GetComponentData(buildstorage, "hull")), true, 4, true, true, true) .. " / " .. hull_max .. " (" .. GetComponentData(buildstorage, "hullpercent") .. "%)") end) or (unknowntext .. " / " .. hull_max .. " (" .. unknowntext .. "%)")) }	-- Hull
 			row = orig.menu.addInfoSubmenuRow(inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
 			local loccapacity = storageinfo_capacity and storagemodules.capacity or unknowntext
@@ -2112,7 +2114,6 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 				local editname = GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname
 				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight}):setText(editname)
 				-- End change by UniTrader
-
 				row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
 			else
 				row = orig.menu.addInfoSubmenuRow(inputtable, row, locrowdata, false, false, false, 1, indentsize)
@@ -2223,7 +2224,6 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 				local editname = GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname
 				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight}):setText(editname)
 				-- End change by UniTrader
-
 				row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
 			else
 				row = orig.menu.addInfoSubmenuRow(inputtable, row, locrowdata, false, false, false, 1, indentsize)
@@ -2235,8 +2235,8 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 			locrowdata = { false, ReadText(1001, 2943), GetComponentData(inputobject, "sector") }	-- Location
 			row = orig.menu.addInfoSubmenuRow(inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
-			local hull_max = defenceinfo_low and ConvertIntegerString(Helper.round(GetComponentData(inputobject, "hullmax")), true, 0, true) or unknowntext
-			locrowdata = { false, ReadText(1001, 1), (defenceinfo_high and (function() return (ConvertIntegerString(Helper.round(GetComponentData(inputobject, "hull")), true, 0, true) .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" .. GetComponentData(inputobject, "hullpercent") .. "%)") end) or (unknowntext .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" .. unknowntext .. "%)")) }	-- Hull, MJ
+			local hull_max = defenceinfo_low and ConvertIntegerString(Helper.round(GetComponentData(inputobject, "hullmax")), true, 4, true, true, true) or unknowntext
+			locrowdata = { false, ReadText(1001, 1), (defenceinfo_high and (function() return (ConvertIntegerString(Helper.round(GetComponentData(inputobject, "hull")), true, 4, true, true, true) .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" .. GetComponentData(inputobject, "hullpercent") .. "%)") end) or (unknowntext .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" .. unknowntext .. "%)")) }	-- Hull, MJ
 			row = orig.menu.addInfoSubmenuRow(inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
 			local radarrange = defenceinfo_low and GetComponentData(inputobject, "maxradarrange") or unknowntext
@@ -2271,8 +2271,8 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 			locrowdata = { false, ReadText(1001, 2943), GetComponentData(inputobject, "sector") }	-- Location
 			row = orig.menu.addInfoSubmenuRow(inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
-			local hull_max = defenceinfo_low and ConvertIntegerString(Helper.round(GetComponentData(inputobject, "hullmax")), true, 0, true) or unknowntext
-			locrowdata = { false, ReadText(1001, 1), (defenceinfo_high and (function() return (ConvertIntegerString(Helper.round(GetComponentData(inputobject, "hull")), true, 0, true) .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" .. GetComponentData(object64, "hullpercent") .. "%)") end) or (unknowntext .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" .. unknowntext .. "%)")) }	-- Hull, MJ
+			local hull_max = defenceinfo_low and ConvertIntegerString(Helper.round(GetComponentData(inputobject, "hullmax")), true, 4, true, true, true) or unknowntext
+			locrowdata = { false, ReadText(1001, 1), (defenceinfo_high and (function() return (ConvertIntegerString(Helper.round(GetComponentData(inputobject, "hull")), true, 4, true, true, true) .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" .. GetComponentData(object64, "hullpercent") .. "%)") end) or (unknowntext .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" .. unknowntext .. "%)")) }	-- Hull, MJ
 			row = orig.menu.addInfoSubmenuRow(inputtable, row, locrowdata, false, false, false, 1, indentsize)
 		end
 	elseif mode == "asteroid" then
