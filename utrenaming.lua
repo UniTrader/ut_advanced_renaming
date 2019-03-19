@@ -390,8 +390,10 @@ local function init()
        if menu.name == "MapMenu" then
              orig.menu = menu -- save entire menu, for other helper function access
        	      -- save original function
-			 orig.setupInfoSubmenuRows=menu.setupInfoSubmenuRows
-			 menu.setupInfoSubmenuRows=utRenaming.setupInfoSubmenuRows
+			 if GetVersionString() == "2.00 (334398)" or GetVersionString() == "2.20 (339509)"  then --Check for Tested Versions (otherwise this change will be omited for compatibility)
+				orig.setupInfoSubmenuRows=menu.setupInfoSubmenuRows
+				menu.setupInfoSubmenuRows=utRenaming.setupInfoSubmenuRows
+			end
 			 orig.infoChangeObjectName=menu.infoChangeObjectName
 			 menu.infoChangeObjectName=utRenaming.infoChangeObjectName
           break
@@ -399,7 +401,6 @@ local function init()
    end
 end
 
-ifthen
 
 if GetVersionString() == "2.00 (334398)" or GetVersionString() == "2.20 (339509)"  then --Check for Tested Versions (otherwise this change will be omited for compatibility)
 function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
