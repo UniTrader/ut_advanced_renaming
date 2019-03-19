@@ -399,6 +399,9 @@ local function init()
    end
 end
 
+ifthen
+
+if GetVersionString() == "2.00 (334398)" or GetVersionString() == "2.20 (339509)"  then --Check for Tested Versions (otherwise this change will be omited for compatibility)
 function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 	local object64 = ConvertStringTo64Bit(tostring(inputobject))
 	if not orig.menu.infocashtransferdetails or orig.menu.infocashtransferdetails[1] ~= inputobject then
@@ -2327,6 +2330,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 	if orig.menu.infoeditname then
 		orig.menu.infoeditname = nil
 	end
+end
 end
 
 
