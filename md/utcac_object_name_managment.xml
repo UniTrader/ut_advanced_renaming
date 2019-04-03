@@ -19,7 +19,7 @@
         <signal_cue_instantly cue="md.G_Work_Around.Signal" param="'.\\extensions\\ut_advanced_renaming\\utrenaming.lua'"/>
       </actions>
     </cue>
-    <cue name="Init">
+    <cue name="Init" version="2">
       <actions>
         <!-- Set Up all Groups needed for Automatic Name Upates -->
         <create_group groupname="$NamedObjects" comment="group to keep track of all Named Objects (for future Force-Updates of Non-Dynamic Names)"/>
@@ -27,9 +27,19 @@
         <set_value name="player.entity.$unformatted_names" exact="table[]"/>
         <set_value name="player.entity.$namereplacement" exact="table[]"/>
         <set_value name="player.entity.$shortname" exact="table[]"/>
+        <!-- Set Up Sequence Number Variables -->
+        <set_value name="player.entity.$sequence_overall" exact="0"/>
+        <set_value name="player.entity.$sequence_type" exact="table[]"/>
+        <set_value name="player.entity.$sequence_sizpurpose" exact="table[]"/>
         <!-- set current User Expression Version so Update on load only happens when it changed -->
         <set_value name="$customversion" exact="if @readtext.{5554302}.{1} != '=ReadText5554302-1=' then readtext.{5554302}.{1} else null"/>
       </actions>
+      <patch sinceversion="2" comment="Add Sequence Number count Variables">
+        <!-- Set Up Sequence Number Variables -->
+        <set_value name="player.entity.$sequence_overall" exact="0"/>
+        <set_value name="player.entity.$sequence_type" exact="table[]"/>
+        <set_value name="player.entity.$sequence_sizpurpose" exact="table[]"/>
+      </patch>
       <cues>
         <cue name="Check_Redundant_Mods" instantiate="true">
           <conditions>
@@ -324,6 +334,63 @@
             <set_value name="$debug" exact="'%1 Advanced Renaming Name Stages: \nUNFORM:  %2'.[$object.name,$nameA]"/>
           </do_if>
           <!-- ========= -->
+          <!-- Check for Sequence Number reset presence and perform according actions -->
+          <substitute_text text="$nameB" source="$nameA" comment="Current id reset">
+            <replace string="'%seqdel'" with="''"/>
+          </substitute_text>
+          <do_if value="$nameA != $nameB">
+            <remove_value name="$object.pilot.$current_id"/>
+            <set_value name="$nameA" exact="$nameB"/>
+            <set_value name="$debug" exact="'%1\nIDRES1:  %2'.[$debug,$nameA]" chance="$debug? *100" comment="fill debug output Value"/>
+            <set_value name="player.entity.$unformatted_names.{$object}" exact="$nameB"/>
+          </do_if>
+          <substitute_text text="$nameB" source="$nameA" comment="Sequence Numbering Reset (all cases)">
+            <replace string="'%seqreset'" with="''"/>
+          </substitute_text>
+          <do_if value="$nameA != $nameB">
+            <substitute_text text="$nameB" source="$nameA" comment="Sequence Numbering Reset (Reset all sequence numbers)">
+              <replace string="'%seqresetall'" with="''"/>
+            </substitute_text>
+            <do_if value="$nameA != $nameB">
+              <set_value name="player.entity.$sequence_overall" exact="0"/>
+              <set_value name="$nameA" exact="$nameB"/>
+            </do_if>
+            <substitute_text text="$nameB" source="$nameA" comment="Sequence Numbering Reset (Object Type sequence numbers)">
+              <replace string="'%seqresettype'" with="''"/>
+            </substitute_text>
+            <do_if value="$nameA != $nameB">
+              <set_value name="player.entity.$sequence_type.{$object.macro}" exact="0"/>
+              <set_value name="$nameA" exact="$nameB"/>
+            </do_if>
+            <substitute_text text="$nameB" source="$nameA" comment="Sequence Numbering Reset (Size Class sequence numbers)">
+              <replace string="'%seqresetsize'" with="''"/>
+            </substitute_text>
+            <do_if value="$nameA != $nameB">
+              <set_value name="player.entity.$sequence_type.{$object.class}" exact="0"/>
+              <set_value name="$nameA" exact="$nameB"/>
+            </do_if>
+            <substitute_text text="$nameB" source="$nameA" comment="Sequence Numbering Reset (Purpose Class sequence numbers)">
+              <replace string="'%seqresetpurp'" with="''"/>
+            </substitute_text>
+            <do_if value="$nameA != $nameB">
+              <set_value name="player.entity.$sequence_type.{$object.primarypurpose}" exact="0"/>
+              <set_value name="$nameA" exact="$nameB"/>
+            </do_if>
+            <substitute_text text="$nameB" source="$nameA" comment="Sequence Numbering Reset (Size/purpose combination sequence numbers)">
+              <replace string="'%seqresetsizpurp'" with="''"/>
+            </substitute_text>
+            <do_if value="$nameA != $nameB">
+              <do_if value="notplayer.entity.$sequence_sizepurppose.{$object.class}?">
+                <set_value name="player.entity.$sequence_sizepurppose.{$object.class}" exact="table[]"/>
+              </do_if>
+              <set_value name="player.entity.$sequence_sizepurppose.{$object.class}.{$object.primarypurpose}" exact="0"/>
+              <set_value name="$nameA" exact="$nameB"/>
+            </do_if>
+            <set_value name="$debug" exact="'%1\nIDRES2:  %2'.[$debug,$nameA]" chance="$debug? *100" comment="fill debug output Value"/>
+            <set_value name="player.entity.$unformatted_names.{$object}" exact="$nameB"/>
+          </do_if>
+          
+          <!--=====-->
           <!-- Perform Static Replacements (Preffered Marking Key / ) -->
           <get_text_ids_in_range result="$keys" page="5554301" start="0" end="1999" factor="2"/>
           <do_all exact="$keys.count" counter="$i" reverse="false">
@@ -435,6 +502,66 @@
             <replace string="{5554302,116}" with="$object.macro.shortname"/>
             -->
           </substitute_text>
+          
+          <!-- Ship Sequence Numbers-->
+          <do_if value="not $object.pilot.$current_id?">
+            <substitute_text text="$nameB" source="$NameA">
+              <replace string="'%seqall'" with="''"/>
+            </substitute_text>
+            <do_if value="$nameA != $nameB">
+              <set_value name="player.entity.$sequence_overall" operation="add"/>
+              <set_value name="$object.pilot.$current_id" exact="player.entity.$sequence_overall"/>
+            </do_if>
+            <do_else>
+              <substitute_text text="$nameB" source="$NameA">
+                <replace string="'%seqtype'" with="''"/>
+              </substitute_text>
+              <do_if value="$nameA != $nameB">
+                <set_value name="player.entity.$sequence_type.{$object.macro}" operation="add"/>
+                <set_value name="$object.pilot.$current_id" exact="player.entity.$sequence_type.{$object.macro}"/>
+              </do_if>
+              <do_else>
+              <substitute_text text="$nameB" source="$NameA">
+                <replace string="'%seqclass'" with="''"/>
+              </substitute_text>
+                <do_if value="$nameA != $nameB">
+                  <set_value name="player.entity.$sequence_type.{$object.class}" operation="add"/>
+                  <set_value name="$object.pilot.$current_id" exact="player.entity.$sequence_type.{$object.class}"/>
+                </do_if>
+                <do_else>
+                  <substitute_text text="$nameB" source="$NameA">
+                    <replace string="'%seqpurp'" with="''"/>
+                  </substitute_text>
+                  <do_if value="$nameA != $nameB">
+                    <set_value name="player.entity.$sequence_type.{$object.primarypurpose}" operation="add"/>
+                    <set_value name="$object.pilot.$current_id" exact="player.entity.$sequence_type.{$object.primarypurpose}"/>
+                  </do_if>
+                  <do_else>
+                    <substitute_text text="$nameB" source="$NameA">
+                      <replace string="'%seqsizpurp'" with="''"/>
+                    </substitute_text>
+                    <do_if value="$nameA != $nameB">
+                      <do_if value="notplayer.entity.$sequence_sizepurppose.{$object.class}?">
+                        <set_value name="player.entity.$sequence_sizepurppose.{$object.class}" exact="table[]"/>
+                      </do_if>
+                      <set_value name="player.entity.$sequence_sizepurppose.{$object.class}.{$object.primarypurpose}" operation="add"/>
+                      <set_value name="$object.pilot.$current_id" exact="player.entity.$sequence_sizepurppose.{$object.class}.{$object.primarypurpose}"/>
+                    </do_if>
+                    <do_else>
+                    </do_else>
+                  </do_else>
+                </do_else>
+              </do_else>
+            </do_else>
+          </do_if>
+          <substitute_text text="$nameA">
+            <replace string="'%seqall'" with="$object.pilot.$current_id"/>
+            <replace string="'%seqsize'" with="$object.pilot.$current_id"/>
+            <replace string="'%seqpurp'" with="$object.pilot.$current_id"/>
+            <replace string="'%seqsizpurp'" with="$object.pilot.$current_id"/>
+            <replace string="'%seqtype'" with="$object.pilot.$current_id"/>
+          </substitute_text>
+          
           <!-- From here on $nameA contains the visible name (with frequently changing content) and $nameB the short variation without frequently changing content - if both are identical after this there is no need for Updates -->
           <set_value name="$nameB" exact="$nameA"/>
           <!-- Perform Script-Dynamic Replacements ( Marking Key $ ) - no Registration for Automated Update Event, send Signal or Include Actions yourself.-->
@@ -673,11 +800,14 @@ else 'null'"/-->
             <set_value name="$nameA" exact="$object.macro.name"/>
           </do_if>
           <do_else>
-            <do_all chance="(player.systemtime.{'%d%m'} == '0104') * 70">
-              <set_value name="$keys" exact="[['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0','1','2','3','4','5','6','7','8','9','0'].random,['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0','1','2','3','4','5','6','7','8','9','0'].random,['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0','1','2','3','4','5','6','7','8','9','0'].random,['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0','1','2','3','4','5','6','7','8','9','0'].random,['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0','1','2','3','4','5','6','7','8','9','0'].random,['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0','1','2','3','4','5','6','7','8','9','0'].random,['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0','1','2','3','4','5','6','7','8','9','0'].random,['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0','1','2','3','4','5','6','7','8','9','0'].random,['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0','1','2','3','4','5','6','7','8','9','0'].random,['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0','1','2','3','4','5','6','7','8','9','0'].random]"/>
-              <do_all exact="$keys.count" counter="$i" reverse="false">
+            <do_all chance="(player.systemtime.{'%d%m'} == '0104')">
+              <set_value name="$letters" exact="['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0','1','2','3','4','5','6','7','8','9','0']"/>
+              <do_all exact="$letters.count" counter="$i" reverse="false">
                 <substitute_text text="$nameA">
-                  <replace string="$keys.{$i}" with="[{5554301,2001},{5554301,2003},{5554301,2005},{5554301,2007},{5554301,2009},{5554301,2011},{5554301,2013},{5554301,2015},{5554301,2017},{5554301,2019},{5554301,2021},{5554301,2025}+'0'].random + $keys.{$i}"/>
+                  <replace string="$letters.{$i}" with="[{5554301,2001},{5554301,2003},{5554301,2005},{5554301,2007},{5554301,2009},{5554301,2011},{5554301,2013},{5554301,2015},{5554301,2017},{5554301,2019},{5554301,2021},{5554301,2025}+'0'].random + $letters.{$i}"/>
+                </substitute_text>
+                <substitute_text text="$nameA">
+                  <replace string="{5554301,2025} + {5554301,2025}" with="{5554301,2025}"/>
                 </substitute_text>
               </do_all>
             </do_all>
