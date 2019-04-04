@@ -30,6 +30,8 @@
         <!-- Set Up Sequence Number Variables -->
         <set_value name="player.entity.$sequence_overall" exact="0"/>
         <set_value name="player.entity.$sequence_type" exact="table[]"/>
+        <set_value name="player.entity.$sequence_size" exact="table[]"/>
+        <set_value name="player.entity.$sequence_purpose" exact="table[]"/>
         <set_value name="player.entity.$sequence_sizpurpose" exact="table[]"/>
         <!-- set current User Expression Version so Update on load only happens when it changed -->
         <set_value name="$customversion" exact="if @readtext.{5554302}.{1} != '=ReadText5554302-1=' then readtext.{5554302}.{1} else null"/>
@@ -38,6 +40,8 @@
         <!-- Set Up Sequence Number Variables -->
         <set_value name="player.entity.$sequence_overall" exact="0"/>
         <set_value name="player.entity.$sequence_type" exact="table[]"/>
+        <set_value name="player.entity.$sequence_size" exact="table[]"/>
+        <set_value name="player.entity.$sequence_purpose" exact="table[]"/>
         <set_value name="player.entity.$sequence_sizpurpose" exact="table[]"/>
       </patch>
       <cues>
@@ -366,14 +370,14 @@
               <replace string="'%seqresetsize'" with="''"/>
             </substitute_text>
             <do_if value="$nameA != $nameB">
-              <set_value name="player.entity.$sequence_type.{$object.class}" exact="0"/>
+              <set_value name="player.entity.$sequence_size.{$object.class}" exact="0"/>
               <set_value name="$nameA" exact="$nameB"/>
             </do_if>
             <substitute_text text="$nameB" source="$nameA" comment="Sequence Numbering Reset (Purpose Class sequence numbers)">
               <replace string="'%seqresetpurp'" with="''"/>
             </substitute_text>
             <do_if value="$nameA != $nameB">
-              <set_value name="player.entity.$sequence_type.{$object.primarypurpose}" exact="0"/>
+              <set_value name="player.entity.$sequence_purpose.{$object.primarypurpose}" exact="0"/>
               <set_value name="$nameA" exact="$nameB"/>
             </do_if>
             <substitute_text text="$nameB" source="$nameA" comment="Sequence Numbering Reset (Size/purpose combination sequence numbers)">
@@ -525,16 +529,16 @@
                 <replace string="'%seqclass'" with="''"/>
               </substitute_text>
                 <do_if value="$nameA != $nameB">
-                  <set_value name="player.entity.$sequence_type.{$object.class}" operation="add"/>
-                  <set_value name="$object.pilot.$current_id" exact="player.entity.$sequence_type.{$object.class}"/>
+                  <set_value name="player.entity.$sequence_size.{$object.class}" operation="add"/>
+                  <set_value name="$object.pilot.$current_id" exact="player.entity.$sequence_size.{$object.class}"/>
                 </do_if>
                 <do_else>
                   <substitute_text text="$nameB" source="$NameA">
                     <replace string="'%seqpurp'" with="''"/>
                   </substitute_text>
                   <do_if value="$nameA != $nameB">
-                    <set_value name="player.entity.$sequence_type.{$object.primarypurpose}" operation="add"/>
-                    <set_value name="$object.pilot.$current_id" exact="player.entity.$sequence_type.{$object.primarypurpose}"/>
+                    <set_value name="player.entity.$sequence_purpose.{$object.primarypurpose}" operation="add"/>
+                    <set_value name="$object.pilot.$current_id" exact="player.entity.$sequence_purpose.{$object.primarypurpose}"/>
                   </do_if>
                   <do_else>
                     <substitute_text text="$nameB" source="$NameA">
