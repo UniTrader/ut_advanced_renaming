@@ -390,7 +390,7 @@ local function init()
        if menu.name == "MapMenu" then
              orig.menu = menu -- save entire menu, for other helper function access
        	      -- save original function
-			 if GetVersionString() == "2.00 (334398)" or GetVersionString() == "2.20 (339509)"  then --Check for Tested Versions (otherwise this change will be omited for compatibility)
+			 if GetVersionString() == "2.00 (334398)" or GetVersionString() == "2.20 (339509)" or GetVersionString() == "2.21 (341463)"  then --Check for Tested Versions (otherwise this change will be omited for compatibility)
 				orig.setupInfoSubmenuRows=menu.setupInfoSubmenuRows
 				menu.setupInfoSubmenuRows=utRenaming.setupInfoSubmenuRows
 			end
@@ -402,7 +402,7 @@ local function init()
 end
 
 
-if GetVersionString() == "2.00 (334398)" or GetVersionString() == "2.20 (339509)"  then --Check for Tested Versions (otherwise this change will be omited for compatibility)
+if GetVersionString() == "2.00 (334398)" or GetVersionString() == "2.20 (339509)" or GetVersionString() == "2.21 (341463)"  then --Check for Tested Versions (otherwise this change will be omited for compatibility)
 function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 	local object64 = ConvertStringTo64Bit(tostring(inputobject))
 	if not orig.menu.infocashtransferdetails or orig.menu.infocashtransferdetails[1] ~= inputobject then
