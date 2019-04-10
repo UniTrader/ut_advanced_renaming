@@ -514,16 +514,16 @@
           
           <!-- Ship Sequence Numbers-->
           <do_if value="not $object.pilot.$current_id?">
-            <substitute_text text="$nameB" source="$NameA">
+            <substitute_text text="$nameB" source="$nameA">
               <replace string="'/seqall'" with="''"/>
             </substitute_text>
             <do_if value="$nameA != $nameB">
               <set_value name="player.entity.$sequence_overall" operation="add"/>
               <set_value name="$object.pilot.$current_id" exact="player.entity.$sequence_overall"/>
-              <debug_to_file text="'Set id from Overall: %1 #%2#%3'.[$object.pilot.$current_id,$nameA,$nameB]" name="'Advanced Renaming.txt'" output="true" chance="$debug? *100"/>
+              <debug_to_file text="'Set id from Overall: '+ $object.pilot.$current_id" name="'Advanced Renaming.txt'" output="true" chance="$debug? *100"/>
             </do_if>
             <do_else>
-              <substitute_text text="$nameB" source="$NameA">
+              <substitute_text text="$nameB" source="$nameA">
                 <replace string="'/seqtype'" with="''"/>
               </substitute_text>
               <do_if value="$nameA != $nameB">
@@ -532,7 +532,7 @@
                 <debug_to_file text="'Set id from Type: '+ $object.pilot.$current_id" name="'Advanced Renaming.txt'" output="true" chance="$debug? *100"/>
               </do_if>
               <do_else>
-              <substitute_text text="$nameB" source="$NameA">
+              <substitute_text text="$nameB" source="$nameA">
                 <replace string="'/seqsize'" with="''"/>
               </substitute_text>
                 <do_if value="$nameA != $nameB">
@@ -541,7 +541,7 @@
                 <debug_to_file text="'Set id from Size: '+ $object.pilot.$current_id" name="'Advanced Renaming.txt'" output="true" chance="$debug? *100"/>
                 </do_if>
                 <do_else>
-                  <substitute_text text="$nameB" source="$NameA">
+                  <substitute_text text="$nameB" source="$nameA">
                     <replace string="'/seqpurp'" with="''"/>
                   </substitute_text>
                   <do_if value="$nameA != $nameB">
@@ -550,7 +550,7 @@
                     <debug_to_file text="'Set id from Purpose: '+ $object.pilot.$current_id" name="'Advanced Renaming.txt'" output="true" chance="$debug? *100"/>
                   </do_if>
                   <do_else>
-                    <substitute_text text="$nameB" source="$NameA">
+                    <substitute_text text="$nameB" source="$nameA">
                       <replace string="'/seqclass'" with="''"/>
                     </substitute_text>
                     <do_if value="$nameA != $nameB">
