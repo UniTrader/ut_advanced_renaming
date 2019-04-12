@@ -32,7 +32,7 @@
         <set_value name="player.entity.$sequence_type" exact="table[]"/>
         <set_value name="player.entity.$sequence_size" exact="table[]"/>
         <set_value name="player.entity.$sequence_purpose" exact="table[]"/>
-        <set_value name="player.entity.$sequence_sizpurpose" exact="table[]"/>
+        <set_value name="player.entity.$sequence_sizepurpose" exact="table[]"/>
         <!-- set current User Expression Version so Update on load only happens when it changed -->
         <set_value name="$customversion" exact="if @readtext.{5554302}.{1} != '=ReadText5554302-1=' then readtext.{5554302}.{1} else null"/>
       </actions>
@@ -42,7 +42,7 @@
         <set_value name="player.entity.$sequence_type" exact="table[]"/>
         <set_value name="player.entity.$sequence_size" exact="table[]"/>
         <set_value name="player.entity.$sequence_purpose" exact="table[]"/>
-        <set_value name="player.entity.$sequence_sizpurpose" exact="table[]"/>
+        <set_value name="player.entity.$sequence_sizepurpose" exact="table[]"/>
       </patch>
       <cues>
         <cue name="Check_Redundant_Mods" instantiate="true">
