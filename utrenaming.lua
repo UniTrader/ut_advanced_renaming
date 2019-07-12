@@ -2459,7 +2459,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 				-- Original Line:
 				-- row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = objectname })
 				local editname = GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname
-				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight}):setText(editname)
+				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = editname}):setText(editname)
 				-- End change by UniTrader
 				row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
 			else
@@ -3615,7 +3615,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 				-- Original Line:
 				-- row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = objectname })
 				local editname = GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname
-				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight}):setText(editname)
+				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = editname}):setText(editname)
 				-- End change by UniTrader
 				row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
 			else
@@ -4162,7 +4162,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 				-- Original Line:
 				-- row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = objectname })
 				local editname = GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname
-				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight}):setText(editname)
+				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = editname}):setText(editname)
 				-- End change by UniTrader
 				row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
 			else
@@ -4272,7 +4272,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 				-- Original Line:
 				-- row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = objectname })
 				local editname = GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname
-				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight}):setText(editname)
+				row[4]:setColSpan(10):createEditBox({ height = config.mapRowHeight, defaultText = editname}):setText(editname)
 				-- End change by UniTrader
 				row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
 			else
