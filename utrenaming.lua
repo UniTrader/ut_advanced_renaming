@@ -4385,7 +4385,6 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 	end
 end
 end
-end
 
 function utRenaming.infoChangeObjectName(objectid, text, textchanged)
     if textchanged then
