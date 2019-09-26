@@ -752,6 +752,11 @@ else 'null'"/-->
             <replace string="{5554302,57}" with="@$object.tradenpc.skill.morale"/>
             <replace string="{5554302,58}" with="@$object.tradenpc.skill.science"/>
             <replace string="{5554302,59}" with="if $object.tradenpc.exists then ( '' +  $object.tradenpc.skill.{$object.tradenpc.type.skilltypes.{1}} +  ( if $object.tradenpc.type.skilltypes.{2}? then  + $object.tradenpc.skill.{$object.tradenpc.type.skilltypes.{2}} else '' ) +   ( if $object.tradenpc.type.skilltypes.{3}? then  + $object.tradenpc.skill.{$object.tradenpc.type.skilltypes.{3}} else '' ) ) else 'null'"/>
+            <!-- Boarding Stuff -->
+            <replace string="'$boarding.marinecount'" with="@$object.boardingmarines.count"/>
+            <replace string="'$boarding.marineskill'" with="@$object.boardingmarines.combinedskill"/>
+            <replace string="'$boarding.resistance'" with="@$object.boardingresistance"/>
+            <replace string="'$boarding.strength'" with="@$object.boardingstrength"/>
             <!-- Station Build Progress -->
             <replace string="{5554302,301}" with="if $object.buildingprocessor.exists and $object.buildingprocessor.isbuilding then $object.buildingprocessor.elapsedtime else ''"/>
             <replace string="{5554302,302}" with="if $object.buildingprocessor.exists and $object.buildingprocessor.isbuilding then $object.buildingprocessor.totaltime else ''"/>
