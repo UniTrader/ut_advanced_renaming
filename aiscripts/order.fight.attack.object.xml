@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<diff xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://utnas/~unitrader/XRebirthxsds/aiscripts-diff.xsd">
+  <add sel="(//apply_experience)[4]/.." pos="after">
+    <signal_objects object="this.assignedcontrolled" param="'Object Name Updated'"/>
+  </add>
+</diff>
