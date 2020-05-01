@@ -24,8 +24,12 @@
         <!-- Set Up all Groups needed for Automatic Name Upates -->
         <create_group groupname="$NamedObjects" comment="group to keep track of all Named Objects (for future Force-Updates of Non-Dynamic Names)"/>
         <create_group groupname="$NamedObjectsDynamic" comment="group to keep track of all Named Objects which have Dnamic Name Parts (to handle update Signals)"/>
-        <set_value name="player.entity.$unformatted_names" exact="table[]"/>
-        <set_value name="player.entity.$namereplacement" exact="table[]"/>
+        <do_if value="not player.entity.$unformatted_names?">
+          <set_value name="player.entity.$unformatted_names" exact="table[]"/>
+        </do_if>
+        <do_if value="not player.entity.$namereplacement?">
+          <set_value name="player.entity.$namereplacement" exact="table[]"/>
+        </do_if>
         <set_value name="player.entity.$shortname" exact="table[]"/>
         <!-- Set Up Sequence Number Variables -->
         <set_value name="player.entity.$sequence_overall" exact="0"/>
