@@ -552,7 +552,7 @@
           </substitute_text>
           
           <!-- Ship Sequence Numbers-->
-          <do_if value="not player.entity.$current_id.{$object}? and $object.pilot.$current_id" comment="Compatibility check for older Version">
+          <do_if value="not player.entity.$current_id.{$object}? and $object.pilot.$current_id?" comment="Compatibility check for older Version">
             <set_value name="player.entity.$current_id.{$object}" exact="$object.pilot.$current_id"/>
             <remove_value name="$object.pilot.$current_id"/>
           </do_if>
