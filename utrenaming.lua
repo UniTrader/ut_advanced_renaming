@@ -2337,9 +2337,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 		orig.menu.infoeditname = nil
 	end
 end
-end
-
-if GetVersionString() == "2.50 (337849)" then --Check for Tested Versions (otherwise this change will be omited for compatibility)
+elseif GetVersionString() == "2.50 (337849)" then --Check for Tested Versions (otherwise this change will be omited for compatibility)
 function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 	local object64 = ConvertStringTo64Bit(tostring(inputobject))
 	if not orig.menu.infocashtransferdetails or orig.menu.infocashtransferdetails[1] ~= inputobject then
@@ -4384,13 +4382,60 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 		orig.menu.infoeditname = nil
 	end
 end
+elseif orig.menu.createRenameContext ~= nil
+function utRenaming.createRenameContext(frame)
+	if orig.menu.arrowsRegistered then
+		UnregisterAddonBindings("ego_detailmonitor", "map_arrows")
+		orig.menu.arrowsRegistered = nil
+	end
+
+	local title = orig.menu.contextMenuData.fleetrename and ReadText(1001, 7895) or ReadText(1001, 1114)
+	local startname = orig.menu.contextMenuData.fleetrename and ffi.string(C.GetFleetName(orig.menu.contextMenuData.component)) or GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[orig.menu.contextMenuData.component] or ffi.string(C.GetComponentName(orig.menu.contextMenuData.component))
+
+	local shiptable = frame:addTable(2, { tabOrder = 2, x = Helper.borderSize, y = Helper.borderSize, width = orig.menu.contextMenuData.width })
+
+	-- title
+	local row = shiptable:addRow(nil, { fixed = true, bgColor = Helper.color.transparent })
+	row[1]:setColSpan(2):createText(title, Helper.headerRowCenteredProperties)
+
+	local row = shiptable:addRow(true, { fixed = true, bgColor = Helper.color.transparent })
+	orig.menu.contextMenuData.nameEditBox = row[1]:setColSpan(2):createEditBox({ height = config.mapRowHeight, description = title }):setText(startname)
+	row[1].handlers.onTextChanged = function (_, text, textchanged) orig.menu.contextMenuData.newtext = text end
+	row[1].handlers.onEditBoxDeactivated = utRenaming.buttonRenameConfirm
+
+	local row = shiptable:addRow(true, { fixed = true, bgColor = Helper.color.transparent })
+	row[1]:createButton({  }):setText(ReadText(1001, 2821), { halign = "center" })
+	row[1].handlers.onClick = utRenaming.buttonRenameConfirm
+	row[2]:createButton({  }):setText(ReadText(1001, 64), { halign = "center" })
+	row[2].handlers.onClick = function () return orig.menu.closeContextMenu("back") end
+
+	-- adjust frame position
+	local neededheight = shiptable.properties.y + shiptable:getVisibleHeight()
+	if frame.properties.y + neededheight + Helper.frameBorder > Helper.viewHeight then
+		orig.menu.contextMenuData.yoffset = Helper.viewHeight - neededheight - Helper.frameBorder
+		frame.properties.y = orig.menu.contextMenuData.yoffset
+	end
+end
+function utRenaming.buttonRenameConfirm()
+	if orig.menu.contextMenuData.newtext then
+		if orig.menu.contextMenuData.fleetrename then
+			C.SetFleetName(orig.menu.contextMenuData.component, orig.menu.contextMenuData.newtext)
+		else
+		    -- UniTrader change: Set Signal Universe/Object instead of actual renaming (which is handled in MD)
+			SignalObject(GetComponentData(objectid, "galaxyid" ) , "Object Name Updated" , { ConvertStringToLuaID(tostring(orig.menu.contextMenuData.component)) , orig.menu.contextMenuData.component } , newtext)
+			--SetComponentName(orig.menu.contextMenuData.component, orig.menu.contextMenuData.newtext)
+		end
+	end
+	orig.menu.refreshInfoFrame()
+	orig.menu.closeContextMenu("back")
+end
 end
 
 function utRenaming.infoChangeObjectName(objectid, text, textchanged)
     if textchanged then
 		SetComponentName(objectid, text)
 	end
-    -- UniTrader change: Set Signal Universe/Object instead of actual renaming (whih is handled in MD)
+    -- UniTrader change: Set Signal Universe/Object instead of actual renaming (which is handled in MD)
     SignalObject(GetComponentData(objectid, "galaxyid" ) , "Object Name Updated" , { ConvertStringToLuaID(tostring(objectid)) , objectid } , text)
     -- UniTrader Changes end (next line was a if before, but i have some diffrent conditions)
 
