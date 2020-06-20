@@ -12,7 +12,7 @@
     <cue name="RegisterUI_G_Workaround_020" version="1" instantiate="true">
       <conditions>
         <event_game_loaded/>
-        <check_value value="md.md.G_Work_Around.Signal.exists"/>
+        <check_value value="md.G_Work_Around.Signal.exists"/>
       </conditions>
       <delay exact="1s"/>
       <actions>
@@ -24,7 +24,7 @@
         <event_ui_triggered screen="'Lua_Loader'" control="'Ready'" />
       </conditions>
       <actions>
-        <raise_lua_event name="'Lua_Loader.Load'" param="'extensions.ut_advanced_renaming.utrenaminge'"/>
+        <raise_lua_event name="'Lua_Loader.Load'" param="'extensions.ut_advanced_renaming.utrenaming'"/>
       </actions>
     </cue>
     <cue name="Init" version="3">
