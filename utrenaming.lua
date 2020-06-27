@@ -403,6 +403,7 @@ end
 
 
 if GetVersionString() == "2.00 (334398)" or GetVersionString() == "2.20 (339509)" or GetVersionString() == "2.21 (341463)"  then --Check for Tested Versions (otherwise this change will be omited for compatibility)
+DebugError("UTRenaming - Applying Lua patch for Version 2.00 to 2.21")
 function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 	local object64 = ConvertStringTo64Bit(tostring(inputobject))
 	if not orig.menu.infocashtransferdetails or orig.menu.infocashtransferdetails[1] ~= inputobject then
@@ -2338,6 +2339,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 	end
 end
 elseif GetVersionString() == "2.50 (337849)" then --Check for Tested Versions (otherwise this change will be omited for compatibility)
+DebugError("UTRenaming - Applying Lua patch for Version 2.50")
 function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 	local object64 = ConvertStringTo64Bit(tostring(inputobject))
 	if not orig.menu.infocashtransferdetails or orig.menu.infocashtransferdetails[1] ~= inputobject then
@@ -4383,6 +4385,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 	end
 end
 elseif orig.menu.createRenameContext ~= nil
+DebugError("UTRenaming - Applying Lua patch for Rename Menu")
 function utRenaming.createRenameContext(frame)
 	if orig.menu.arrowsRegistered then
 		UnregisterAddonBindings("ego_detailmonitor", "map_arrows")
