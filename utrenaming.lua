@@ -390,7 +390,7 @@ local function init()
        if menu.name == "MapMenu" then
              orig.menu = menu -- save entire menu, for other helper function access
        	      -- save original function
-			 if GetVersionString() == "2.00 (334398)" or GetVersionString() == "2.20 (339509)" or GetVersionString() == "2.21 (341463)" or  GetVersionString() == "2.50 (337849)"   then --Check for Tested Versions (otherwise this change will be omited for compatibility)
+			 if GetVersionString() == "2.00 (334398)" or GetVersionString() == "2.20 (339509)" or GetVersionString() == "2.21 (341463)" or  GetVersionString() == "2.50 (337849)" or GetVersionString() == "3.20 (400261)"   then --Check for Tested Versions (otherwise this change will be omited for compatibility)
 				orig.setupInfoSubmenuRows=menu.setupInfoSubmenuRows
 				menu.setupInfoSubmenuRows=utRenaming.setupInfoSubmenuRows
 			end
