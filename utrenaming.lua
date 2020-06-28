@@ -4383,6 +4383,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 	end
 end
 else
+DebugError("UTRenaming - Unknown Version Number -" .. GetVersionString() .. "- Applying Patch which might have been of use some time during the 3.20 beta")
 function utRenaming.createRenameContext(frame)
 	if orig.menu.arrowsRegistered then
 		UnregisterAddonBindings("ego_detailmonitor", "map_arrows")
