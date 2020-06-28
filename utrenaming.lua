@@ -4387,13 +4387,13 @@ DebugError("Applying 3.20 patch")
 function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance)
 	local object64 = ConvertStringTo64Bit(tostring(inputobject))
 
-	if (not menu.infoTablePersistentData[instance].cashtransferdetails) or (menu.infoTablePersistentData[instance].cashtransferdetails.curobject ~= inputobject) then
-		menu.infoTablePersistentData[instance].cashtransferdetails = { curobject = inputobject, transfers = {} }
-		menu.infoTablePersistentData[instance].drops = {}
+	if (not orig.menu.infoTablePersistentData[instance].cashtransferdetails) or (orig.menu.infoTablePersistentData[instance].cashtransferdetails.curobject ~= inputobject) then
+		orig.menu.infoTablePersistentData[instance].cashtransferdetails = { curobject = inputobject, transfers = {} }
+		orig.menu.infoTablePersistentData[instance].drops = {}
 	end
 
-	local infocashtransferdetails = menu.infoTablePersistentData[instance].cashtransferdetails
-	local infodrops = menu.infoTablePersistentData[instance].drops
+	local infocashtransferdetails = orig.menu.infoTablePersistentData[instance].cashtransferdetails
+	local infodrops = orig.menu.infoTablePersistentData[instance].drops
 
 	local indentsize = 0
 
@@ -4442,14 +4442,14 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 	local isplayerowned, isonlineobject, isenemy = GetComponentData(object64, "isplayerowned", "isonlineobject", "isenemy")
 	local titlecolor = Helper.color.white
 	if isplayerowned then
-		titlecolor = menu.holomapcolor.playercolor
+		titlecolor = orig.menu.holomapcolor.playercolor
 		if object64 == C.GetPlayerObjectID() then
-			titlecolor = menu.holomapcolor.currentplayershipcolor
+			titlecolor = orig.menu.holomapcolor.currentplayershipcolor
 		end
-	elseif isonlineobject and menu.getFilterOption("layer_think") and menu.getFilterOption("think_diplomacy_highlightvisitor") then
-		titlecolor = menu.holomapcolor.visitorcolor
+	elseif isonlineobject and orig.menu.getFilterOption("layer_think") and orig.menu.getFilterOption("think_diplomacy_highlightvisitor") then
+		titlecolor = orig.menu.holomapcolor.visitorcolor
 	elseif isenemy then
-		titlecolor = menu.holomapcolor.enemycolor
+		titlecolor = orig.menu.holomapcolor.enemycolor
 	end
 	local unknowntext = ReadText(1001, 3210)
 	local cheatsecrecy = false
@@ -4473,7 +4473,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 	local unitinfo_details =			cheatsecrecy or C.IsInfoUnlockedForPlayer(inputobject, "units_details")
 
 	if not isplayerowned then
-		menu.extendedinfo["info_weaponconfig" .. instance] = nil
+		orig.menu.extendedinfo["info_weaponconfig" .. instance] = nil
 	end
 
 	--- title ---
@@ -4484,7 +4484,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 	--- object name ---
 	local row = inputtable:addRow("info_focus", { fixed = true, bgColor = Helper.defaultTitleBackgroundColor })
 	row[8]:createButton({ width = config.mapRowHeight, cellBGColor = Helper.color.transparent }):setIcon("menu_center_selection", { width = config.mapRowHeight, height = config.mapRowHeight, y = (Helper.headerRow1Height - config.mapRowHeight) / 2 })
-	row[8].handlers.onClick = function () return C.SetFocusMapComponent(menu.holomap, menu.infoSubmenuObject, true) end
+	row[8].handlers.onClick = function () return C.SetFocusMapComponent(orig.menu.holomap, orig.menu.infoSubmenuObject, true) end
 	if (mode == "ship") or (mode == "station") then
 		row[1]:setBackgroundColSpan(7):setColSpan(5):createText(objectname, Helper.headerRow1Properties)
 		row[1].properties.color = titlecolor
@@ -4507,13 +4507,13 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 			-- row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(objectname, { halign = "right" })
 			row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname, { halign = "right" })
 			DebugError("Tracing the Editname:"..C.GetPlayerID().."//"..tostring(C.GetPlayerID()).."//"..ConvertStringTo64Bit(tostring(C.GetPlayerID())).."//"..GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names"))
-			row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return menu.infoChangeObjectName(inputobject, text, textchanged) end
+			row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
 		else
-			row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize, nil, nil, false)
+			row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize, nil, nil, false)
 		end
 
 		locrowdata = { false, ReadText(1001, 9040) .. ReadText(1001, 120), Helper.unlockInfo(ownerinfo, GetComponentData(object64, "ownername")) }	-- "Owner"
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
 		local loccontainer = nil
 		if isdocked then
@@ -4525,12 +4525,12 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 			objectloc = ReadText(1001, 3248) .. " " .. ffi.string(C.GetComponentName(loccontainer)) .. ", " .. objectloc	-- Docked at
 		end
 		locrowdata = { false, ReadText(1001, 2943) .. ReadText(1001, 120), objectloc }	-- Location
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
 		local macroname, ware, islasertower = GetMacroData(GetComponentData(object64, "macro"), "name", "ware", "islasertower")
 		local objecttype = Helper.unlockInfo(nameinfo, macroname)
 		locrowdata = { false, ReadText(1001, 94) .. ReadText(1001, 120), objecttype }	-- Model
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
 		if ware then
 			local n = C.GetNumWareBlueprintOwners(ware)
@@ -4543,36 +4543,36 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 				local known = IsKnownItem("factions", faction)
 				if known then
 					locrowdata = { false, first and (ReadText(1001, 8391) .. ReadText(1001, 120)) or "", Helper.unlockInfo(nameinfo, name) }	-- Produced by
-					row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+					row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 					first = false
 				end
 			end
 		end
 
 		locrowdata = { false, ReadText(1001, 9051) .. ReadText(1001, 120), Helper.unlockInfo(nameinfo, (function() return tostring(GetComponentData(object64, "shiptypename") or 0, true, 0, true) end)) }	-- Ship Type
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
 		local hull_max = Helper.unlockInfo(defenceinfo_low, ConvertIntegerString(Helper.round(GetComponentData(object64, "hullmax")), true, 4, true, true, true))
 		locrowdata = { false, ReadText(1001, 1) .. ReadText(1001, 120), (defenceinfo_high and (function() return (ConvertIntegerString(Helper.round(GetComponentData(object64, "hull")), true, 4, true, true, true) .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" .. GetComponentData(object64, "hullpercent") .. "%)") end) or (unknowntext .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" ..  GetComponentData(object64, "hullpercent") .. "%)")) }	-- Hull, MJ
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
 		local shield_max = Helper.unlockInfo(defenceinfo_low, ConvertIntegerString(Helper.round(GetComponentData(object64, "shieldmax")), true, 4, true, true, true))
 		locrowdata = { false, ReadText(1001, 2) .. ReadText(1001, 120), (defenceinfo_high and (function() return (ConvertIntegerString(Helper.round(GetComponentData(object64, "shield")), true, 4, true, true, true) .. " / " .. shield_max .. " " .. ReadText(1001, 118) .. " (" .. GetComponentData(object64, "shieldpercent") .. "%)") end) or (unknowntext .. " / " .. shield_max .. " " .. ReadText(1001, 118) .. " (" ..  GetComponentData(object64, "shieldpercent") .. "%)")) }	-- Shield, MJ
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
 		locrowdata = { true, ReadText(1001, 9076) .. ReadText(1001, 120), defenceinfo_low and (function() return (ConvertIntegerString(Helper.round(GetComponentData(object64, "maxunboostedforwardspeed") or 0), true, 0, true) .. " " .. ReadText(1001, 113)) end) or (unknowntext .. " " .. ReadText(1001, 113)) }	-- Cruising Speed, m/s
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize, nil, nil, false)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize, nil, nil, false)
 
 		local dpstable = ffi.new("DPSData[?]", 6)
 		local hasturrets = (defenceinfo_low and #loadout.component.turret > 0)
 		local numtotalquadrants = C.GetDefensibleDPS(dpstable, inputobject, true, true, true, true, hasturrets, false, false)
 		if not hasturrets then
 			locrowdata = { false, ReadText(1001, 9092) .. ReadText(1001, 120), defenceinfo_high and (function() return (ConvertIntegerString(Helper.round(dpstable[0].dps), true, 0, true) .. " " .. ReadText(1001, 119)) end) or (unknowntext .. " " .. ReadText(1001, 119)) }	-- Weapon Output, MW
-			row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+			row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 		else
 			for i = 0, numtotalquadrants - 1 do
 				locrowdata = { false, (ReadText(1001, 9092) .. " (" .. ReadText(20220, dpstable[i].quadranttextid) .. ")" .. ReadText(1001, 120)), defenceinfo_high and (function() return (ConvertIntegerString(Helper.round(dpstable[i].dps), true, 0, true) .. " " .. ReadText(1001, 119)) end) or (unknowntext .. " " .. ReadText(1001, 119)) }	-- Weapon Output, MW
-				row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+				row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 			end
 		end
 
@@ -4580,7 +4580,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 		C.GetDefensibleDPS(sustainedfwddps, inputobject, true, true, true, true, false, true, false)
 		if sustainedfwddps[0].dps > 0 then
 			locrowdata = { false, ReadText(1001, 9093) .. ReadText(1001, 120), defenceinfo_high and (function() return (ConvertIntegerString(Helper.round(sustainedfwddps[0].dps), true, 0, true) .. " " .. ReadText(1001, 119)) end) or (unknowntext .. " " .. ReadText(1001, 119)) }	-- MW
-			row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+			row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 		end
 		-- crew skill
 		if (not C.IsRealComponentClass(inputobject, "ship_xs")) and (not islasertower) then
@@ -4600,10 +4600,10 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 		-- radar range
 		local radarrange = Helper.unlockInfo(defenceinfo_low, ConvertIntegerString((Helper.round(GetComponentData(object64, "maxradarrange")) / 1000), true, 0, true))
 		locrowdata = { false, ReadText(1001, 2426) .. ReadText(1001, 120), (radarrange .. " " .. ReadText(1001, 108)) }	-- Radar Range, km
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 		-- boarding strength
 		locrowdata = { false, ReadText(1001, 1325) .. ReadText(1001, 120), Helper.unlockInfo(defenceinfo_high, (function() return ConvertIntegerString(GetComponentData(object64, "boardingstrength") or 0, true, 0, true) end)) }	-- Boarding Attack Strength
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 		-- docked ships
 		local shipstoragecapacity = GetComponentData(inputobject, "shipstoragecapacity") or 0
 		if shipstoragecapacity > 0 then
@@ -4612,12 +4612,12 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 				numdockedships = C.GetNumDockedShips(inputobject, nil)
 			end
 			local row = inputtable:addRow("info_dockedships", { bgColor = Helper.color.transparent })
-			row[1]:createButton({ height = config.mapRowHeight, active = numdockedships > 0 }):setText(function() return (numdockedships > 0 and menu.isInfoExtended("info_dockedships", instance)) and "-" or "+" end, { halign = "center" })
-			row[1].handlers.onClick = function() return menu.buttonExtendInfo("info_dockedships", instance) end
+			row[1]:createButton({ height = config.mapRowHeight, active = numdockedships > 0 }):setText(function() return (numdockedships > 0 and orig.menu.isInfoExtended("info_dockedships", instance)) and "-" or "+" end, { halign = "center" })
+			row[1].handlers.onClick = function() return orig.menu.buttonExtendInfo("info_dockedships", instance) end
 			row[1].properties.uiTriggerID = "info_dockedships_toggle"
 			row[2]:setColSpan(2):createText(ReadText(1001, 3265) .. ReadText(1001, 120)) -- Docked Ships
 			row[4]:setColSpan(5):createText(numdockedships .. " / " .. shipstoragecapacity, { halign = "right" })
-			if menu.isInfoExtended("info_dockedships", instance) then
+			if orig.menu.isInfoExtended("info_dockedships", instance) then
 				local dockedships = ffi.new("UniverseID[?]", numdockedships)
 				numdockedships = C.GetDockedShips(dockedships, numdockedships, inputobject, nil)
 				local playerowneddockedships = {}
@@ -4698,11 +4698,11 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 			-- commander
 			local commander = nil
 			if C.IsComponentClass(inputobject, "controllable") then
-				commander = GetCommander(menu.infoSubmenuObject)
+				commander = GetCommander(orig.menu.infoSubmenuObject)
 			end
 			local commandername, commandercolor = "-", Helper.color.white
 			if commander then
-				commandername, commandercolor = menu.getContainerNameAndColors(commander, 0, false, false)
+				commandername, commandercolor = orig.menu.getContainerNameAndColors(commander, 0, false, false)
 			end
 			local row = inputtable:addRow(false, { bgColor = Helper.color.unselectable })
 			row[2]:setColSpan(2):createText(ReadText(1001, 1112) .. ReadText(1001, 120))
@@ -4845,10 +4845,10 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 
 				if isplayerowned then
 					--local oldamount = amount
-					row[2].handlers.onSliderCellChanged = function(_, newamount) return menu.infoSubmenuUpdateDrops(ware, amount, newamount, instance) end
-					row[2].handlers.onSliderCellConfirm = function() return menu.refreshInfoFrame() end
-					row[2].handlers.onSliderCellActivated = function() menu.noupdate = true end
-					row[2].handlers.onSliderCellDeactivated = function() menu.noupdate = false end
+					row[2].handlers.onSliderCellChanged = function(_, newamount) return orig.menu.infoSubmenuUpdateDrops(ware, amount, newamount, instance) end
+					row[2].handlers.onSliderCellConfirm = function() return orig.menu.refreshInfoFrame() end
+					row[2].handlers.onSliderCellActivated = function() orig.menu.noupdate = true end
+					row[2].handlers.onSliderCellDeactivated = function() orig.menu.noupdate = false end
 
 					local row = inputtable:addRow("Drops", { bgColor = Helper.color.transparent })
 					row[4]:setColSpan(5):createText(function() return (infodrops[ware] ~= 0) and (ReadText(1001, 9406) .. ReadText(1001, 120) .. " (" .. tostring(infodrops[ware]) .. ")") or "" end, { halign = "right", minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = inputfont })	-- Dropping, :
@@ -4867,9 +4867,9 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 
 				-- add a "Drop" button
 				row[4]:setColSpan(2):createButton({ height = config.mapRowHeight, active = stufftodrop }):setText(ReadText(1001, 9405), { halign = "center", fontsize = config.mapFontSize })	-- Drop
-				row[4].handlers.onClick = function() return menu.infoSubmenuConfirmDrops(inputobject, instance) end
+				row[4].handlers.onClick = function() return orig.menu.infoSubmenuConfirmDrops(inputobject, instance) end
 				row[6]:setColSpan(3):createButton({ height = config.mapRowHeight, active = stufftodrop }):setText(ReadText(1001, 64), { halign = "center", fontsize = config.mapFontSize })	-- Cancel
-				row[6].handlers.onClick = function() return menu.resetInfoSubmenu(nil, instance) end
+				row[6].handlers.onClick = function() return orig.menu.resetInfoSubmenu(nil, instance) end
 			end
 		else
 			local row = inputtable:addRow(false, { bgColor = Helper.color.unselectable })
@@ -4923,10 +4923,10 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 				row[2].handlers.onSliderCellChanged = function(_, value) 
 					local idx = i
 					local loccash = containercash
-					return menu.infoSubmenuUpdateTransferAmount(instance, value, idx, loccash) end
-				row[2].handlers.onSliderCellActivated = function() menu.noupdate = true end
-				row[2].handlers.onSliderCellDeactivated = function() menu.noupdate = false end
-				row[2].handlers.onSliderCellConfirm = function() menu.over = true end
+					return orig.menu.infoSubmenuUpdateTransferAmount(instance, value, idx, loccash) end
+				row[2].handlers.onSliderCellActivated = function() orig.menu.noupdate = true end
+				row[2].handlers.onSliderCellDeactivated = function() orig.menu.noupdate = false end
+				row[2].handlers.onSliderCellConfirm = function() orig.menu.over = true end
 
 				local row = inputtable:addRow(nil, { bgColor = Helper.color.unselectable })
 				row[2]:setColSpan(2):createText(((container == buildstorage) and ReadText(1001, 9436) or ReadText(1001, 9434)) .. ReadText(1001, 120))
@@ -4942,11 +4942,11 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 
 				local row = inputtable:addRow("info_updateaccount", { bgColor = Helper.color.transparent })
 				row[3]:createButton({ height = config.mapRowHeight, active = function () local money, estimate = GetComponentData(container, "money", entry.estimatetype); if entry.supply then estimate = estimate + tonumber(C.GetSupplyBudget(container)) / 100 end; --[[if entry.tradewares then estimate = estimate + tonumber(C.GetTradeWareBudget(container)) / 100 end;]] return (money + GetPlayerMoney()) > estimate end }):setText(ReadText(1001, 7965), { halign = "center", fontsize = config.mapFontSize })	-- Accept Estimate
-				row[3].handlers.onClick = function () return menu.infoSubmenuSetManagerAccountToEstimate(i, instance) end
-				row[4]:setColSpan(2):createButton({ height = config.mapRowHeight, active = function () return menu.checkTransferDetails(i, instance) end }):setText(ReadText(1001, 2821), { halign = "center", fontsize = config.mapFontSize })	-- Confirm
-				row[4].handlers.onClick = function () return menu.infoSubmenuUpdateManagerAccount(i, instance) end
-				row[6]:setColSpan(3):createButton({ height = config.mapRowHeight, active = function () return menu.checkTransferDetails(i, instance) end }):setText(ReadText(1001, 64), { halign = "center", fontsize = config.mapFontSize })	-- Cancel
-				row[6].handlers.onClick = function() return menu.resetInfoSubmenu(i, instance) end
+				row[3].handlers.onClick = function () return orig.menu.infoSubmenuSetManagerAccountToEstimate(i, instance) end
+				row[4]:setColSpan(2):createButton({ height = config.mapRowHeight, active = function () return orig.menu.checkTransferDetails(i, instance) end }):setText(ReadText(1001, 2821), { halign = "center", fontsize = config.mapFontSize })	-- Confirm
+				row[4].handlers.onClick = function () return orig.menu.infoSubmenuUpdateManagerAccount(i, instance) end
+				row[6]:setColSpan(3):createButton({ height = config.mapRowHeight, active = function () return orig.menu.checkTransferDetails(i, instance) end }):setText(ReadText(1001, 64), { halign = "center", fontsize = config.mapFontSize })	-- Cancel
+				row[6].handlers.onClick = function() return orig.menu.resetInfoSubmenu(i, instance) end
 			end
 			-- trade rules
 			local row = inputtable:addRow(false, { bgColor = Helper.defaultTitleBackgroundColor })
@@ -4978,7 +4978,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 						hasownlist = C.HasContainerOwnTradeRule(object, "buy", "") or C.HasContainerOwnTradeRule(object, "sell", "")
 						traderuleid = C.GetContainerTradeRuleID(object, "buy", "")
 						if traderuleid ~= C.GetContainerTradeRuleID(object, "sell", "") then
-							DebugError("menu.setupInfoSubmenuRows(): Mismatch between buy and sell trade rule on station level: " .. tostring(traderuleid) .. " vs " .. tostring(C.GetContainerTradeRuleID(inputobject, "sell", "")))
+							DebugError("orig.menu.setupInfoSubmenuRows(): Mismatch between buy and sell trade rule on station level: " .. tostring(traderuleid) .. " vs " .. tostring(C.GetContainerTradeRuleID(inputobject, "sell", "")))
 						end
 					else
 						hasownlist = C.HasContainerOwnTradeRule(object, entry.type, "")
@@ -4988,13 +4988,13 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 					local rowdata = "info_traderule_" .. entry.type .. "_global"
 					local row = inputtable:addRow({ rowdata }, { bgColor = Helper.color.transparent })
 					row[1]:createCheckBox(not hasownlist, { width = config.mapRowHeight, height = config.mapRowHeight })
-					row[1].handlers.onClick = function(_, checked) return menu.checkboxSetTradeRuleOverride(object, entry.type, checked) end
+					row[1].handlers.onClick = function(_, checked) return orig.menu.checkboxSetTradeRuleOverride(object, entry.type, checked) end
 					row[2]:setColSpan(7):createText(ReadText(1001, 8367), textproperties)
 
 					local row = inputtable:addRow("info_traderule_" .. entry.type .. "_current", { bgColor = Helper.color.transparent })
-					row[1]:setColSpan(8):createDropDown(menu.traderuleOptions, { height = Helper.standardTextHeight, startOption = (traderuleid ~= 0) and traderuleid or -1, active = hasownlist }):setTextProperties({ fontsize = config.mapFontSize })
-					row[1].handlers.onDropDownConfirmed = function (_, id) return menu.dropdownTradeRule(object, entry.type, id, nil, true) end
-					row[1].handlers.onDropDownActivated = function () menu.noupdate = true end
+					row[1]:setColSpan(8):createDropDown(orig.menu.traderuleOptions, { height = Helper.standardTextHeight, startOption = (traderuleid ~= 0) and traderuleid or -1, active = hasownlist }):setTextProperties({ fontsize = config.mapFontSize })
+					row[1].handlers.onDropDownConfirmed = function (_, id) return orig.menu.dropdownTradeRule(object, entry.type, id, nil, true) end
+					row[1].handlers.onDropDownActivated = function () orig.menu.noupdate = true end
 				end
 			end
 		end
@@ -5009,24 +5009,24 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 			-- row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(objectname, { halign = "right" })
 			row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname, { halign = "right" })
 			DebugError("Tracing the Editname:"..C.GetPlayerID().."//"..tostring(C.GetPlayerID()).."//"..ConvertStringTo64Bit(tostring(C.GetPlayerID())).."//"..GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names"))
-			row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return menu.infoChangeObjectName(inputobject, text, textchanged) end
+			row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
 		else
-			row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize, nil, nil, false)
+			row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize, nil, nil, false)
 		end
 
 		locrowdata = { false, ReadText(1001, 9040), Helper.unlockInfo(ownerinfo, GetComponentData(object64, "ownername")) }	-- Owner
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
 		locrowdata = { false, ReadText(1001, 2943), GetComponentData(object64, "sector") }	-- Location
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
 		local hull_max = defenceinfo_low and ConvertIntegerString(Helper.round(GetComponentData(object64, "hullmax")), true, 4, true, true, true) or unknowntext
 		locrowdata = { false, ReadText(1001, 1), (defenceinfo_high and (function() return (ConvertIntegerString(Helper.round(GetComponentData(object64, "hull")), true, 4, true, true, true) .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" .. GetComponentData(object64, "hullpercent") .. "%)") end) or (unknowntext .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" .. GetComponentData(object64, "hullpercent") .. "%)")) }	-- Hull, MJ
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
 		local radarrange = defenceinfo_low and (Helper.round(GetComponentData(object64, "maxradarrange")) / 1000) or unknowntext
 		locrowdata = { false, ReadText(1001, 2426), (radarrange .. " " .. ReadText(1001, 108)) }	-- Radar Range, km
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 		-- docked ships
 		local shipstoragecapacity = GetComponentData(inputobject, "shipstoragecapacity") or 0
 		if shipstoragecapacity > 0 then
@@ -5035,12 +5035,12 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 				numdockedships = C.GetNumDockedShips(inputobject, nil)
 			end
 			local row = inputtable:addRow("info_dockedships", { bgColor = Helper.color.transparent })
-			row[1]:createButton({ height = config.mapRowHeight, active = numdockedships > 0 }):setText(function() return (numdockedships > 0 and menu.isInfoExtended("info_dockedships", instance)) and "-" or "+" end, { halign = "center" })
-			row[1].handlers.onClick = function() return menu.buttonExtendInfo("info_dockedships", instance) end
+			row[1]:createButton({ height = config.mapRowHeight, active = numdockedships > 0 }):setText(function() return (numdockedships > 0 and orig.menu.isInfoExtended("info_dockedships", instance)) and "-" or "+" end, { halign = "center" })
+			row[1].handlers.onClick = function() return orig.menu.buttonExtendInfo("info_dockedships", instance) end
 			row[1].properties.uiTriggerID = "info_dockedships_toggle"
 			row[2]:setColSpan(2):createText(ReadText(1001, 3265) .. ReadText(1001, 120)) -- Docked Ships
 			row[4]:setColSpan(5):createText(numdockedships .. " / " .. shipstoragecapacity, { halign = "right" })
-			if menu.isInfoExtended("info_dockedships", instance) then
+			if orig.menu.isInfoExtended("info_dockedships", instance) then
 				local dockedships = ffi.new("UniverseID[?]", numdockedships)
 				numdockedships = C.GetDockedShips(dockedships, numdockedships, inputobject, nil)
 				local playerowneddockedships = {}
@@ -5080,7 +5080,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 		end
 		-- trade subscription
 		locrowdata = { false, ReadText(1001, 9414), (GetComponentData(object64, "tradesubscription") and ReadText(1001, 2617) or ReadText(1001, 2618)) }	-- Updating Trade Offers
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 		-- manager
 		local manager = GetComponentData(inputobject, "tradenpc")
 		manager = ConvertIDTo64Bit(manager)
@@ -5161,7 +5161,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 				end
 			end
 		end
-		table.sort(productiontable, menu.productionSorter)
+		table.sort(productiontable, orig.menu.productionSorter)
 		local products = {}
 		local intermediatewares = {}
 		resources = {}
@@ -5274,13 +5274,13 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 			end
 			
 			locrowdata = { "info_station_storage", (ReadText(1001, 1400) .. " (" .. printednumwares .. " " .. ((printednumwares == "1") and ReadText(1001, 45) or ReadText(1001, 46)) .. ")") }	-- Storage, Ware, Wares
-			local row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, true, (numwares > 0) and true or false, 1, indentsize)
-			if menu.isInfoExtended(locrowdata[1], instance) then
+			local row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, true, (numwares > 0) and true or false, 1, indentsize)
+			if orig.menu.isInfoExtended(locrowdata[1], instance) then
 				for i, usagecat in ipairs(cargocatindex) do
 					if (cargotable[usagecat].numcatwares > 0) then
 						--print("adding category: " .. cargotable[usagecat].text)
 						locrowdata = { false, (cargotable[usagecat].text .. ReadText(1001, 120)) }	-- :
-						local row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata)
+						local row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata)
 						for _, wareentry in ipairs(cargotable[usagecat].wares) do
 							local ware = wareentry.ware
 							local amount = wareentry.amount
@@ -5366,8 +5366,8 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 			local printedfullcapacity = (type(loccapacity) == "number") and ConvertIntegerString(loccapacity, true, 0, true) or nil
 			local printednumwares = storageinfo_amounts and ConvertIntegerString(numwares, true, 0, true) or unknowntext
 			locrowdata = { "info_station_buildstorage_storage", (ReadText(1001, 1400) .. " (" .. printednumwares .. " " .. ((printednumwares == "1") and ReadText(1001, 45) or ReadText(1001, 46)) .. ")") }	-- Storage, Ware, Wares
-			local row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, true, (numwares > 0) and true or false, 1, indentsize)
-			if menu.isInfoExtended(locrowdata[1], instance) then
+			local row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, true, (numwares > 0) and true or false, 1, indentsize)
+			if orig.menu.isInfoExtended(locrowdata[1], instance) then
 				for _, wareentry in ipairs(cargotable) do
 					local ware = wareentry.ware
 					local amount = wareentry.amount
@@ -5399,13 +5399,13 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 			-- row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(objectname, { halign = "right" })
 			row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname, { halign = "right" })
 			DebugError("Tracing the Editname:"..C.GetPlayerID().."//"..tostring(C.GetPlayerID()).."//"..ConvertStringTo64Bit(tostring(C.GetPlayerID())).."//"..GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names"))
-			row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return menu.infoChangeObjectName(inputobject, text, textchanged) end
+			row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
 		else
-			row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+			row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 		end
 
 		locrowdata = { false, ReadText(1001, 9040), Helper.unlockInfo(ownerinfo, GetComponentData(object64, "ownername")) }	-- Owner
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
 		local stationtable = GetContainedStations(object64, true)
 		local numstations = #stationtable
@@ -5443,20 +5443,20 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 
 		-- TODO: review. currently looks at total known station workforce in the sector.
 		locrowdata = { false, ReadText(1001, 9041), sectorpopulation }	-- Population
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
 		locrowdata = { false, ReadText(1001, 9042), (numstations > 0 and numstations or 0) }	-- Known Stations
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
 		locrowdata = { false, ReadText(1001, 9050), maxproductgrp }	-- Main Production
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
 		-- natural resources
 		local row = inputtable:addRow(false, { bgColor = Helper.defaultTitleBackgroundColor })
 		row[1]:setColSpan(8):createText(ReadText(1001, 9423), Helper.headerRowCenteredProperties) -- Natural Resources
 			local sunlight = (GetComponentData(object64, "sunlight") * 100 .. "%")
 			locrowdata = { false, ReadText(1001, 2412), sunlight }	-- Sunlight
-			row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+			row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
 			-- TODO: Add Region info: NB: Matthias says that yield numbers for regions could be too big to be useful, and that retrieving that info is very inefficient. But we'll try when the function is up.
 
@@ -5473,17 +5473,17 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 			gatedestination = C.IsInfoUnlockedForPlayer(gatedestinationid64, "name") and ffi.string(C.GetComponentName(gatedestinationid64)) or unknowntext
 		end
 		locrowdata = { false, ReadText(1001, 3215), tostring(gatedestination) }	-- (gate) Destination
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
 		local destinationowner = unknowntext
 		if gatedestination ~= unknowntext then
 			destinationowner = GetComponentData(gatedestinationid, "ownername")
 		end
 		locrowdata = { false, ReadText(1001, 9424), tostring(destinationowner) }	-- Destination Owner
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
 		locrowdata = { false, ReadText(1001, 9425), (isgateactive and ReadText(1001, 2617) or ReadText(1001, 2618)) }	-- Active, Yes, No
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 	elseif mode == "deployable" then
 		-- general info
 		local row = inputtable:addRow(false, { bgColor = Helper.defaultTitleBackgroundColor })
@@ -5496,38 +5496,38 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 			-- row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(objectname, { halign = "right" })
 			row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname, { halign = "right" })
 			DebugError("Tracing the Editname:"..C.GetPlayerID().."//"..tostring(C.GetPlayerID()).."//"..ConvertStringTo64Bit(tostring(C.GetPlayerID())).."//"..GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names"))
-			row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return menu.infoChangeObjectName(inputobject, text, textchanged) end
+			row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
 		else
-			row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+			row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 		end
 
 		locrowdata = { false, ReadText(1001, 9040), Helper.unlockInfo(ownerinfo, GetComponentData(inputobject, "ownername")) }	-- Owner
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
 		locrowdata = { false, ReadText(1001, 2943), GetComponentData(inputobject, "sector") }	-- Location
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
 		local hull_max = defenceinfo_low and ConvertIntegerString(Helper.round(GetComponentData(inputobject, "hullmax")), true, 4, true, true, true) or unknowntext
 		locrowdata = { false, ReadText(1001, 1), (defenceinfo_high and (function() return (ConvertIntegerString(Helper.round(GetComponentData(inputobject, "hull")), true, 4, true, true, true) .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" .. GetComponentData(inputobject, "hullpercent") .. "%)") end) or (unknowntext .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" .. unknowntext .. "%)")) }	-- Hull, MJ
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
 		local radarrange = defenceinfo_low and GetComponentData(inputobject, "maxradarrange") or unknowntext
 
-		if C.IsComponentClass(menu.infoSubmenuObject, "mine") then
+		if C.IsComponentClass(orig.menu.infoSubmenuObject, "mine") then
 			-- add if mines are made selectable in the map again:
 			--	detonation output (s), tracking capability (s), friend/foe (s), proximity (s)
-		elseif C.IsComponentClass(menu.infoSubmenuObject, "resourceprobe") then
+		elseif C.IsComponentClass(orig.menu.infoSubmenuObject, "resourceprobe") then
 			if radarrange and radarrange ~= unknowntext then
 				radarrange = Helper.round(radarrange / 1000)
 			end
 			locrowdata = { "info_radarrange", ReadText(1001, 2426), (radarrange .. " " .. ReadText(1001, 9082)) }	-- Scannning Range, km
-			row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
-		elseif C.IsComponentClass(menu.infoSubmenuObject, "satellite") then
+			row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		elseif C.IsComponentClass(orig.menu.infoSubmenuObject, "satellite") then
 			if radarrange and radarrange ~= unknowntext then
 				radarrange = Helper.round(radarrange / 1000)
 			end
 			locrowdata = { false, ReadText(1001, 2426), (radarrange .. " " .. ReadText(1001, 108)) }	-- Radar Range, km
-			row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+			row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 		end
 	elseif mode == "asteroid" then
 		-- general info
@@ -5540,12 +5540,12 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 		local locwidth = ConvertIntegerString(rawwidth, true, 0, true)
 		local locheight = ConvertIntegerString(rawheight, true, 0, true)
 		locrowdata = { false, ReadText(1001, 9229), (loclength .. ReadText(1001, 107) .. " " .. ReadText(1001, 42) .. " " .. locwidth .. ReadText(1001, 107) .. " " .. ReadText(1001, 42) .. " " .. locheight .. ReadText(1001, 107)) }	-- m, x
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
 		local rawvolume = rawlength * rawwidth * rawheight
 		local locvolume = ConvertIntegerString(rawvolume, true, 0, true)
 		locrowdata = { false, ReadText(1001, 1407), (locvolume .. " " .. ReadText(1001, 110)) }	-- Volume, m^3
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
 		local wares = GetComponentData(inputobject, "wares")
 		local hasyield = false
@@ -5559,22 +5559,22 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 
 			if hasyield then
 				locrowdata = { false, ReadText(1001, 3214) .. ReadText(1001, 120) }	-- Yield, :
-				row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+				row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 
 				for i, ware in ipairs(wares) do
 					if ware.amount > 0 then
 						local warename = GetWareData(ware.ware, "name")
 						locrowdata = { false, warename, ware.amount }
-						row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 2, indentsize)
+						row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 2, indentsize)
 					end
 				end
 			end
 		end
 	elseif mode == "none" then
 		local locrowdata = { "info_none", ReadText(1001, 6526) }
-		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false)
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false)
 	else
-		DebugError("menu.setupInfoSubmenuRows(): called with unsupported mode: " .. tostring(mode) .. ".")
+		DebugError("orig.menu.setupInfoSubmenuRows(): called with unsupported mode: " .. tostring(mode) .. ".")
 	end
 end
 else
