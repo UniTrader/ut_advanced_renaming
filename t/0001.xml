@@ -374,6 +374,8 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   <t id="1206">Super /(unused/)</t>
   <t id="1207">\033GSuper /(unused/)</t>
   <t id="1208">&lt;==</t>
+  <!-- X4 Version: Line Text for the Edit Name -->
+  <t id="1300">Edit:</t>
   <!-- Expression Update from October/November 2016 - converting all expressions to new format -->
   <t id="2000">%S</t>
   <t id="2001">$S</t><!-- All Skills -->
