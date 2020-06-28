@@ -893,7 +893,7 @@ else 'null'"/-->
             </do_all>
           </do_else>
           <!-- Finally Set Name, write debug value to log and cleanup -->
-          <set_object_name object="$object" name="'%1%2.[$nameA,{5554301,2017}]" comment="adding neutral Color Tag at the end"/>
+          <set_object_name object="$object" name="'%1%2'.[$nameA,{5554301,2017}]" comment="adding neutral Color Tag at the end"/>
           <add_to_group groupname="md.UT_CAC_Object_Name_Managment.Init.$NamedObjects" object="$object"/>
           <!-- for the short name / $nameB look in the Code Group before - more economic there -->
           <set_value name="$debug" exact="'%1\nNaming Table: %2'.[$debug,player.entity.$unformatted_names]" chance="$debug? *100" comment="fill debug output Value"/>
