@@ -4500,6 +4500,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 		local row = inputtable:addRow(false, { bgColor = Helper.defaultTitleBackgroundColor })
 		row[1]:setColSpan(8):createText(ReadText(1001, 1111), Helper.headerRowCenteredProperties) -- General Information
 		locrowdata = { "info_name", ReadText(1001, 2809) .. ReadText(1001, 120), objectname }	-- Name
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize, nil, nil, false)
 		if isplayerowned then
 			row = inputtable:addRow(locrowdata[1], { bgColor = Helper.color.transparent })
 			row[2]:setColSpan(2):createText(locrowdata[2], { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = Helper.standardFont, x = Helper.standardTextOffsetx + indentsize })
@@ -4508,8 +4509,6 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 			row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname, { halign = "right" })
 			--DebugError("Tracing the Editname:"..C.GetPlayerID().."//"..tostring(C.GetPlayerID()).."//"..ConvertStringTo64Bit(tostring(C.GetPlayerID())).."//"..GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names"))
 			row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
-		else
-			row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize, nil, nil, false)
 		end
 
 		locrowdata = { false, ReadText(1001, 9040) .. ReadText(1001, 120), Helper.unlockInfo(ownerinfo, GetComponentData(object64, "ownername")) }	-- "Owner"
@@ -5002,6 +5001,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 		local row = inputtable:addRow(false, { bgColor = Helper.defaultTitleBackgroundColor })
 		row[1]:setColSpan(8):createText(ReadText(1001, 1111), Helper.headerRowCenteredProperties) -- General Information
 		locrowdata = { "info_name", ReadText(1001, 2809), objectname }	-- Name
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize, nil, nil, false)
 		if isplayerowned then
 			local row = inputtable:addRow(locrowdata[1], { bgColor = Helper.color.transparent })
 			row[2]:setColSpan(2):createText(locrowdata[2], { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = Helper.standardFont, x = Helper.standardTextOffsetx + (1 * indentsize) })
@@ -5010,8 +5010,6 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 			row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname, { halign = "right" })
 			--DebugError("Tracing the Editname:"..C.GetPlayerID().."//"..tostring(C.GetPlayerID()).."//"..ConvertStringTo64Bit(tostring(C.GetPlayerID())).."//"..GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names"))
 			row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
-		else
-			row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize, nil, nil, false)
 		end
 
 		locrowdata = { false, ReadText(1001, 9040), Helper.unlockInfo(ownerinfo, GetComponentData(object64, "ownername")) }	-- Owner
@@ -5392,6 +5390,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 		local row = inputtable:addRow(false, { bgColor = Helper.defaultTitleBackgroundColor })
 		row[1]:setColSpan(8):createText(ReadText(1001, 1111), Helper.headerRowCenteredProperties) -- General Information
 		locrowdata = { "info_name", ReadText(1001, 2809), objectname }	-- Name
+		row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 		if isplayerowned then
 			row = inputtable:addRow(locrowdata[1], { bgColor = Helper.color.transparent })
 			row[2]:setColSpan(2):createText(locrowdata[2], { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = Helper.standardFont, x = Helper.standardTextOffsetx + (1 * indentsize) })
@@ -5400,8 +5399,6 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 			row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname, { halign = "right" })
 			--DebugError("Tracing the Editname:"..C.GetPlayerID().."//"..tostring(C.GetPlayerID()).."//"..ConvertStringTo64Bit(tostring(C.GetPlayerID())).."//"..GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names"))
 			row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
-		else
-			row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 		end
 
 		locrowdata = { false, ReadText(1001, 9040), Helper.unlockInfo(ownerinfo, GetComponentData(object64, "ownername")) }	-- Owner
@@ -5489,6 +5486,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 		local row = inputtable:addRow(false, { bgColor = Helper.defaultTitleBackgroundColor })
 		row[1]:setColSpan(8):createText(ReadText(1001, 1111), Helper.headerRowCenteredProperties) -- General Information
 		locrowdata = { "info_name", ReadText(1001, 2809), objectname }	-- Name
+			row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 		if isplayerowned then
 			row = inputtable:addRow(locrowdata[1], { bgColor = Helper.color.transparent })
 			row[2]:setColSpan(2):createText(locrowdata[2], { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = Helper.standardFont, x = Helper.standardTextOffsetx + (1 * indentsize) })
@@ -5497,8 +5495,6 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 			row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname, { halign = "right" })
 			--DebugError("Tracing the Editname:"..C.GetPlayerID().."//"..tostring(C.GetPlayerID()).."//"..ConvertStringTo64Bit(tostring(C.GetPlayerID())).."//"..GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names"))
 			row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
-		else
-			row = orig.menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
 		end
 
 		locrowdata = { false, ReadText(1001, 9040), Helper.unlockInfo(ownerinfo, GetComponentData(inputobject, "ownername")) }	-- Owner
