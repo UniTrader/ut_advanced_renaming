@@ -4384,7 +4384,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 		orig.menu.infoeditname = nil
 	end
 end
-elseif menu.createRenameContext ~= nil then
+else
 DebugError("UTRenaming - Applying Lua patch for Rename Menu")
 function utRenaming.createRenameContext(frame)
 	if orig.menu.arrowsRegistered then
