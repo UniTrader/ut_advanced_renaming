@@ -6,7 +6,7 @@
         <event_cue_completed cue="md.G_Work_Around.Init"/>
       </conditions>
       <actions>
-        <debug_text filter="general" text="'utrenaming g workaround call'"/>
+        <debug_text filter="general" text="'utrenaming g workaround call'" chance="0"/>
         <raise_lua_event name="'RegisterAddon'" param="'extensions.ut_advanced_renaming.utrenaming'"/>
       </actions>
     </cue>
@@ -17,7 +17,7 @@
       </conditions>
       <delay exact="1s"/>
       <actions>
-        <debug_text filter="general" text="'utrenaming g workaround 020 call'"/>
+        <debug_text filter="general" text="'utrenaming g workaround 020 call'" chance="0"/>
         <signal_cue_instantly cue="md.G_Work_Around.Signal" param="'.\\extensions\\ut_advanced_renaming\\utrenaming.lua'"/>
       </actions>
     </cue>
@@ -26,7 +26,7 @@
         <event_ui_triggered screen="'Lua_Loader'" control="'Ready'" />
       </conditions>
       <actions>
-        <debug_text filter="general" text="'utrenaming lua loader call'"/>
+        <debug_text filter="general" text="'utrenaming lua loader call'" chance="0"/>
         <raise_lua_event name="'Lua_Loader.Load'" param="'extensions.ut_advanced_renaming.utrenaming'"/>
       </actions>
     </cue>
