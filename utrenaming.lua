@@ -5007,6 +5007,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 			-- Next line changed by UniTrader - original line in comment
 			-- row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(objectname, { halign = "right" })
 			row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname, { halign = "right" })
+			DebugError("Tracing the Editname:"..C.GetPlayerID().."//"..tostring(C.GetPlayerID()).."//"..ConvertStringTo64Bit(tostring(C.GetPlayerID())).."//"..GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names"))
 			row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return menu.infoChangeObjectName(inputobject, text, textchanged) end
 		else
 			row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize, nil, nil, false)
@@ -5396,6 +5397,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 			-- Next line changed by UniTrader - original line in comment
 			-- row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(objectname, { halign = "right" })
 			row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname, { halign = "right" })
+			DebugError("Tracing the Editname:"..C.GetPlayerID().."//"..tostring(C.GetPlayerID()).."//"..ConvertStringTo64Bit(tostring(C.GetPlayerID())).."//"..GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names"))
 			row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return menu.infoChangeObjectName(inputobject, text, textchanged) end
 		else
 			row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
@@ -5492,6 +5494,7 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 			-- Next line changed by UniTrader - original line in comment
 			-- row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(objectname, { halign = "right" })
 			row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname, { halign = "right" })
+			DebugError("Tracing the Editname:"..C.GetPlayerID().."//"..tostring(C.GetPlayerID()).."//"..ConvertStringTo64Bit(tostring(C.GetPlayerID())).."//"..GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names"))
 			row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return menu.infoChangeObjectName(inputobject, text, textchanged) end
 		else
 			row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
