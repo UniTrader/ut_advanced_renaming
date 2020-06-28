@@ -4382,6 +4382,1196 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 		orig.menu.infoeditname = nil
 	end
 end
+elseif  GetVersionString() == "3.20 (400261)" then
+function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance)
+	local object64 = ConvertStringTo64Bit(tostring(inputobject))
+
+	if (not menu.infoTablePersistentData[instance].cashtransferdetails) or (menu.infoTablePersistentData[instance].cashtransferdetails.curobject ~= inputobject) then
+		menu.infoTablePersistentData[instance].cashtransferdetails = { curobject = inputobject, transfers = {} }
+		menu.infoTablePersistentData[instance].drops = {}
+	end
+
+	local infocashtransferdetails = menu.infoTablePersistentData[instance].cashtransferdetails
+	local infodrops = menu.infoTablePersistentData[instance].drops
+
+	local indentsize = 0
+
+	local loadout = {}
+	if mode == "ship" or mode == "station" then
+		loadout = { ["component"] = {}, ["macro"] = {}, ["ware"] = {} }
+		for i, upgradetype in ipairs(Helper.upgradetypes) do
+			if upgradetype.supertype == "macro" then
+				loadout.component[upgradetype.type] = {}
+				local numslots = 0
+				if C.IsComponentClass(inputobject, "defensible") then
+					numslots = tonumber(C.GetNumUpgradeSlots(inputobject, "", upgradetype.type))
+				end
+				for j = 1, numslots do
+					local current = C.GetUpgradeSlotCurrentComponent(inputobject, upgradetype.type, j)
+					if current ~= 0 then
+						table.insert(loadout.component[upgradetype.type], current)
+					end
+				end
+			elseif upgradetype.supertype == "virtualmacro" then
+				loadout.macro[upgradetype.type] = {}
+				local numslots = tonumber(C.GetNumVirtualUpgradeSlots(inputobject, "", upgradetype.type))
+				for j = 1, numslots do
+					local current = ffi.string(C.GetVirtualUpgradeSlotCurrentMacro(inputobject, upgradetype.type, j))
+					if current ~= "" then
+						table.insert(loadout.macro[upgradetype.type], current)
+					end
+				end
+			elseif upgradetype.supertype == "software" then
+				loadout.ware[upgradetype.type] = {}
+				local numslots = C.GetNumSoftwareSlots(inputobject, "")
+				local buf = ffi.new("SoftwareSlot[?]", numslots)
+				numslots = C.GetSoftwareSlots(buf, numslots, inputobject, "")
+				for j = 0, numslots - 1 do
+					local current = ffi.string(buf[j].current)
+					if current ~= "" then
+						table.insert(loadout.ware[upgradetype.type], current)
+					end
+				end
+			elseif upgradetype.supertype == "ammo" then
+				loadout.macro[upgradetype.type] = {}
+			end
+		end
+	end
+
+	local isplayerowned, isonlineobject, isenemy = GetComponentData(object64, "isplayerowned", "isonlineobject", "isenemy")
+	local titlecolor = Helper.color.white
+	if isplayerowned then
+		titlecolor = menu.holomapcolor.playercolor
+		if object64 == C.GetPlayerObjectID() then
+			titlecolor = menu.holomapcolor.currentplayershipcolor
+		end
+	elseif isonlineobject and menu.getFilterOption("layer_think") and menu.getFilterOption("think_diplomacy_highlightvisitor") then
+		titlecolor = menu.holomapcolor.visitorcolor
+	elseif isenemy then
+		titlecolor = menu.holomapcolor.enemycolor
+	end
+	local unknowntext = ReadText(1001, 3210)
+	local cheatsecrecy = false
+	-- secrecy stuff
+	local nameinfo =					cheatsecrecy or C.IsInfoUnlockedForPlayer(inputobject, "name")
+	local ownerinfo =					cheatsecrecy or C.IsInfoUnlockedForPlayer(inputobject, "owner")
+	local defenceinfo_low =				cheatsecrecy or C.IsInfoUnlockedForPlayer(inputobject, "defence_level")
+	local defenceinfo_high =			cheatsecrecy or C.IsInfoUnlockedForPlayer(inputobject, "defence_status")
+	local operatorinfo =				cheatsecrecy or C.IsInfoUnlockedForPlayer(inputobject, "operator_name")
+	local operatorinfo_details =		cheatsecrecy or C.IsInfoUnlockedForPlayer(inputobject, "operator_details")
+	local operatorinfo_commands =		cheatsecrecy or C.IsInfoUnlockedForPlayer(inputobject, "operator_commands")
+	local productioninfo_products =		cheatsecrecy or C.IsInfoUnlockedForPlayer(inputobject, "production_products")
+	local productioninfo_rate =			cheatsecrecy or C.IsInfoUnlockedForPlayer(inputobject, "production_rate")
+	local productioninfo_resources =	cheatsecrecy or C.IsInfoUnlockedForPlayer(inputobject, "production_resources")
+	local productioninfo_time =			cheatsecrecy or C.IsInfoUnlockedForPlayer(inputobject, "production_time")
+	local storageinfo_capacity =		cheatsecrecy or C.IsInfoUnlockedForPlayer(inputobject, "storage_capacity")
+	local storageinfo_amounts =			cheatsecrecy or C.IsInfoUnlockedForPlayer(inputobject, "storage_amounts")
+	local storageinfo_warelist =		cheatsecrecy or C.IsInfoUnlockedForPlayer(inputobject, "storage_warelist")
+	local unitinfo_capacity =			cheatsecrecy or C.IsInfoUnlockedForPlayer(inputobject, "units_capacity")
+	local unitinfo_amount =				cheatsecrecy or C.IsInfoUnlockedForPlayer(inputobject, "units_amount")
+	local unitinfo_details =			cheatsecrecy or C.IsInfoUnlockedForPlayer(inputobject, "units_details")
+
+	if not isplayerowned then
+		menu.extendedinfo["info_weaponconfig" .. instance] = nil
+	end
+
+	--- title ---
+	local row = inputtable:addRow(false, {fixed = true, bgColor = Helper.defaultTitleBackgroundColor})
+	row[1]:setColSpan(8):createText(ReadText(1001, 2427), Helper.headerRow1Properties)
+
+	local objectname = Helper.unlockInfo(nameinfo, ffi.string(C.GetComponentName(inputobject)))
+	--- object name ---
+	local row = inputtable:addRow("info_focus", { fixed = true, bgColor = Helper.defaultTitleBackgroundColor })
+	row[8]:createButton({ width = config.mapRowHeight, cellBGColor = Helper.color.transparent }):setIcon("menu_center_selection", { width = config.mapRowHeight, height = config.mapRowHeight, y = (Helper.headerRow1Height - config.mapRowHeight) / 2 })
+	row[8].handlers.onClick = function () return C.SetFocusMapComponent(menu.holomap, menu.infoSubmenuObject, true) end
+	if (mode == "ship") or (mode == "station") then
+		row[1]:setBackgroundColSpan(7):setColSpan(5):createText(objectname, Helper.headerRow1Properties)
+		row[1].properties.color = titlecolor
+		row[6]:setColSpan(2):createText(Helper.unlockInfo(nameinfo, ffi.string(C.GetObjectIDCode(inputobject))), Helper.headerRow1Properties)
+		row[6].properties.halign = "right"
+		row[6].properties.color = titlecolor
+	else
+		row[1]:setBackgroundColSpan(7):setColSpan(7):createText(objectname, Helper.headerRow1Properties)
+		row[1].properties.color = titlecolor
+	end
+
+	if mode == "ship" then
+		local row = inputtable:addRow(false, { bgColor = Helper.defaultTitleBackgroundColor })
+		row[1]:setColSpan(8):createText(ReadText(1001, 1111), Helper.headerRowCenteredProperties) -- General Information
+		locrowdata = { "info_name", ReadText(1001, 2809) .. ReadText(1001, 120), objectname }	-- Name
+		if isplayerowned then
+			row = inputtable:addRow(locrowdata[1], { bgColor = Helper.color.transparent })
+			row[2]:setColSpan(2):createText(locrowdata[2], { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = Helper.standardFont, x = Helper.standardTextOffsetx + indentsize })
+			-- Next line changed by UniTrader - original line in comment
+			-- row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(objectname, { halign = "right" })
+			row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname, { halign = "right" })
+			row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return menu.infoChangeObjectName(inputobject, text, textchanged) end
+		else
+			row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize, nil, nil, false)
+		end
+
+		locrowdata = { false, ReadText(1001, 9040) .. ReadText(1001, 120), Helper.unlockInfo(ownerinfo, GetComponentData(object64, "ownername")) }	-- "Owner"
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+
+		local loccontainer = nil
+		if isdocked then
+			loccontainer = ConvertStringTo64Bit(tostring(C.GetTopLevelContainer(inputobject)))
+		end
+		local objectlocid64 = ConvertStringTo64Bit(tostring(GetComponentData(object64, "sectorid")))
+		local objectloc = Helper.unlockInfo(C.IsInfoUnlockedForPlayer(objectlocid64, "name"), ffi.string(C.GetComponentName(objectlocid64)))
+		if loccontainer then
+			objectloc = ReadText(1001, 3248) .. " " .. ffi.string(C.GetComponentName(loccontainer)) .. ", " .. objectloc	-- Docked at
+		end
+		locrowdata = { false, ReadText(1001, 2943) .. ReadText(1001, 120), objectloc }	-- Location
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+
+		local macroname, ware, islasertower = GetMacroData(GetComponentData(object64, "macro"), "name", "ware", "islasertower")
+		local objecttype = Helper.unlockInfo(nameinfo, macroname)
+		locrowdata = { false, ReadText(1001, 94) .. ReadText(1001, 120), objecttype }	-- Model
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+
+		if ware then
+			local n = C.GetNumWareBlueprintOwners(ware)
+			local buf = ffi.new("const char*[?]", n)
+			n = C.GetWareBlueprintOwners(buf, n, ware)
+			local first = true
+			for i = 0, n - 1 do
+				local faction = ffi.string(buf[i])
+				local name = GetFactionData(faction, "name")
+				local known = IsKnownItem("factions", faction)
+				if known then
+					locrowdata = { false, first and (ReadText(1001, 8391) .. ReadText(1001, 120)) or "", Helper.unlockInfo(nameinfo, name) }	-- Produced by
+					row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+					first = false
+				end
+			end
+		end
+
+		locrowdata = { false, ReadText(1001, 9051) .. ReadText(1001, 120), Helper.unlockInfo(nameinfo, (function() return tostring(GetComponentData(object64, "shiptypename") or 0, true, 0, true) end)) }	-- Ship Type
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+
+		local hull_max = Helper.unlockInfo(defenceinfo_low, ConvertIntegerString(Helper.round(GetComponentData(object64, "hullmax")), true, 4, true, true, true))
+		locrowdata = { false, ReadText(1001, 1) .. ReadText(1001, 120), (defenceinfo_high and (function() return (ConvertIntegerString(Helper.round(GetComponentData(object64, "hull")), true, 4, true, true, true) .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" .. GetComponentData(object64, "hullpercent") .. "%)") end) or (unknowntext .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" ..  GetComponentData(object64, "hullpercent") .. "%)")) }	-- Hull, MJ
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+
+		local shield_max = Helper.unlockInfo(defenceinfo_low, ConvertIntegerString(Helper.round(GetComponentData(object64, "shieldmax")), true, 4, true, true, true))
+		locrowdata = { false, ReadText(1001, 2) .. ReadText(1001, 120), (defenceinfo_high and (function() return (ConvertIntegerString(Helper.round(GetComponentData(object64, "shield")), true, 4, true, true, true) .. " / " .. shield_max .. " " .. ReadText(1001, 118) .. " (" .. GetComponentData(object64, "shieldpercent") .. "%)") end) or (unknowntext .. " / " .. shield_max .. " " .. ReadText(1001, 118) .. " (" ..  GetComponentData(object64, "shieldpercent") .. "%)")) }	-- Shield, MJ
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+
+		locrowdata = { true, ReadText(1001, 9076) .. ReadText(1001, 120), defenceinfo_low and (function() return (ConvertIntegerString(Helper.round(GetComponentData(object64, "maxunboostedforwardspeed") or 0), true, 0, true) .. " " .. ReadText(1001, 113)) end) or (unknowntext .. " " .. ReadText(1001, 113)) }	-- Cruising Speed, m/s
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize, nil, nil, false)
+
+		local dpstable = ffi.new("DPSData[?]", 6)
+		local hasturrets = (defenceinfo_low and #loadout.component.turret > 0)
+		local numtotalquadrants = C.GetDefensibleDPS(dpstable, inputobject, true, true, true, true, hasturrets, false, false)
+		if not hasturrets then
+			locrowdata = { false, ReadText(1001, 9092) .. ReadText(1001, 120), defenceinfo_high and (function() return (ConvertIntegerString(Helper.round(dpstable[0].dps), true, 0, true) .. " " .. ReadText(1001, 119)) end) or (unknowntext .. " " .. ReadText(1001, 119)) }	-- Weapon Output, MW
+			row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		else
+			for i = 0, numtotalquadrants - 1 do
+				locrowdata = { false, (ReadText(1001, 9092) .. " (" .. ReadText(20220, dpstable[i].quadranttextid) .. ")" .. ReadText(1001, 120)), defenceinfo_high and (function() return (ConvertIntegerString(Helper.round(dpstable[i].dps), true, 0, true) .. " " .. ReadText(1001, 119)) end) or (unknowntext .. " " .. ReadText(1001, 119)) }	-- Weapon Output, MW
+				row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+			end
+		end
+
+		local sustainedfwddps = ffi.new("DPSData[?]", 1)
+		C.GetDefensibleDPS(sustainedfwddps, inputobject, true, true, true, true, false, true, false)
+		if sustainedfwddps[0].dps > 0 then
+			locrowdata = { false, ReadText(1001, 9093) .. ReadText(1001, 120), defenceinfo_high and (function() return (ConvertIntegerString(Helper.round(sustainedfwddps[0].dps), true, 0, true) .. " " .. ReadText(1001, 119)) end) or (unknowntext .. " " .. ReadText(1001, 119)) }	-- MW
+			row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		end
+		-- crew skill
+		if (not C.IsRealComponentClass(inputobject, "ship_xs")) and (not islasertower) then
+			local shipcombinedskill = math.floor(C.GetShipCombinedSkill(inputobject) * 15 / 100)
+			local printedshipcombinedskill = unknowntext
+			local locfont = inputfont
+			local locfontcolor = Helper.standardColor
+			if operatorinfo_details then
+				printedshipcombinedskill = Helper.displaySkill(shipcombinedskill)
+				locfontcolor = Helper.color.brightyellow
+			end
+			locrowdata = { false, ReadText(1001, 9427) .. ReadText(1001, 120), printedshipcombinedskill }	-- Crew Skill
+			row = inputtable:addRow(locrowdata[1], { bgColor = Helper.color.unselectable })
+			row[2]:setColSpan(2):createText(locrowdata[2], { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = inputfont, x = Helper.standardTextOffsetx + indentsize, mouseOverText = ReadText(1026, 1) })
+			row[4]:setColSpan(5):createText(locrowdata[3], { halign = "right", minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = locfont, color = locfontcolor, mouseOverText = ReadText(1026, 1) })
+		end
+		-- radar range
+		local radarrange = Helper.unlockInfo(defenceinfo_low, ConvertIntegerString((Helper.round(GetComponentData(object64, "maxradarrange")) / 1000), true, 0, true))
+		locrowdata = { false, ReadText(1001, 2426) .. ReadText(1001, 120), (radarrange .. " " .. ReadText(1001, 108)) }	-- Radar Range, km
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		-- boarding strength
+		locrowdata = { false, ReadText(1001, 1325) .. ReadText(1001, 120), Helper.unlockInfo(defenceinfo_high, (function() return ConvertIntegerString(GetComponentData(object64, "boardingstrength") or 0, true, 0, true) end)) }	-- Boarding Attack Strength
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		-- docked ships
+		local shipstoragecapacity = GetComponentData(inputobject, "shipstoragecapacity") or 0
+		if shipstoragecapacity > 0 then
+			local numdockedships = 0
+			if C.IsComponentClass(inputobject, "container") then
+				numdockedships = C.GetNumDockedShips(inputobject, nil)
+			end
+			local row = inputtable:addRow("info_dockedships", { bgColor = Helper.color.transparent })
+			row[1]:createButton({ height = config.mapRowHeight, active = numdockedships > 0 }):setText(function() return (numdockedships > 0 and menu.isInfoExtended("info_dockedships", instance)) and "-" or "+" end, { halign = "center" })
+			row[1].handlers.onClick = function() return menu.buttonExtendInfo("info_dockedships", instance) end
+			row[1].properties.uiTriggerID = "info_dockedships_toggle"
+			row[2]:setColSpan(2):createText(ReadText(1001, 3265) .. ReadText(1001, 120)) -- Docked Ships
+			row[4]:setColSpan(5):createText(numdockedships .. " / " .. shipstoragecapacity, { halign = "right" })
+			if menu.isInfoExtended("info_dockedships", instance) then
+				local dockedships = ffi.new("UniverseID[?]", numdockedships)
+				numdockedships = C.GetDockedShips(dockedships, numdockedships, inputobject, nil)
+				local playerowneddockedships = {}
+				local npcowneddockedships = {}
+				for i = 0, numdockedships-1 do
+					local locship = ConvertStringTo64Bit(tostring(dockedships[i]))
+					if GetComponentData(locship, "isplayerowned") then
+						table.insert(playerowneddockedships, locship)
+					else
+						table.insert(npcowneddockedships, locship)
+					end
+				end
+				table.sort(playerowneddockedships, function(a, b) return GetComponentData(a, "size") > GetComponentData(b, "size") end)
+				table.sort(npcowneddockedships, function(a, b) return GetComponentData(a, "size") > GetComponentData(b, "size") end)
+
+				for i, shipid in ipairs(playerowneddockedships) do
+					local shipname = ffi.string(C.GetComponentName(shipid))
+					local iconid = GetComponentData(shipid, "icon")
+					if iconid and iconid ~= "" then
+						shipname = string.format("\027[%s] %s", iconid, shipname)
+					end
+					row = inputtable:addRow("info_dockedship" .. i, { bgColor = Helper.color.transparent })
+					row[2]:setColSpan(2):createText(shipname, { color = Helper.color.green, x = Helper.standardTextOffsetx + indentsize })
+					row[4]:setColSpan(5):createText(("(" .. ffi.string(C.GetObjectIDCode(shipid)) .. ")"), { halign = "right", color = Helper.color.green, x = Helper.standardTextOffsetx + indentsize })
+				end
+				for i, shipid in ipairs(npcowneddockedships) do
+					local shipname = ffi.string(C.GetComponentName(shipid))
+					local iconid = GetComponentData(shipid, "icon")
+					if iconid and iconid ~= "" then
+						shipname = string.format("\027[%s] %s", iconid, shipname)
+					end
+					row = inputtable:addRow("info_dockedship" .. (#playerowneddockedships + i), { bgColor = Helper.color.transparent })
+					row[2]:setColSpan(2):createText(shipname, { x = Helper.standardTextOffsetx + indentsize })
+					row[4]:setColSpan(5):createText(("(" .. ffi.string(C.GetObjectIDCode(shipid)) .. ")"), { halign = "right", x = Helper.standardTextOffsetx + indentsize })
+				end
+			end
+		end
+		-- pilot
+		local pilot = GetComponentData(inputobject, "assignedpilot")
+		pilot = ConvertIDTo64Bit(pilot)
+		local pilotname, skilltable, postname, aicommandstack, aicommand, aicommandparam, aicommandaction, aicommandactionparam = "-", {}, ReadText(1001, 4847), {}
+		if pilot and IsValidComponent(pilot) then
+			pilotname, skilltable, postname, aicommandstack, aicommand, aicommandparam, aicommandaction, aicommandactionparam = GetComponentData(pilot, "name", "skills", "postname", "aicommandstack", "aicommand", "aicommandparam", "aicommandaction", "aicommandactionparam")
+		end
+		local isbigship = C.IsComponentClass(inputobject, "ship_m") or C.IsComponentClass(inputobject, "ship_l") or C.IsComponentClass(inputobject, "ship_xl")
+		if (not C.IsRealComponentClass(inputobject, "ship_xs")) and (not islasertower) then
+			-- title
+			local printedtitle = isbigship and ReadText(1001, 4848) or ReadText(1001, 4847)	-- Captain, Pilot
+			local row = inputtable:addRow(false, { bgColor = Helper.defaultTitleBackgroundColor })
+			row[1]:setColSpan(8):createText(printedtitle, Helper.headerRowCenteredProperties)
+			if pilot then
+				local adjustedskill = math.floor(C.GetEntityCombinedSkill(pilot, nil, "aipilot") * 15 / 100)
+				local printedskill = Helper.unlockInfo(operatorinfo_details, Helper.displaySkill(adjustedskill))
+				-- name
+				local printedpilotname = Helper.unlockInfo(operatorinfo, pilotname)
+				local row = inputtable:addRow({ "info_pilot", pilot, inputobject }, { bgColor = Helper.color.transparent })
+				row[2]:setColSpan(2):createText(ReadText(1001, 2809) .. ReadText(1001, 120))
+				row[4]:setColSpan(5):createText(printedpilotname, { halign = "right" })
+				-- combined skill
+				local row = inputtable:addRow(false, { bgColor = Helper.color.unselectable })
+				row[2]:setColSpan(2):createText(ReadText(1001, 8395) .. ReadText(1001, 120), { mouseOverText = ReadText(1026, 2) })
+				local locfontcolor = Helper.standardColor
+				if operatorinfo_details then
+					locfontcolor = Helper.color.brightyellow
+				end
+				row[4]:setColSpan(5):createText(printedskill, { halign = "right", color = locfontcolor, mouseOverText = ReadText(1026, 2) })
+			else
+				-- name
+				local row = inputtable:addRow(false, { bgColor = Helper.color.unselectable })
+				row[2]:setColSpan(2):createText(ReadText(1001, 2809) .. ReadText(1001, 120))
+				row[4]:setColSpan(5):createText("-", { halign = "right" })
+				-- combined skill
+				local row = inputtable:addRow(false, { bgColor = Helper.color.unselectable })
+				row[2]:setColSpan(2):createText(ReadText(1001, 8395) .. ReadText(1001, 120), { mouseOverText = ReadText(1026, 2) })
+				local locfontcolor = Helper.standardColor
+				row[4]:setColSpan(5):createText("-", { halign = "right", color = locfontcolor, mouseOverText = ReadText(1026, 2) })
+			end
+			-- commander
+			local commander = nil
+			if C.IsComponentClass(inputobject, "controllable") then
+				commander = GetCommander(menu.infoSubmenuObject)
+			end
+			local commandername, commandercolor = "-", Helper.color.white
+			if commander then
+				commandername, commandercolor = menu.getContainerNameAndColors(commander, 0, false, false)
+			end
+			local row = inputtable:addRow(false, { bgColor = Helper.color.unselectable })
+			row[2]:setColSpan(2):createText(ReadText(1001, 1112) .. ReadText(1001, 120))
+			row[4]:setColSpan(5)
+			local texttruncated = TruncateText(commandername, Helper.standardFont, Helper.scaleFont(Helper.standardFont, Helper.standardFontSize), row[4]:getColSpanWidth() - Helper.scaleX(Helper.standardTextOffsetx))
+			local mouseovertext = ""
+			if texttruncated ~= commandername then
+				mouseovertext = commandername
+			end
+			row[4]:createText(texttruncated, { halign = "right", color = commandercolor, mouseOverText = mouseovertext })
+			-- subordinates
+			local subordinates = {}
+			if C.IsComponentClass(inputobject, "controllable") then
+				subordinates = GetSubordinates(inputobject)
+			end
+			local row = inputtable:addRow("info_subordinates", { bgColor = Helper.color.transparent, interactive = false })
+			row[2]:setColSpan(2):createText(ReadText(1001, 1503) .. ReadText(1001, 120)) -- Subordinates
+			row[4]:setColSpan(5):createText(#subordinates, { halign = "right" })
+			-- current order
+			local numorders = C.GetNumOrders(inputobject)
+			local currentorders = ffi.new("Order[?]", numorders)
+			local activeorder = ffi.new("Order")
+			if numorders > 0 then
+				numorders = C.GetOrders(currentorders, numorders, inputobject)
+				activeorder = currentorders[0]
+			else
+				C.GetDefaultOrder(activeorder, inputobject)
+			end
+			local ordername = ReadText(1001, 31)
+			local orderdefinition = ffi.new("OrderDefinition")
+			if activeorder.orderdef ~= nil and C.GetOrderDefinition(orderdefinition, activeorder.orderdef) then
+				ordername = Helper.unlockInfo(operatorinfo_commands, ffi.string(orderdefinition.name))
+			end
+			local row = inputtable:addRow(false, { bgColor = Helper.color.unselectable })
+			row[2]:setColSpan(2):createText(ReadText(1001, 8392) .. ReadText(1001, 120))
+			row[4]:setColSpan(5):createText(ordername, { halign = "right" })
+			-- command
+			if pilot and IsValidComponent(pilot) then
+				local row = inputtable:addRow(false, { bgColor = Helper.color.unselectable })
+				row[2]:setColSpan(2):createText(ReadText(1001, 78) .. ReadText(1001, 120), { x = Helper.standardIndentStep })
+				if #aicommandstack > 0 then
+					aicommand = aicommandstack[1].command
+					aicommandparam = aicommandstack[1].param
+				end
+				row[4]:setColSpan(5):createText(Helper.unlockInfo(operatorinfo_commands, string.format(aicommand, IsComponentClass(aicommandparam, "component") and GetComponentData(aicommandparam, "name") or nil)), { halign = "right" })
+				local row = inputtable:addRow(false, { bgColor = Helper.color.unselectable })
+				local numaicommands = #aicommandstack
+				if numaicommands > 1 then
+					aicommandaction = aicommandstack[numaicommands].command
+					aicommandactionparam = aicommandstack[numaicommands].param
+				end
+				row[4]:setColSpan(5):createText(Helper.unlockInfo(operatorinfo_commands, string.format(aicommandaction, IsComponentClass(aicommandactionparam, "component") and GetComponentData(aicommandactionparam, "name") or nil)), { halign = "right" })
+			end
+		end
+		-- storage
+		local storagemodules = GetStorageData(object64)
+		local cargotable = {}
+		local sortedwarelist = {}
+		local simplewarelist = {}
+		for _, storagemodule in ipairs(storagemodules) do
+			for _, ware in ipairs(storagemodule) do
+				table.insert(sortedwarelist, ware)
+				simplewarelist[ware.ware] = true
+			end
+		end
+
+		local isresupplyship = GetComponentData(object64, "cansupplyships")
+		if isresupplyship then
+			local n = C.GetNumMaxProductionStorage(object64)
+			local buf = ffi.new("UIWareAmount[?]", n)
+			n = C.GetMaxProductionStorage(buf, n, object64)
+			for i = 0, n - 1 do
+				local locwareid = ffi.string(buf[i].wareid)
+				if not simplewarelist[locwareid] then
+					local locware = {}
+					locware["ware"] = locwareid
+					locware["name"], locware["volume"] = GetWareData(locwareid, "name", "volume")
+					locware["amount"] = 0
+					locware["consumption"] = buf[i].amount
+					table.insert(sortedwarelist, locware)
+					--print("inserting " .. tostring(locware.name) .. ". id: " .. tostring(locware.ware) .. ", name: " .. tostring(locware.name) .. ", amount: " .. tostring(locware.amount) .. ", volume: " .. tostring(locware.volume) .. ", consumption: " .. tostring(locware.consumption))
+				end
+			end
+		end
+
+		table.sort(sortedwarelist, function(a, b) return a.name < b.name end)
+		for _, ware in ipairs(sortedwarelist) do
+			table.insert(cargotable, { ware = ware.ware, amount = ware.amount })
+		end
+		local row = inputtable:addRow(false, { bgColor = Helper.defaultTitleBackgroundColor })
+		row[1]:setColSpan(8):createText(ReadText(1001, 1400), Helper.headerRowCenteredProperties) -- Storage
+		if storageinfo_warelist then
+			-- slider showing total filled capacity
+			local n = C.GetNumCargoTransportTypes(inputobject, true)
+			local transporttype = ffi.new("StorageInfo[?]", n)
+			n = C.GetCargoTransportTypes(transporttype, n, inputobject, true, false)
+			for i = 0, n - 1 do
+				-- slider showing total filled capacity
+				row = inputtable:addRow("info_storage_used_" .. ffi.string(transporttype[i].transport), { bgColor = Helper.color.transparent, interactive = false })
+				row[2]:setColSpan(7):createSliderCell({ height = config.mapRowHeight, start = transporttype[i].spaceused, max = transporttype[i].capacity, suffix = ReadText(1001, 110), readOnly = true }):setText((ReadText(1001, 1402) .. " (" .. ffi.string(transporttype[i].name) .. ")" .. ReadText(1001, 120)), { fontsize = config.mapFontSize, color = Helper.standardColor })
+			end
+
+			--local row = inputtable:addRow("info_storage_totalused", { bgColor = Helper.color.transparent })
+			--row[2]:setColSpan(7):createSliderCell({ height = config.mapRowHeight, start = storagemodules.stored, max = math.max(storagemodules.capacity, storagemodules.stored), suffix = ReadText(1001, 110), readOnly = true }):setText((ReadText(1001, 1402) .. ReadText(1001, 120)), { fontsize = config.mapFontSize, color = Helper.standardColor })
+
+			if isplayerowned then
+				local numtrips = GetComponentData(object64, "numtrips") or 0
+				if numtrips > 0 then
+					local cargoaftertrades = GetCargoAfterTradeOrders(object64, true)
+					local totalvolume = 0
+					for ware, amount in pairs(cargoaftertrades) do
+						totalvolume = totalvolume + amount * GetWareData(ware, "volume")
+					end
+					local row = inputtable:addRow("info_storage_future", { bgColor = Helper.color.transparent, interactive = false })
+					row[2]:setColSpan(7):createSliderCell({ height = config.mapRowHeight, start = totalvolume, max = math.max(storagemodules.capacity, totalvolume), suffix = ReadText(1001, 110), readOnly = true }):setText((ReadText(1001, 8374) .. ReadText(1001, 120)), { fontsize = config.mapFontSize, color = Helper.standardColor })
+				end
+			end
+
+			inputtable:addEmptyRow(config.mapRowHeight / 2)
+
+			local locpolicefaction = GetComponentData(GetComponentData(object64, "zoneid"), "policefaction")
+			for _, wareentry in ipairs(cargotable) do
+				local ware = wareentry.ware
+				local amount = wareentry.amount
+				local targetamount = GetWareProductionLimit(object64, ware)
+				if not infodrops[ware] then
+					infodrops[ware] = 0
+				end
+				local row = inputtable:addRow(ware, { bgColor = Helper.color.transparent, interactive = playerowned })
+				if not isresupplyship then
+					row[2]:setColSpan(7):createSliderCell({ height = config.mapRowHeight, start = amount - infodrops[ware], maxSelect = amount, max = math.max(math.floor(storagemodules.capacity / GetWareData(ware, "volume")), amount - infodrops[ware]), readOnly = not isplayerowned, hideMaxValue = true }):setText(GetWareData(ware, "name"), { fontsize = config.mapFontSize, color = locpolicefaction and (IsWareIllegalTo(ware, GetComponentData(object64, "owner"), locpolicefaction) and Helper.color.orange) or Helper.standardColor })
+				else
+					-- applies even if targetamount == 0
+					if targetamount then
+						row[2]:setColSpan(7):createSliderCell({ height = config.mapRowHeight, start = amount - infodrops[ware], maxSelect = amount, max = math.max(targetamount, amount), readOnly = not isplayerowned }):setText(GetWareData(ware, "name"), { fontsize = config.mapFontSize, color = locpolicefaction and (IsWareIllegalTo(ware, GetComponentData(object64, "owner"), locpolicefaction) and Helper.color.orange) or Helper.standardColor })
+					else
+						row[2]:setColSpan(7):createSliderCell({ height = config.mapRowHeight, start = amount - infodrops[ware], maxSelect = amount, max = amount, readOnly = not isplayerowned, hideMaxValue = true }):setText(GetWareData(ware, "name"), { fontsize = config.mapFontSize, color = locpolicefaction and (IsWareIllegalTo(ware, GetComponentData(object64, "owner"), locpolicefaction) and Helper.color.orange) or Helper.standardColor })
+					end
+				end
+
+				if isplayerowned then
+					--local oldamount = amount
+					row[2].handlers.onSliderCellChanged = function(_, newamount) return menu.infoSubmenuUpdateDrops(ware, amount, newamount, instance) end
+					row[2].handlers.onSliderCellConfirm = function() return menu.refreshInfoFrame() end
+					row[2].handlers.onSliderCellActivated = function() menu.noupdate = true end
+					row[2].handlers.onSliderCellDeactivated = function() menu.noupdate = false end
+
+					local row = inputtable:addRow("Drops", { bgColor = Helper.color.transparent })
+					row[4]:setColSpan(5):createText(function() return (infodrops[ware] ~= 0) and (ReadText(1001, 9406) .. ReadText(1001, 120) .. " (" .. tostring(infodrops[ware]) .. ")") or "" end, { halign = "right", minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = inputfont })	-- Dropping, :
+				end
+			end
+
+			if isplayerowned then
+				local stufftodrop = false
+				for ware, numdrops in pairs(infodrops) do
+					if numdrops > 0 then
+						stufftodrop = true
+						break
+					end
+				end
+				local row = inputtable:addRow("ConfirmDrops", { bgColor = Helper.color.transparent })
+
+				-- add a "Drop" button
+				row[4]:setColSpan(2):createButton({ height = config.mapRowHeight, active = stufftodrop }):setText(ReadText(1001, 9405), { halign = "center", fontsize = config.mapFontSize })	-- Drop
+				row[4].handlers.onClick = function() return menu.infoSubmenuConfirmDrops(inputobject, instance) end
+				row[6]:setColSpan(3):createButton({ height = config.mapRowHeight, active = stufftodrop }):setText(ReadText(1001, 64), { halign = "center", fontsize = config.mapFontSize })	-- Cancel
+				row[6].handlers.onClick = function() return menu.resetInfoSubmenu(nil, instance) end
+			end
+		else
+			local row = inputtable:addRow(false, { bgColor = Helper.color.unselectable })
+			row[2]:setColSpan(7):createText(ReadText(1001, 3210))
+		end
+	elseif mode == "station" then
+		local buildstorage = ConvertIDTo64Bit(GetComponentData(inputobject, "buildstorage"))
+		if isplayerowned then
+			-- acccounts
+			local row = inputtable:addRow(false, { bgColor = Helper.defaultTitleBackgroundColor })
+			row[1]:setColSpan(8):createText(ReadText(1001, 7708), Helper.headerRowCenteredProperties) -- Account Management
+			local playercash = GetPlayerMoney()
+			local cashcontainers = {}
+			if C.IsComponentClass(inputobject, "container") then
+				table.insert(cashcontainers, { container = inputobject, estimatetype = "productionmoney", supply = true, tradewares = true, text = ReadText(1001, 7710) }) -- Station Account
+			end
+			if buildstorage then
+				table.insert(cashcontainers, { container = buildstorage, estimatetype = "wantedmoney", text = ReadText(1001, 9429) }) -- Funds for Station Construction
+			end
+			for i, entry in ipairs(cashcontainers) do
+				if i ~= 1 then
+					inputtable:addEmptyRow(config.mapRowHeight)
+				end
+
+				if not infocashtransferdetails.transfers[i] then
+					infocashtransferdetails.transfers[i] = { object = entry.container, amount = 0, estimatetype = entry.estimatetype, supply = entry.supply, tradewares = entry.tradewares }
+				end
+
+				local container = entry.container
+				local containercash = GetAccountData(container, "money") or 0
+				local sliderstart = infocashtransferdetails.transfers[i].amount + containercash
+				local slidermax = math.max((containercash + playercash), sliderstart)
+
+				local othertransfers = 0
+				for j, transferentry in ipairs(infocashtransferdetails.transfers) do
+					if j ~= i then
+						othertransfers = othertransfers + transferentry.amount
+					end
+				end
+				local slidermaxselect = math.min(math.max((containercash + playercash - othertransfers), sliderstart), slidermax)
+
+				local row = inputtable:addRow("info_stationaccount" .. i, { bgColor = Helper.color.transparent })
+				row[2]:setColSpan(7):createSliderCell({
+					height = config.mapRowHeight,
+					start = sliderstart, 
+					min = math.min(containercash, 0),
+					max = slidermax,
+					maxSelect = slidermaxselect,
+					suffix = ReadText(1001, 101) }):setText(entry.text, { fontsize = config.mapFontSize })
+
+				row[2].handlers.onSliderCellChanged = function(_, value) 
+					local idx = i
+					local loccash = containercash
+					return menu.infoSubmenuUpdateTransferAmount(instance, value, idx, loccash) end
+				row[2].handlers.onSliderCellActivated = function() menu.noupdate = true end
+				row[2].handlers.onSliderCellDeactivated = function() menu.noupdate = false end
+				row[2].handlers.onSliderCellConfirm = function() menu.over = true end
+
+				local row = inputtable:addRow(nil, { bgColor = Helper.color.unselectable })
+				row[2]:setColSpan(2):createText(((container == buildstorage) and ReadText(1001, 9436) or ReadText(1001, 9434)) .. ReadText(1001, 120))
+				local estimate = GetComponentData(container, entry.estimatetype)
+				if entry.supply then
+					estimate = estimate + tonumber(C.GetSupplyBudget(container)) / 100
+				end
+				--[[
+				if entry.tradewares then
+					estimate = estimate + tonumber(C.GetTradeWareBudget(container)) / 100
+				end--]]
+				row[4]:setColSpan(5):createText(ConvertMoneyString(estimate, false, true, nil, true) .. " " .. ReadText(1001, 101), { halign = "right" })
+
+				local row = inputtable:addRow("info_updateaccount", { bgColor = Helper.color.transparent })
+				row[3]:createButton({ height = config.mapRowHeight, active = function () local money, estimate = GetComponentData(container, "money", entry.estimatetype); if entry.supply then estimate = estimate + tonumber(C.GetSupplyBudget(container)) / 100 end; --[[if entry.tradewares then estimate = estimate + tonumber(C.GetTradeWareBudget(container)) / 100 end;]] return (money + GetPlayerMoney()) > estimate end }):setText(ReadText(1001, 7965), { halign = "center", fontsize = config.mapFontSize })	-- Accept Estimate
+				row[3].handlers.onClick = function () return menu.infoSubmenuSetManagerAccountToEstimate(i, instance) end
+				row[4]:setColSpan(2):createButton({ height = config.mapRowHeight, active = function () return menu.checkTransferDetails(i, instance) end }):setText(ReadText(1001, 2821), { halign = "center", fontsize = config.mapFontSize })	-- Confirm
+				row[4].handlers.onClick = function () return menu.infoSubmenuUpdateManagerAccount(i, instance) end
+				row[6]:setColSpan(3):createButton({ height = config.mapRowHeight, active = function () return menu.checkTransferDetails(i, instance) end }):setText(ReadText(1001, 64), { halign = "center", fontsize = config.mapFontSize })	-- Cancel
+				row[6].handlers.onClick = function() return menu.resetInfoSubmenu(i, instance) end
+			end
+			-- trade rules
+			local row = inputtable:addRow(false, { bgColor = Helper.defaultTitleBackgroundColor })
+			row[1]:setColSpan(8):createText(ReadText(1001, 11010), Helper.headerRowCenteredProperties)
+
+			local types = {
+				{ type = "trade",	name = ReadText(1001, 11017) },
+				{ type = "supply",	name = ReadText(1001, 11018) },
+				{ type = "build",	name = ReadText(1001, 11019), condition = GetComponentData(inputobject, "canequipships") },
+			}
+			if buildstorage then
+				table.insert(types, { type = "trade",	name = ReadText(1001, 11032), object = buildstorage })
+			end
+			local displayed = false
+			for i, entry in ipairs(types) do
+				if (entry.condition == nil) or entry.condition then
+					if displayed then
+						row = inputtable:addRow(false, { bgColor = Helper.color.transparent })
+						row[1]:setColSpan(8):createText("")
+					end
+					displayed = true
+
+					row = inputtable:addRow(false, { bgColor = Helper.color.unselectable })
+					row[1]:setColSpan(8):createText(entry.name .. ReadText(1001, 120), textproperties)
+
+					local object = entry.object or inputobject
+					local hasownlist, traderuleid
+					if entry.type == "trade" then
+						hasownlist = C.HasContainerOwnTradeRule(object, "buy", "") or C.HasContainerOwnTradeRule(object, "sell", "")
+						traderuleid = C.GetContainerTradeRuleID(object, "buy", "")
+						if traderuleid ~= C.GetContainerTradeRuleID(object, "sell", "") then
+							DebugError("menu.setupInfoSubmenuRows(): Mismatch between buy and sell trade rule on station level: " .. tostring(traderuleid) .. " vs " .. tostring(C.GetContainerTradeRuleID(inputobject, "sell", "")))
+						end
+					else
+						hasownlist = C.HasContainerOwnTradeRule(object, entry.type, "")
+						traderuleid = C.GetContainerTradeRuleID(object, entry.type, "")
+					end
+
+					local rowdata = "info_traderule_" .. entry.type .. "_global"
+					local row = inputtable:addRow({ rowdata }, { bgColor = Helper.color.transparent })
+					row[1]:createCheckBox(not hasownlist, { width = config.mapRowHeight, height = config.mapRowHeight })
+					row[1].handlers.onClick = function(_, checked) return menu.checkboxSetTradeRuleOverride(object, entry.type, checked) end
+					row[2]:setColSpan(7):createText(ReadText(1001, 8367), textproperties)
+
+					local row = inputtable:addRow("info_traderule_" .. entry.type .. "_current", { bgColor = Helper.color.transparent })
+					row[1]:setColSpan(8):createDropDown(menu.traderuleOptions, { height = Helper.standardTextHeight, startOption = (traderuleid ~= 0) and traderuleid or -1, active = hasownlist }):setTextProperties({ fontsize = config.mapFontSize })
+					row[1].handlers.onDropDownConfirmed = function (_, id) return menu.dropdownTradeRule(object, entry.type, id, nil, true) end
+					row[1].handlers.onDropDownActivated = function () menu.noupdate = true end
+				end
+			end
+		end
+		-- general info
+		local row = inputtable:addRow(false, { bgColor = Helper.defaultTitleBackgroundColor })
+		row[1]:setColSpan(8):createText(ReadText(1001, 1111), Helper.headerRowCenteredProperties) -- General Information
+		locrowdata = { "info_name", ReadText(1001, 2809), objectname }	-- Name
+		if isplayerowned then
+			local row = inputtable:addRow(locrowdata[1], { bgColor = Helper.color.transparent })
+			row[2]:setColSpan(2):createText(locrowdata[2], { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = Helper.standardFont, x = Helper.standardTextOffsetx + (1 * indentsize) })
+			-- Next line changed by UniTrader - original line in comment
+			-- row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(objectname, { halign = "right" })
+			row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname, { halign = "right" })
+			row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return menu.infoChangeObjectName(inputobject, text, textchanged) end
+		else
+			row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize, nil, nil, false)
+		end
+
+		locrowdata = { false, ReadText(1001, 9040), Helper.unlockInfo(ownerinfo, GetComponentData(object64, "ownername")) }	-- Owner
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+
+		locrowdata = { false, ReadText(1001, 2943), GetComponentData(object64, "sector") }	-- Location
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+
+		local hull_max = defenceinfo_low and ConvertIntegerString(Helper.round(GetComponentData(object64, "hullmax")), true, 4, true, true, true) or unknowntext
+		locrowdata = { false, ReadText(1001, 1), (defenceinfo_high and (function() return (ConvertIntegerString(Helper.round(GetComponentData(object64, "hull")), true, 4, true, true, true) .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" .. GetComponentData(object64, "hullpercent") .. "%)") end) or (unknowntext .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" .. GetComponentData(object64, "hullpercent") .. "%)")) }	-- Hull, MJ
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+
+		local radarrange = defenceinfo_low and (Helper.round(GetComponentData(object64, "maxradarrange")) / 1000) or unknowntext
+		locrowdata = { false, ReadText(1001, 2426), (radarrange .. " " .. ReadText(1001, 108)) }	-- Radar Range, km
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		-- docked ships
+		local shipstoragecapacity = GetComponentData(inputobject, "shipstoragecapacity") or 0
+		if shipstoragecapacity > 0 then
+			local numdockedships = 0
+			if C.IsComponentClass(inputobject, "container") then
+				numdockedships = C.GetNumDockedShips(inputobject, nil)
+			end
+			local row = inputtable:addRow("info_dockedships", { bgColor = Helper.color.transparent })
+			row[1]:createButton({ height = config.mapRowHeight, active = numdockedships > 0 }):setText(function() return (numdockedships > 0 and menu.isInfoExtended("info_dockedships", instance)) and "-" or "+" end, { halign = "center" })
+			row[1].handlers.onClick = function() return menu.buttonExtendInfo("info_dockedships", instance) end
+			row[1].properties.uiTriggerID = "info_dockedships_toggle"
+			row[2]:setColSpan(2):createText(ReadText(1001, 3265) .. ReadText(1001, 120)) -- Docked Ships
+			row[4]:setColSpan(5):createText(numdockedships .. " / " .. shipstoragecapacity, { halign = "right" })
+			if menu.isInfoExtended("info_dockedships", instance) then
+				local dockedships = ffi.new("UniverseID[?]", numdockedships)
+				numdockedships = C.GetDockedShips(dockedships, numdockedships, inputobject, nil)
+				local playerowneddockedships = {}
+				local npcowneddockedships = {}
+				for i = 0, numdockedships-1 do
+					local locship = ConvertStringTo64Bit(tostring(dockedships[i]))
+					if GetComponentData(locship, "isplayerowned") then
+						table.insert(playerowneddockedships, locship)
+					else
+						table.insert(npcowneddockedships, locship)
+					end
+				end
+				table.sort(playerowneddockedships, function(a, b) return GetComponentData(a, "size") > GetComponentData(b, "size") end)
+				table.sort(npcowneddockedships, function(a, b) return GetComponentData(a, "size") > GetComponentData(b, "size") end)
+
+				for i, shipid in ipairs(playerowneddockedships) do
+					local shipname = ffi.string(C.GetComponentName(shipid))
+					local iconid = GetComponentData(shipid, "icon")
+					if iconid and iconid ~= "" then
+						shipname = string.format("\027[%s] %s", iconid, shipname)
+					end
+					row = inputtable:addRow("info_dockedship" .. i, { bgColor = Helper.color.transparent })
+					row[2]:setColSpan(2):createText(shipname, { color = Helper.color.green, x = Helper.standardTextOffsetx + indentsize })
+					row[4]:setColSpan(5):createText(("(" .. ffi.string(C.GetObjectIDCode(shipid)) .. ")"), { halign = "right", color = Helper.color.green, x = Helper.standardTextOffsetx + indentsize })
+				end
+				for i, shipid in ipairs(npcowneddockedships) do
+					local shipname = ffi.string(C.GetComponentName(shipid))
+					local iconid = GetComponentData(shipid, "icon")
+					if iconid and iconid ~= "" then
+						shipname = string.format("\027[%s] %s", iconid, shipname)
+					end
+					row = inputtable:addRow("info_dockedship" .. (#playerowneddockedships + i), { bgColor = Helper.color.transparent })
+					row[2]:setColSpan(2):createText(shipname, { x = Helper.standardTextOffsetx + indentsize })
+					row[4]:setColSpan(5):createText(("(" .. ffi.string(C.GetObjectIDCode(shipid)) .. ")"), { halign = "right", x = Helper.standardTextOffsetx + indentsize })
+				end
+			end
+		end
+		-- trade subscription
+		locrowdata = { false, ReadText(1001, 9414), (GetComponentData(object64, "tradesubscription") and ReadText(1001, 2617) or ReadText(1001, 2618)) }	-- Updating Trade Offers
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		-- manager
+		local manager = GetComponentData(inputobject, "tradenpc")
+		manager = ConvertIDTo64Bit(manager)
+		local managername, skilltable, postname, isfemale = "-", {}, ReadText(1001, 4847)
+		if manager then
+			managername, skilltable, postname, isfemale = GetComponentData(manager, "name", "skills", "postname", "isfemale")
+		end
+		local isbigship = C.IsComponentClass(inputobject, "ship_m") or C.IsComponentClass(inputobject, "ship_l") or C.IsComponentClass(inputobject, "ship_xl")
+		-- title
+		local printedtitle = (manager and isfemale) and ReadText(20208, 30302) or ReadText(20208, 30301)
+		local row = inputtable:addRow(false, { bgColor = Helper.defaultTitleBackgroundColor })
+		row[1]:setColSpan(8):createText(printedtitle, Helper.headerRowCenteredProperties)
+		if manager then
+			local adjustedskill = math.floor(C.GetEntityCombinedSkill(manager, nil, "manager") * 15 / 100)
+			local printedskill = Helper.unlockInfo(operatorinfo_details, Helper.displaySkill(adjustedskill))
+			-- name
+			local printedmanagername = Helper.unlockInfo(operatorinfo, managername)
+			local row = inputtable:addRow({ "info_pilot", manager, inputobject }, { bgColor = Helper.color.transparent })
+			row[2]:setColSpan(2):createText(ReadText(1001, 2809) .. ReadText(1001, 120))
+			row[4]:setColSpan(5):createText(printedmanagername, { halign = "right" })
+			-- combined skill
+			local row = inputtable:addRow(false, { bgColor = Helper.color.unselectable })
+			row[2]:setColSpan(2):createText(ReadText(1001, 8395) .. ReadText(1001, 120), { mouseOverText = ReadText(1026, 2) })
+			local locfontcolor = Helper.standardColor
+			if operatorinfo_details then
+				locfontcolor = Helper.color.brightyellow
+			end
+			row[4]:setColSpan(5):createText(printedskill, { halign = "right", color = locfontcolor, mouseOverText = ReadText(1026, 2) })
+		else
+			-- name
+			local row = inputtable:addRow(false, { bgColor = Helper.color.unselectable })
+			row[2]:setColSpan(2):createText(ReadText(1001, 2809) .. ReadText(1001, 120))
+			row[4]:setColSpan(5):createText("-", { halign = "right" })
+			-- combined skill
+			local row = inputtable:addRow(false, { bgColor = Helper.color.unselectable })
+			row[2]:setColSpan(2):createText(ReadText(1001, 8395) .. ReadText(1001, 120), { mouseOverText = ReadText(1026, 2) })
+			local locfontcolor = Helper.standardColor
+			row[4]:setColSpan(5):createText("-", { halign = "right", color = locfontcolor, mouseOverText = ReadText(1026, 2) })
+		end
+		-- subordinates
+		local subordinates = C.IsComponentClass(inputobject, "controllable") and GetSubordinates(inputobject) or {}
+		local row = inputtable:addRow("info_subordinates", { bgColor = Helper.color.transparent, interactive = false })
+		row[2]:setColSpan(2):createText(ReadText(1001, 1503) .. ReadText(1001, 120)) -- Subordinates
+		row[4]:setColSpan(5):createText(#subordinates, { halign = "right" })
+		--storage
+		local productiontable = {}
+		local productionmodules = GetProductionModules(object64)
+		for i, prodmod in ipairs(productionmodules) do
+			-- can query: proddata.cycletime, proddata.estimated, proddata.productionmethod, proddata.state, proddata.remainingcycletime, proddata.remainingtime, proddata.cycleprogress, proddata.efficiency (table), proddata.products (table), proddata.sresources (table), proddata.presources (table)
+			-- proddata.state == "empty" == no production
+				-- proddata.efficiency[#].product, proddata.efficiency[#].cycle, proddata.efficiency[#].primary
+				-- proddata.products: numbered: product (table), proddata.products.efficiency
+					-- proddata.products[#].ware, proddata.products[#].name, proddata.products[#].amount, proddata.products[#].component, proddata.products[#].cycle
+				-- proddata.sresources: proddata.sresources.efficiency (no production methods currently use secondary resources)
+				-- proddata.presources: numbered: presource (table), proddata.presources.efficiency
+					-- proddata.presources[#].ware, proddata.presources[#].name, proddata.presources[#].amount, proddata.presources[#].component, proddata.presources[#].cycle
+			local proddata = GetProductionModuleData(prodmod)
+			if proddata.state ~= "empty" then
+				local methodindex = nil
+				for j, productionmethod in ipairs(productiontable) do
+					if productionmethod.productionmethod == proddata.productionmethod then
+						methodindex = j
+						break
+					end
+				end
+				if methodindex then
+					table.insert(productiontable[methodindex], { products = {}, primaryresources = {}, efficiency = proddata.products.efficiency, cycletime = proddata.cycletime, cycletimeremaining = proddata.remainingcycletime, moduleindex = i })
+				else
+					table.insert(productiontable, { productionmethod = proddata.productionmethod, [1] = { products = {}, primaryresources = {}, efficiency = proddata.products.efficiency, cycletime = proddata.cycletime, cycletimeremaining = proddata.remainingcycletime, moduleindex = i } })
+					methodindex = #productiontable
+				end
+
+				for _, product in ipairs(proddata.products) do
+					table.insert(productiontable[methodindex][#productiontable[methodindex]].products, { ware = product.ware, name = product.name, amount = product.amount, component = product.component, cycle = product.cycle })
+				end
+				for _, resource in ipairs(proddata.presources) do
+					table.insert(productiontable[methodindex][#productiontable[methodindex]].primaryresources, { ware = resource.ware, name = resource.name, amount = resource.amount, component = resource.component, cycle = resource.cycle })
+				end
+			end
+		end
+		table.sort(productiontable, menu.productionSorter)
+		local products = {}
+		local intermediatewares = {}
+		resources = {}
+		list_allresources = GetComponentData(inputobject, "allresources")
+		for _, productionmethod in ipairs(productiontable) do
+			for _, productionmodule in ipairs(productionmethod) do
+				for _, product in ipairs(productionmodule.products) do
+					-- can query: product.name, product.amount, product.component, product.cycle, product.ware
+					if not products[product.ware] then
+						--print("products. inserting " .. product.name)
+						products[product.ware] = { name = product.name, amount = 0, ware = product.ware }
+						products[product.ware].listed = false
+					end
+				end
+			end
+		end
+		for _, resource in ipairs(list_allresources) do
+			if products[resource] then
+				intermediatewares[resource] = { name = tostring(GetWareData(resource, "name")), amount = 0, ware = resource }
+				intermediatewares[resource].listed = false
+				products[resource] = nil
+			elseif not resources[resource] then
+				resources[resource] = { name = tostring(GetWareData(resource, "name")), amount = 0, ware = resource }
+				resources[resource].listed = false
+			end
+		end
+		storagemodules = {capacity = 0, stored = 0}
+		if C.IsComponentClass(inputobject, "container") then
+			storagemodules = GetStorageData(inputobject)
+		end
+		cargotable = { products = {text = ReadText(1001, 1610), numcatwares = 0, wares = {}}, intermediatewares = {text = ReadText(1001, 6100), numcatwares = 0, wares = {}}, resources = {text = ReadText(1001, 41), numcatwares = 0, wares = {}}, storage = {text = ReadText(1001, 1400), numcatwares = 0, wares = {}} }	-- Products, Resources, Storage
+		local cargocatindex = { "products", "intermediatewares", "resources", "storage" }
+		numwares = 0
+		local sortedwarelist = {}
+		-- numbered: ware (see below); storagemodule.name, storagemodule.consumption, storagemodule.stored, storagemodule.capacity
+		for _, storagemodule in ipairs(storagemodules) do
+			--print("storage module: " .. tostring(storagemodule.name) .. ", consumption: " .. tostring(storagemodule.consumption) .. ", stored: " .. tostring(storagemodule.stored) .. ", capacity: " .. tostring(storagemodule.capacity))
+			-- can query: ware.ware, ware.name, ware.amount, ware.consumption, ware.volume
+			for _, ware in ipairs(storagemodule) do
+				--print("sortedwarelist. inserting stored ware: " .. ware.name .. ", amount: " .. tostring(ware.amount))
+				table.insert(sortedwarelist, ware)
+				if resources[ware.ware] then
+					--print("resource: " .. ware.name .. " is already listed.")
+					resources[ware.ware].listed = true
+				end
+				if intermediatewares[ware.ware] then
+					--print("resource: " .. ware.name .. " is already listed.")
+					intermediatewares[ware.ware].listed = true
+				end
+				if products[ware.ware] then
+					--print("product: " .. ware.name .. " is already listed.")
+					products[ware.ware].listed = true
+				end
+			end
+		end
+		for _, resource in pairs(resources) do
+			if not resource.listed then
+				--print("sortedwarelist. inserting resource: " .. resource.name)
+				table.insert(sortedwarelist, resource)
+			end
+		end
+		for _, intermediateware in pairs(intermediatewares) do
+			if not intermediateware.listed then
+				--print("sortedwarelist. inserting intermediate ware: " .. intermediateware.name)
+				table.insert(sortedwarelist, intermediateware)
+			end
+		end
+		for _, product in pairs(products) do
+			if not product.listed then
+				--print("sortedwarelist. inserting product: " .. product.name)
+				table.insert(sortedwarelist, product)
+			end
+		end
+		table.sort(sortedwarelist, function(a, b) return a.name < b.name end)
+
+		for _, ware in ipairs(sortedwarelist) do
+			local usage = "storage"
+			if intermediatewares[ware.ware] then
+				usage = "intermediatewares"
+			elseif products[ware.ware] then
+				usage = "products"
+			elseif resources[ware.ware] then
+				usage = "resources"
+			end
+			--print("usage: " .. tostring(usage) .. ", ware: " .. tostring(ware.ware) .. ", amount: " .. tostring(ware.amount) .. ", entry: " .. tostring(ware))
+			table.insert(cargotable[usage].wares, { ware = ware.ware, amount = ware.amount })
+			cargotable[usage].numcatwares = cargotable[usage].numcatwares + 1
+			numwares = numwares + 1
+		end
+		--print("estimated: " .. tostring(storagemodules.estimated) .. ", productionestimated: " .. tostring(storagemodules.productionestimated))
+		local loccapacity = (storagemodules.capacity > 0) and storagemodules.capacity or 0
+		local locamount = storageinfo_amounts and storagemodules.stored or unknowntext
+		local printedcapacity = ConvertIntegerString(loccapacity, true, 1, true)
+		local printedamount = (type(locamount) == "number") and ConvertIntegerString(locamount, true, 1, true) or locamount
+		local printedfullamount = (type(locamount) == "number") and ConvertIntegerString(locamount, true, 0, true) or nil
+		local printedfullcapacity = (type(loccapacity) == "number") and ConvertIntegerString(loccapacity, true, 0, true) or nil
+		local printednumwares = storageinfo_amounts and ConvertIntegerString(numwares, true, 0, true) or unknowntext
+
+		-- title
+		local row = inputtable:addRow(false, { bgColor = Helper.defaultTitleBackgroundColor })
+		row[1]:setColSpan(8):createText(ReadText(1001, 1400), Helper.headerRowCenteredProperties)
+		if storageinfo_warelist and (numwares > 0) then
+			local n = C.GetNumCargoTransportTypes(inputobject, true)
+			local transporttype = ffi.new("StorageInfo[?]", n)
+			n = C.GetCargoTransportTypes(transporttype, n, inputobject, true, false)
+			for i = 0, n - 1 do
+				-- slider showing total filled capacity
+				row = inputtable:addRow("info_storage_used_" .. ffi.string(transporttype[i].transport), { bgColor = Helper.color.transparent, interactive = false })
+				row[2]:setColSpan(7):createSliderCell({ height = config.mapRowHeight, start = transporttype[i].spaceused, max = transporttype[i].capacity, suffix = ReadText(1001, 110), readOnly = true }):setText((ReadText(1001, 1402) .. " (" .. ffi.string(transporttype[i].name) .. ")" .. ReadText(1001, 120)), { fontsize = config.mapFontSize, color = Helper.standardColor })
+			end
+			
+			locrowdata = { "info_station_storage", (ReadText(1001, 1400) .. " (" .. printednumwares .. " " .. ((printednumwares == "1") and ReadText(1001, 45) or ReadText(1001, 46)) .. ")") }	-- Storage, Ware, Wares
+			local row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, true, (numwares > 0) and true or false, 1, indentsize)
+			if menu.isInfoExtended(locrowdata[1], instance) then
+				for i, usagecat in ipairs(cargocatindex) do
+					if (cargotable[usagecat].numcatwares > 0) then
+						--print("adding category: " .. cargotable[usagecat].text)
+						locrowdata = { false, (cargotable[usagecat].text .. ReadText(1001, 120)) }	-- :
+						local row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata)
+						for _, wareentry in ipairs(cargotable[usagecat].wares) do
+							local ware = wareentry.ware
+							local amount = wareentry.amount
+							--print("ware: " .. tostring(ware) .. ", amount: " .. tostring(amount))
+							locrowdata = { GetWareData(ware, "name"), amount }
+							local printedwarecapacity = GetWareProductionLimit(inputobject, ware)
+							--print("printedwarecapacity: " .. tostring(printedwarecapacity) .. ", amount: " .. tostring(amount))
+							if (printedwarecapacity < 1) or (printedwarecapacity < amount) then
+								printedwarecapacity = amount
+							end
+							row = inputtable:addRow(true, { bgColor = Helper.color.transparent, interactive = false })
+							row[2]:setColSpan(7):createSliderCell({ height = config.mapRowHeight, start = amount, max = printedwarecapacity, readOnly = true }):setText(GetWareData(ware, "name"), { fontsize = config.mapFontSize })
+						end
+					end
+				end
+			end
+		else
+			local row = inputtable:addRow(false, { bgColor = Helper.color.unselectable })
+			row[2]:setColSpan(7):createText(ReadText(1001, 3210))
+		end
+		-- build storage
+		local storagemodules = {}
+		local cargotable = {}
+		local numwares = 0
+		local sortedwarelist = {}
+		local list_allresources = {}
+		local resources = {}
+		if buildstorage then
+			-- insert build storage details
+			storagemodules = GetStorageData(buildstorage)
+			list_allresources = GetComponentData(buildstorage, "allresources")
+		end
+		for _, resource in ipairs(list_allresources) do
+			if not resources[resource] then
+				resources[resource] = { name = tostring(GetWareData(resource, "name")), amount = 0, ware = resource }
+				resources[resource].listed = false
+				--print("registering resource: " .. tostring(resource))
+			end
+		end
+		for _, storagemodule in ipairs(storagemodules) do
+			for _, ware in ipairs(storagemodule) do
+				table.insert(sortedwarelist, ware)
+				--print("ware in storage. adding " .. tostring(ware.ware))
+				if resources[ware.ware] then
+					resources[ware.ware].listed = true
+					--print(tostring(ware.ware) .. "is a resource.")
+				end
+			end
+		end
+		for _, resource in pairs(resources) do
+			if not resource.listed then
+				table.insert(sortedwarelist, resource)
+				resource.listed = true
+				--print("adding unlisted resource: " .. tostring(resource.ware))
+			end
+		end
+		table.sort(sortedwarelist, function(a, b) return a.name < b.name end)
+		for _, ware in ipairs(sortedwarelist) do
+			table.insert(cargotable, { ware = ware.ware, amount = ware.amount })
+			numwares = numwares + 1
+		end
+		--print("storageinfo_warelist: " .. tostring(storageinfo_warelist) .. " numwares > 0: " .. tostring(numwares > 0))
+		--print("buildstorage: " .. ffi.string(C.GetComponentName(buildstorage)) .. " " .. tostring(buildstorage) .. " numwares: " .. tostring(numwares))
+
+		-- title
+		local row = inputtable:addRow(false, { bgColor = Helper.defaultTitleBackgroundColor })
+		row[1]:setColSpan(8):createText(ReadText(20104, 80101), Helper.headerRowCenteredProperties)
+		if storageinfo_warelist and (numwares > 0) then
+			local n = C.GetNumCargoTransportTypes(buildstorage, true)
+			local transporttype = ffi.new("StorageInfo[?]", n)
+			n = C.GetCargoTransportTypes(transporttype, n, buildstorage, true, false)
+			for i = 0, n - 1 do
+				-- slider showing total filled capacity
+				row = inputtable:addRow("info_storage_used_" .. ffi.string(transporttype[i].transport), { bgColor = Helper.color.transparent, interactive = false })
+				row[2]:setColSpan(7):createSliderCell({ height = config.mapRowHeight, start = transporttype[i].spaceused, max = transporttype[i].capacity, suffix = ReadText(1001, 110), readOnly = true }):setText((ReadText(1001, 1402) .. " (" .. ReadText(20104, 23003) .. ")" .. ReadText(1001, 120)), { fontsize = config.mapFontSize, color = Helper.standardColor })
+			end
+			
+			local loccapacity = storageinfo_capacity and storagemodules.capacity or unknowntext
+			local locamount = storageinfo_amounts and storagemodules.stored or unknowntext
+			local printedcapacity = ConvertIntegerString(loccapacity, true, 1, true)
+			local printedamount = ConvertIntegerString(locamount, true, 1, true)
+			local printedfullamount = (type(locamount) == "number") and ConvertIntegerString(locamount, true, 0, true) or nil
+			local printedfullcapacity = (type(loccapacity) == "number") and ConvertIntegerString(loccapacity, true, 0, true) or nil
+			local printednumwares = storageinfo_amounts and ConvertIntegerString(numwares, true, 0, true) or unknowntext
+			locrowdata = { "info_station_buildstorage_storage", (ReadText(1001, 1400) .. " (" .. printednumwares .. " " .. ((printednumwares == "1") and ReadText(1001, 45) or ReadText(1001, 46)) .. ")") }	-- Storage, Ware, Wares
+			local row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, true, (numwares > 0) and true or false, 1, indentsize)
+			if menu.isInfoExtended(locrowdata[1], instance) then
+				for _, wareentry in ipairs(cargotable) do
+					local ware = wareentry.ware
+					local amount = wareentry.amount
+					--print("ware: " .. tostring(ware) .. ", amount: " .. tostring(amount))
+					local printedwarecapacity = GetWareProductionLimit(buildstorage, ware)
+					--print("printedwarecapacity: " .. tostring(printedwarecapacity) .. ", amount: " .. tostring(amount))
+					if (printedwarecapacity < 1) or (printedwarecapacity < amount) then
+						printedwarecapacity = amount
+					end
+					locrowdata = { GetWareData(ware, "name"), amount }
+					row = inputtable:addRow(false, { bgColor = Helper.color.transparent, interactive = false })
+					row[2]:setColSpan(7):createSliderCell({ height = config.mapRowHeight, start = amount, max = printedwarecapacity, readOnly = true }):setText(GetWareData(ware, "name"), { fontsize = config.mapFontSize })
+				end
+			end
+		else
+			local row = inputtable:addRow(false, { bgColor = Helper.color.unselectable })
+			row[2]:setColSpan(7):createText(ReadText(1001, 3210))
+		end
+
+	elseif mode == "sector" then
+		-- general info
+		local row = inputtable:addRow(false, { bgColor = Helper.defaultTitleBackgroundColor })
+		row[1]:setColSpan(8):createText(ReadText(1001, 1111), Helper.headerRowCenteredProperties) -- General Information
+		locrowdata = { "info_name", ReadText(1001, 2809), objectname }	-- Name
+		if isplayerowned then
+			row = inputtable:addRow(locrowdata[1], { bgColor = Helper.color.transparent })
+			row[2]:setColSpan(2):createText(locrowdata[2], { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = Helper.standardFont, x = Helper.standardTextOffsetx + (1 * indentsize) })
+			-- Next line changed by UniTrader - original line in comment
+			-- row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(objectname, { halign = "right" })
+			row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname, { halign = "right" })
+			row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return menu.infoChangeObjectName(inputobject, text, textchanged) end
+		else
+			row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		end
+
+		locrowdata = { false, ReadText(1001, 9040), Helper.unlockInfo(ownerinfo, GetComponentData(object64, "ownername")) }	-- Owner
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+
+		local stationtable = GetContainedStations(object64, true)
+		local numstations = #stationtable
+		local productiontable = {}
+		local products = {}
+		local sectorpopulation = 0
+		for _, station in ipairs(stationtable) do
+			local workforceinfo = C.GetWorkForceInfo(ConvertStringTo64Bit(tostring(station)), "")
+			sectorpopulation = sectorpopulation + workforceinfo.current
+			table.insert(productiontable, GetComponentData(station, "products"))
+		end
+		for _, entry in ipairs(productiontable) do
+			for _, product in ipairs(entry) do
+				local notincremented = true
+				for compproduct, count in pairs(products) do
+					if compproduct == product then
+						products[product] = count + 1
+						notincremented = false
+						break
+					end
+				end
+				if notincremented then
+					products[product] = 1
+				end
+			end
+		end
+		local maxproductgrp = ReadText(1001, 9002)	-- Unknown
+		local maxcount = 0
+		for product, count in pairs(products) do
+			if not maxproductgrp or (count > maxcount) then
+				maxproductgrp = GetWareData(product, "groupName")
+				maxcount = count
+			end
+		end
+
+		-- TODO: review. currently looks at total known station workforce in the sector.
+		locrowdata = { false, ReadText(1001, 9041), sectorpopulation }	-- Population
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+
+		locrowdata = { false, ReadText(1001, 9042), (numstations > 0 and numstations or 0) }	-- Known Stations
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+
+		locrowdata = { false, ReadText(1001, 9050), maxproductgrp }	-- Main Production
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+
+		-- natural resources
+		local row = inputtable:addRow(false, { bgColor = Helper.defaultTitleBackgroundColor })
+		row[1]:setColSpan(8):createText(ReadText(1001, 9423), Helper.headerRowCenteredProperties) -- Natural Resources
+			local sunlight = (GetComponentData(object64, "sunlight") * 100 .. "%")
+			locrowdata = { false, ReadText(1001, 2412), sunlight }	-- Sunlight
+			row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+
+			-- TODO: Add Region info: NB: Matthias says that yield numbers for regions could be too big to be useful, and that retrieving that info is very inefficient. But we'll try when the function is up.
+
+	elseif mode == "gate" then
+		-- general info
+		local row = inputtable:addRow(false, { bgColor = Helper.defaultTitleBackgroundColor })
+		row[1]:setColSpan(8):createText(ReadText(1001, 1111), Helper.headerRowCenteredProperties) -- General Information
+		local isgateactive = GetComponentData(object64, "isactive")
+		local gatedestinationid
+		local gatedestination = unknowntext
+		if isgateactive then
+			gatedestinationid = GetComponentData(GetComponentData(object64, "destination"), "sectorid")
+			local gatedestinationid64 = ConvertStringTo64Bit(tostring(gatedestinationid))
+			gatedestination = C.IsInfoUnlockedForPlayer(gatedestinationid64, "name") and ffi.string(C.GetComponentName(gatedestinationid64)) or unknowntext
+		end
+		locrowdata = { false, ReadText(1001, 3215), tostring(gatedestination) }	-- (gate) Destination
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+
+		local destinationowner = unknowntext
+		if gatedestination ~= unknowntext then
+			destinationowner = GetComponentData(gatedestinationid, "ownername")
+		end
+		locrowdata = { false, ReadText(1001, 9424), tostring(destinationowner) }	-- Destination Owner
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+
+		locrowdata = { false, ReadText(1001, 9425), (isgateactive and ReadText(1001, 2617) or ReadText(1001, 2618)) }	-- Active, Yes, No
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+	elseif mode == "deployable" then
+		-- general info
+		local row = inputtable:addRow(false, { bgColor = Helper.defaultTitleBackgroundColor })
+		row[1]:setColSpan(8):createText(ReadText(1001, 1111), Helper.headerRowCenteredProperties) -- General Information
+		locrowdata = { "info_name", ReadText(1001, 2809), objectname }	-- Name
+		if isplayerowned then
+			row = inputtable:addRow(locrowdata[1], { bgColor = Helper.color.transparent })
+			row[2]:setColSpan(2):createText(locrowdata[2], { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = Helper.standardFont, x = Helper.standardTextOffsetx + (1 * indentsize) })
+			-- Next line changed by UniTrader - original line in comment
+			-- row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(objectname, { halign = "right" })
+			row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname, { halign = "right" })
+			row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return menu.infoChangeObjectName(inputobject, text, textchanged) end
+		else
+			row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		end
+
+		locrowdata = { false, ReadText(1001, 9040), Helper.unlockInfo(ownerinfo, GetComponentData(inputobject, "ownername")) }	-- Owner
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+
+		locrowdata = { false, ReadText(1001, 2943), GetComponentData(inputobject, "sector") }	-- Location
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+
+		local hull_max = defenceinfo_low and ConvertIntegerString(Helper.round(GetComponentData(inputobject, "hullmax")), true, 4, true, true, true) or unknowntext
+		locrowdata = { false, ReadText(1001, 1), (defenceinfo_high and (function() return (ConvertIntegerString(Helper.round(GetComponentData(inputobject, "hull")), true, 4, true, true, true) .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" .. GetComponentData(inputobject, "hullpercent") .. "%)") end) or (unknowntext .. " / " .. hull_max .. " " .. ReadText(1001, 118) .. " (" .. unknowntext .. "%)")) }	-- Hull, MJ
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+
+		local radarrange = defenceinfo_low and GetComponentData(inputobject, "maxradarrange") or unknowntext
+
+		if C.IsComponentClass(menu.infoSubmenuObject, "mine") then
+			-- add if mines are made selectable in the map again:
+			--	detonation output (s), tracking capability (s), friend/foe (s), proximity (s)
+		elseif C.IsComponentClass(menu.infoSubmenuObject, "resourceprobe") then
+			if radarrange and radarrange ~= unknowntext then
+				radarrange = Helper.round(radarrange / 1000)
+			end
+			locrowdata = { "info_radarrange", ReadText(1001, 2426), (radarrange .. " " .. ReadText(1001, 9082)) }	-- Scannning Range, km
+			row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		elseif C.IsComponentClass(menu.infoSubmenuObject, "satellite") then
+			if radarrange and radarrange ~= unknowntext then
+				radarrange = Helper.round(radarrange / 1000)
+			end
+			locrowdata = { false, ReadText(1001, 2426), (radarrange .. " " .. ReadText(1001, 108)) }	-- Radar Range, km
+			row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+		end
+	elseif mode == "asteroid" then
+		-- general info
+		local row = inputtable:addRow(false, { bgColor = Helper.defaultTitleBackgroundColor })
+		row[1]:setColSpan(8):createText(ReadText(1001, 1111), Helper.headerRowCenteredProperties) -- General Information
+		local rawlength = GetComponentData(inputobject, "length")
+		local rawwidth = GetComponentData(inputobject, "width")
+		local rawheight = GetComponentData(inputobject, "height")
+		local loclength = ConvertIntegerString(rawlength, true, 0, true)
+		local locwidth = ConvertIntegerString(rawwidth, true, 0, true)
+		local locheight = ConvertIntegerString(rawheight, true, 0, true)
+		locrowdata = { false, ReadText(1001, 9229), (loclength .. ReadText(1001, 107) .. " " .. ReadText(1001, 42) .. " " .. locwidth .. ReadText(1001, 107) .. " " .. ReadText(1001, 42) .. " " .. locheight .. ReadText(1001, 107)) }	-- m, x
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+
+		local rawvolume = rawlength * rawwidth * rawheight
+		local locvolume = ConvertIntegerString(rawvolume, true, 0, true)
+		locrowdata = { false, ReadText(1001, 1407), (locvolume .. " " .. ReadText(1001, 110)) }	-- Volume, m^3
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+
+		local wares = GetComponentData(inputobject, "wares")
+		local hasyield = false
+		if wares then
+			for _, ware in ipairs(wares) do
+				if ware.amount > 0 then
+					hasyield = true
+					break
+				end
+			end
+
+			if hasyield then
+				locrowdata = { false, ReadText(1001, 3214) .. ReadText(1001, 120) }	-- Yield, :
+				row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 1, indentsize)
+
+				for i, ware in ipairs(wares) do
+					if ware.amount > 0 then
+						local warename = GetWareData(ware.ware, "name")
+						locrowdata = { false, warename, ware.amount }
+						row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false, 2, indentsize)
+					end
+				end
+			end
+		end
+	elseif mode == "none" then
+		local locrowdata = { "info_none", ReadText(1001, 6526) }
+		row = menu.addInfoSubmenuRow(instance, inputtable, row, locrowdata, false, false, false)
+	else
+		DebugError("menu.setupInfoSubmenuRows(): called with unsupported mode: " .. tostring(mode) .. ".")
+	end
+end
 else
 DebugError("UTRenaming - Unknown Version Number -" .. GetVersionString() .. "- Applying Patch which might have been of use some time during the 3.20 beta")
 function utRenaming.createRenameContext(frame)
