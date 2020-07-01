@@ -4505,10 +4505,10 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 		if isplayerowned then
 			row = inputtable:addRow(locrowdata[1], { bgColor = Helper.color.transparent })
 			-- Change by UniTrader - turn locrowdata[2] (reference to "Name:") into text reference to "Edit:" (ReadText(5554302,1300))
-			row[2]:setColSpan(2):createText(ReadText(5554302,1300), { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = Helper.standardFont, x = Helper.standardTextOffsetx + (1 * indentsize) })
+			row[2]:setColSpan(1):createText(ReadText(5554302,1300), { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = Helper.standardFont, x = Helper.standardTextOffsetx + (1 * indentsize) })
 			-- Change by UniTrader - get Edit Name from Blackboar Var rather than using the object name itself
-			row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname, { halign = "right" })
-			row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
+			row[3]:setColSpan(6):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname, { halign = "right" })
+			row[3].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
 		end
 
 		locrowdata = { false, ReadText(1001, 9040) .. ReadText(1001, 120), Helper.unlockInfo(ownerinfo, GetComponentData(object64, "ownername")) }	-- "Owner"
@@ -5006,10 +5006,10 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 		if isplayerowned then
 			row = inputtable:addRow(locrowdata[1], { bgColor = Helper.color.transparent })
 			-- Change by UniTrader - turn locrowdata[2] (reference to "Name:") into text reference to "Edit:" (ReadText(5554302,1300))
-			row[2]:setColSpan(2):createText(ReadText(5554302,1300), { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = Helper.standardFont, x = Helper.standardTextOffsetx + (1 * indentsize) })
+			row[2]:setColSpan(1):createText(ReadText(5554302,1300), { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = Helper.standardFont, x = Helper.standardTextOffsetx + (1 * indentsize) })
 			-- Change by UniTrader - get Edit Name from Blackboar Var rather than using the object name itself
-			row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname, { halign = "right" })
-			row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
+			row[3]:setColSpan(6):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname, { halign = "right" })
+			row[3].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
 		end
 
 		locrowdata = { false, ReadText(1001, 9040), Helper.unlockInfo(ownerinfo, GetComponentData(object64, "ownername")) }	-- Owner
@@ -5395,10 +5395,10 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 		if isplayerowned then
 			row = inputtable:addRow(locrowdata[1], { bgColor = Helper.color.transparent })
 			-- Change by UniTrader - turn locrowdata[2] (reference to "Name:") into text reference to "Edit:" (ReadText(5554302,1300))
-			row[2]:setColSpan(2):createText(ReadText(5554302,1300), { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = Helper.standardFont, x = Helper.standardTextOffsetx + (1 * indentsize) })
+			row[2]:setColSpan(1):createText(ReadText(5554302,1300), { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = Helper.standardFont, x = Helper.standardTextOffsetx + (1 * indentsize) })
 			-- Change by UniTrader - get Edit Name from Blackboar Var rather than using the object name itself
-			row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname, { halign = "right" })
-			row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
+			row[3]:setColSpan(6):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname, { halign = "right" })
+			row[3].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
 		end
 
 		locrowdata = { false, ReadText(1001, 9040), Helper.unlockInfo(ownerinfo, GetComponentData(object64, "ownername")) }	-- Owner
@@ -5491,10 +5491,10 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 		if isplayerowned then
 			row = inputtable:addRow(locrowdata[1], { bgColor = Helper.color.transparent })
 			-- Change by UniTrader - turn locrowdata[2] (reference to "Name:") into text reference to "Edit:" (ReadText(5554302,1300))
-			row[2]:setColSpan(2):createText(ReadText(5554302,1300), { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = Helper.standardFont, x = Helper.standardTextOffsetx + (1 * indentsize) })
+			row[2]:setColSpan(1):createText(ReadText(5554302,1300), { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = Helper.standardFont, x = Helper.standardTextOffsetx + (1 * indentsize) })
 			-- Change by UniTrader - get Edit Name from Blackboar Var rather than using the object name itself
-			row[4]:setColSpan(5):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname, { halign = "right" })
-			row[4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
+			row[3]:setColSpan(6):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or objectname, { halign = "right" })
+			row[3].handlers.onEditBoxDeactivated = function(_, text, textchanged) return orig.menu.infoChangeObjectName(inputobject, text, textchanged) end
 		end
 
 		locrowdata = { false, ReadText(1001, 9040), Helper.unlockInfo(ownerinfo, GetComponentData(inputobject, "ownername")) }	-- Owner
