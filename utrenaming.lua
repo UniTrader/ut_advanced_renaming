@@ -4383,7 +4383,6 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject)
 	end
 end
 elseif  GetVersionString() == "3.20 (400261)" then
-DebugError("Applying 3.20 patch")
 function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance)
 	local object64 = ConvertStringTo64Bit(tostring(inputobject))
 
