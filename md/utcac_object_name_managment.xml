@@ -4,6 +4,8 @@
     <cue name="RegisterUI_G_Workaround" version="1" instantiate="true">
       <conditions>
         <event_cue_completed cue="md.G_Work_Around.Init"/>
+        <check_value value="md.G_Work_Around.Signal.exists" negate="true" comment="use latest lua load API if present"/>
+        <check_value value="md.Lua_Loader.Reload_Listener.exists" negate="true" comment="use latest lua load API if present"/>
       </conditions>
       <actions>
         <debug_text filter="general" text="'utrenaming g workaround call'" chance="0"/>
@@ -14,6 +16,7 @@
       <conditions>
         <event_game_loaded/>
         <check_value value="md.G_Work_Around.Signal.exists"/>
+        <check_value value="md.Lua_Loader.Reload_Listener.exists" negate="true" comment="use latest lua load API if present"/>
       </conditions>
       <delay exact="1s"/>
       <actions>
