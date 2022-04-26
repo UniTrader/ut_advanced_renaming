@@ -882,17 +882,17 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 	orig.setupInfoSubmenuRows(mode, inputtable, inputobject, instance)
 	if inputtable.rows[4][4] and inputtable.rows[4][4]["type"] == "editbox" then
 		--Lib.Print_Table(inputtable.rows[4][4], "1st column")
-		if false then 
+		if ReadText(5554302, 2) == "yes" then 
+			-- Make Editbox bigger - produces some harmless errors
+			inputtable.rows[4][2]:setColSpan(1)
+			inputtable.rows[4][3]:setColSpan(6):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or inputtable.rows[4][4].properties.text.text, { halign = "right" })
+			inputtable.rows[4][3].handlers.onEditBoxDeactivated = function(_, text, textchanged) return utRenaming.infoChangeObjectName(inputobject, text, textchanged) end
+		else
 			-- just replace the String if appliable - error free, but smaller text field
 			if GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] then
 				inputtable.rows[4][4]:setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject])
 			end
 			inputtable.rows[4][4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return utRenaming.infoChangeObjectName(inputobject, text, textchanged) end
-		else
-			-- Make Editbox bigger - produces some harmless errors
-			inputtable.rows[4][2]:setColSpan(1)
-			inputtable.rows[4][3]:setColSpan(6):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or inputtable.rows[4][4].properties.text.text, { halign = "right" })
-			inputtable.rows[4][3].handlers.onEditBoxDeactivated = function(_, text, textchanged) return utRenaming.infoChangeObjectName(inputobject, text, textchanged) end
 		end
 		--Lib.Print_Table(inputtable.rows[4][4].properties.text, "4th column")
 	end

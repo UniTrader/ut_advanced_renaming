@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <mdscript name="UT_CAC_Object_Name_Managment" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://utnas/~unitrader/XRebirthxsds/md.xsd">
   <cues>
-    <cue name="RegisterUI_G_Workaround" version="1" instantiate="true">
+    <!--cue name="RegisterUI_G_Workaround" version="1" instantiate="true">
       <conditions>
         <event_cue_completed cue="md.G_Work_Around.Init"/>
         <check_value value="md.G_Work_Around.Signal.exists" negate="true" comment="use latest lua load API if present"/>
@@ -23,7 +23,7 @@
         <debug_text filter="general" text="'utrenaming g workaround 020 call'" chance="0"/>
         <signal_cue_instantly cue="md.G_Work_Around.Signal" param="'.\\extensions\\ut_advanced_renaming\\utrenaming.lua'"/>
       </actions>
-    </cue>
+    </cue-->
     <cue name="RegisterUI_Lua_Loader" instantiate="true">
       <conditions>
         <event_ui_triggered screen="'Lua_Loader'" control="'Ready'" />
@@ -205,6 +205,7 @@
               <event_object_signalled group="$NamedObjectsDynamic" param="'Object Name Updated'" comment="for Update Signalling from other Scripts"/>
             </check_any>
           </conditions>
+		  <delay min="100ms" max="1000ms"/>
           <actions>
             <set_value name="$object" exact="event.object"/>
             <include_actions ref="RenameActions"/>
@@ -285,10 +286,8 @@
           <actions>
             <set_value name="$customversion" exact="{5554302,1}"/>
             <do_all exact="$NamedObjects.count" counter="$i">
-              <set_value name="$object" exact="$NamedObjects.{$i}"/>
-              <include_actions ref="RenameActions"/>
+              <signal_objects object="$NamedObjects.{$i}" param="'Object Name Updated'"/>
             </do_all>
-            <remove_value name="$object"/>
           </actions>
         </cue>
         <cue name="NameUpdateEventObject" instantiate="true">
@@ -309,11 +308,17 @@
         </cue>
         <cue name="NameUpdateBoarding" instantiate="true">
           <conditions>
-            <check_any>
-              <event_boarding_operation_started/>
-              <event_boarding_operation_removed/>
-              <event_boarding_phase_changed/>
-            </check_any>
+            <check_all>
+              <check_any>
+                <event_boarding_operation_started/>
+                <event_boarding_operation_removed/>
+                <event_boarding_phase_changed/>
+              </check_any>
+              <check_any>
+                <check_value value="$NamedObjectsDynamic.indexof.{event.param.boardee}"/>
+                <check_value value="$NamedObjectsDynamic.indexof.{event.param.boarder}"/>
+			  </check_any>
+            </check_all>
           </conditions>
           <actions>
             <do_if value="$NamedObjectsDynamic.indexof.{event.boardee}">
