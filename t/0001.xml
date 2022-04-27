@@ -289,14 +289,14 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   <t id="122">0</t><!-- Leading Sign for %subnumber if there are more than 9 or 99 total subordinates (will be doubled if necesary)-->
   <!-- ##### -->
   <t id="123">$money</t>
-  <t id="124">$cargo.primary</t>xx
+  <t id="124">$cargo.pri</t>
   <t id="125">Empty</t><!-- Text in case there is no primary Cargo -->
-  <t id="126">$cargo.secondary</t>xx
+  <t id="126">$cargo.sec</t>
   <t id="127"></t><!-- Text in case there is no secondary Cargo -->
   <t id="128">$cargo.free</t>
-  <t id="129">$cargo.volume</t>
+  <t id="129">$cargo.vol</t>
   <t id="130">$cargo.used</t>
-  <t id="131">$cargo.typecount</t>
+  <t id="131">$cargo.count</t>
   <!-- Freight Class Expression and Results -->
   <t id="200">/freightclass</t>
   <t id="201">U(niversal - equals BCEL)</t>
@@ -366,34 +366,5 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   <t id="1112">Expression => Result</t>
   <!-- X4 Version: Line Text for the Edit Name -->
   <t id="1300">Edit:</t>
-  <!-- Expression Update from October/November 2016 - converting all expressions to new format -->
-  <t id="2000">%S</t>
-  <t id="2001">$S</t><!-- All Skills -->
-  <t id="2002">%superiorobject</t>
-  <t id="2003">$sup.name</t>
-  <t id="2004">%superiorzone</t>
-  <t id="2005">$sup.zone</t>
-  <t id="2006">%superiorsector</t>
-  <t id="2007">$sup.sec</t>
-  <t id="2008">%superiorcluster</t>
-  <t id="2009">$sup.clu</t>
-  <t id="2010">%zone</t>
-  <t id="2011">/zone</t>
-  <t id="2012">%sector</t>
-  <t id="2013">/sec</t>
-  <t id="2014">%cluster</t>
-  <t id="2015">/clu</t>
-  <t id="2016">%type</t>
-  <t id="2017">/type</t>
-  <t id="2018">%purpose</t>
-  <t id="2019">/purpose</t>
-  <t id="2020">%class</t>
-  <t id="2021">/class</t>
-  <t id="2022">%scriptset</t>
-  <t id="2023">$scriptset</t>
-  <t id="2024">%freightclass</t>
-  <t id="2025">/freightclass</t>
-  <t id="2026">%stage</t>
-  <t id="2027">$stage</t>
 </page>
 </language>

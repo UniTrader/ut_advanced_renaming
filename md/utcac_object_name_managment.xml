@@ -448,7 +448,7 @@
               <replace string="{5554302,516}" with="''"/>
             </substitute_text>
             <do_if value="$nameA != $nameB">
-              <do_if value="notplayer.entity.$sequence_sizepurppose.{$object.class}?">
+              <do_if value="not player.entity.$sequence_sizepurppose.{$object.class}?">
                 <set_value name="player.entity.$sequence_sizepurppose.{$object.class}" exact="table[]"/>
               </do_if>
               <set_value name="player.entity.$sequence_sizepurppose.{$object.class}.{$object.primarypurpose}" exact="0"/>
@@ -541,7 +541,7 @@
             <replace string="{5554302,103}" with="$object.sector.name"/>
             <replace string="{5554302,104}" with="$object.cluster.name"/>
             <replace string="{5554302,105}" with="$type"/>
-            <replace string="{5554302,106}" with="$object.macro.name"/>
+            <replace string="{5554302,106}" with="$type"/>
             <replace string="{5554302,107}" with="$object.macro.name"/>
             <replace string="{5554302,108}" with="{5554301,11001} + $object.primarypurpose"/>
             <!-- will be post-dynamic replaced with proper Purpose Name -->
