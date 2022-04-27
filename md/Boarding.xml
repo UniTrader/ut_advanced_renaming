@@ -1,4 +1,12 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <diff xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://utnas/~unitrader/XRebirthxsds/md-diff.xsd">
-
+  <add sel="(//apply_experience)[6]/.." pos="after">
+    <signal_objects object="$Target" param="'Object Name Updated'"/>
+  </add>
+  <add sel="(//apply_experience)[12]/.." pos="after">
+    <signal_objects object="$Target" param="'Object Name Updated'"/>
+  </add>
+  <add sel="(//apply_experience)[13]" pos="after">
+    <signal_objects object="$Target" param="'Object Name Updated'"/>
+  </add>
 </diff>
