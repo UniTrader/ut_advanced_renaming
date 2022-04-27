@@ -28,6 +28,7 @@
       <conditions>
         <event_ui_triggered screen="'Lua_Loader'" control="'Ready'" />
       </conditions>
+	  <delay min="10ms" max="100ms"/>
       <actions>
         <debug_text filter="general" text="'utrenaming lua loader call'" chance="0"/>
         <raise_lua_event name="'Lua_Loader.Load'" param="'extensions.ut_advanced_renaming.utrenaming'"/>
