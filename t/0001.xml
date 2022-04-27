@@ -85,8 +85,8 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   <t id="11025">XS</t>
   <t id="11026">%CLASS:station</t>
   <t id="11027">ST</t>
-  <!-- unneeded Color Tags - either with or without space in-between -->
-  <t id="11030"> \033A </t>
+  <!-- unneeded Color Tags - either with or without space in-between // will allow rhese for now-->
+  <!--t id="11030"> \033A </t>
   <t id="11031"> \033A</t>
   <t id="11032"> \033B </t>
   <t id="11033"> \033B</t>
@@ -129,7 +129,7 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   <t id="11078">\033Y\033</t>
   <t id="11079">\033</t>
   <t id="11080">\033Z\033</t>
-  <t id="11081">\033</t>
+  <t id="11081">\033</t-->
   <!-- 
   From Navscripts:
   <t id="11100">$destination</t>
