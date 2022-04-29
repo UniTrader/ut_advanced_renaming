@@ -233,7 +233,7 @@
                   </do_if>
                 </do_all>
               </do_if>
-              <do_if value="event.param == 'Subordinates Name Updated - smallhips'">
+              <do_if value="event.param == 'Subordinates Name Updated - smallships'">
                 <do_all exact="$subordinates.count" counter="$i" reverse="true">
                   <do_if value="$subordinates.{$i}.isclass.ship_m or $subordinates.{$i}.isclass.ship_s or $subordinates.{$i}.isclass.ship_xs" negate="true">
                     <remove_value name="$subordinates.{$i}"/>
