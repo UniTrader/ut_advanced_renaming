@@ -246,7 +246,8 @@
                   <replace string="{5554302,118}" with="( if $subordinates.count ge 100 and $i lt 100  then {5554302,122} else '' ) + ( if $subordinates.count ge 10 and $i lt 10  then {5554302,122} else '' ) + $i"/>
                 </substitute_text>
                 <set_value name="player.entity.$unformatted_names.{$subordinates.{$i}}" exact="$objectname"/>
-                <signal_cue_instantly cue="NameUpdate_Initialize" param="$subordinates.{$i}"/>
+                <add_to_group groupname="md.UT_CAC_Object_Name_Managment.Init.$NamedObjects" object="$object"/>
+                <signal_objects object="$subordinates.{$i}" param="'Object Name Updated'"/>
               </do_all>
               <remove_value name="$subordinates"/>
               <remove_value name="$objectname"/>
