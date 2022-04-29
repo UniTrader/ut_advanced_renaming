@@ -245,7 +245,7 @@
                   <replace string="{5554302,117}" with="$subordinates.count"/>
                   <replace string="{5554302,118}" with="( if $subordinates.count ge 100 and $i lt 100  then {5554302,122} else '' ) + ( if $subordinates.count ge 10 and $i lt 10  then {5554302,122} else '' ) + $i"/>
                 </substitute_text>
-                <set_value name="player.entity.$unformatted_names.{$subordinates.{$i}" exact="$objectname"/>
+                <set_value name="player.entity.$unformatted_names.{$subordinates.{$i}]" exact="$objectname"/>
                 <signal_objects object="$subordinates.{$i}" param="'Object Name Updated'"/>
               </do_all>
               <remove_value name="$subordinates"/>
@@ -463,10 +463,7 @@
             </substitute_text>
           </do_all>
           <set_value name="$debug" exact="'%1\nCUSTOM: (Not seperate from next yet)\nLOCAL:   %2'.[$debug,$nameA]" chance="$debug? *100" comment="fill debug output Value"/>
-          <!-- If Language-transfer is desired Save name Var back to local Var now, continue with remaining phrases after that -->
-          <do_if value="@readtext.{5554302}.{1} == 'yes'">
-            <set_value name="player.entity.$unformatted_names.{$object}" exact="$nameA"/>
-          </do_if>
+		  
           <get_text_ids_in_range result="$keys" page="5554301" start="2000" end="3000" factor="2"/>
           <do_all exact="$keys.count" counter="$i" reverse="false">
             <substitute_text text="$nameA">
