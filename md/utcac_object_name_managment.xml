@@ -258,10 +258,10 @@
               <remove_value name="$objectname"/>
             </do_if>
             <do_else>
-              <set_value name="$object" exact="event.param2.{1}"/>
+              <set_value name="$object" exact="event.param2" comment="event.param2"/>
               <set_value name="player.entity.$unformatted_names.{$object}" exact="event.param3"/>
-              <set_value name="player.entity.$unformatted_names.{event.param2.{2}}" exact="event.param3" comment="Specifically for lua because it refuses to retrieve the unformatted name otherwise - screw lua!!!"/>
-              <add_to_group groupname="$NamedObjectsDynamic" object="$object"/>
+              <!--set_value name="player.entity.$unformatted_names.{event.param2.{2}}" exact="event.param3" comment="Specifically for lua because it refuses to retrieve the unformatted name otherwise - screw lua!!!"/-->
+              <!--add_to_group groupname="$NamedObjectsDynamic" object="$object"/-->
               <do_if value="event.param3 == ''" comment="If the set Name is empty - use/re-set default name according to custom file">
                 <remove_value name="player.entity.$unformatted_names.{$object}"/>
                 <signal_cue_instantly cue="NameUpdate_Initialize" param="$object"/>

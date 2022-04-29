@@ -864,37 +864,46 @@ local utRenaming = {}
 
 local function init()
 	--DebugError("my mod init")
-   for _, menu in ipairs(Menus) do
-       if menu.name == "MapMenu" then
-             orig.menu = menu -- save entire menu, for other helper function access
-       	      -- save original function
-			orig.setupInfoSubmenuRows=menu.setupInfoSubmenuRows
-			menu.setupInfoSubmenuRows=utRenaming.setupInfoSubmenuRows
 
-			 orig.infoChangeObjectName=menu.infoChangeObjectName
-			 menu.infoChangeObjectName=utRenaming.infoChangeObjectName
-          break
-      end
-   end
+	menu = Lib.Get_Egosoft_Menu("MapMenu")
+	orig.menu = menu -- save entire menu, for other helper function access
+	-- save original function
+	orig.setupInfoSubmenuRows=menu.setupInfoSubmenuRows
+	menu.setupInfoSubmenuRows=utRenaming.setupInfoSubmenuRows
+
+	orig.infoChangeObjectName=menu.infoChangeObjectName
+	menu.infoChangeObjectName=utRenaming.infoChangeObjectName
 end
 
 function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance)
 	orig.setupInfoSubmenuRows(mode, inputtable, inputobject, instance)
 	if inputtable.rows[4][4] and inputtable.rows[4][4]["type"] == "editbox" then
 		--Lib.Print_Table(inputtable.rows[4][4], "1st column")
+		
+		-- needs to be done the complicated way, because lua...
+		--Lib.Print_Table(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names"), "Name Table")
+		local editname
+		for k,v in pairs(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")) do
+			--DebugError(tostring(k))
+			--DebugError("ID: "..tostring(inputobject))
+			if tostring(k) == "ID: "..tostring(inputobject) then
+				editname = v
+				--DebugError(editname)
+				break
+			end
+		end
 		if ReadText(5554302, 2) == "yes" then 
 			-- Make Editbox bigger - produces some harmless errors
 			inputtable.rows[4][2]:setColSpan(1)
-			inputtable.rows[4][3]:setColSpan(6):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] or inputtable.rows[4][4].properties.text.text, { halign = "right" })
+			inputtable.rows[4][3]:setColSpan(6):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(editname or inputtable.rows[4][4].properties.text.text, { halign = "right" })
 			inputtable.rows[4][3].handlers.onEditBoxDeactivated = function(_, text, textchanged) return utRenaming.infoChangeObjectName(inputobject, text, textchanged) end
 		else
 			-- just replace the String if appliable - error free, but smaller text field
-			if GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject] then
-				inputtable.rows[4][4]:setText(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")[inputobject])
+			if editname then
+				inputtable.rows[4][4]:setText(editname)
 			end
 			inputtable.rows[4][4].handlers.onEditBoxDeactivated = function(_, text, textchanged) return utRenaming.infoChangeObjectName(inputobject, text, textchanged) end
 		end
-		--Lib.Print_Table(inputtable.rows[4][4].properties.text, "4th column")
 	end
 end
 
@@ -904,7 +913,7 @@ function utRenaming.infoChangeObjectName(objectid, text, textchanged)
 		SetComponentName(objectid, text)
 	end
     -- UniTrader change: Set Signal Universe/Object instead of actual renaming (which is handled in MD)
-    SignalObject(GetComponentData(objectid, "galaxyid" ) , "Object Name Updated" , { ConvertStringToLuaID(tostring(objectid)) , objectid } , text)
+    SignalObject(GetComponentData(objectid, "galaxyid" ) , "Object Name Updated" , ConvertStringToLuaID(tostring(objectid)) , text)
     -- UniTrader Changes end (next line was a if before, but i have some diffrent conditions)
 
 	orig.menu.noupdate = false
