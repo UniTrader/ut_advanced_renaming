@@ -339,7 +339,7 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   <t id="998">DEBUG OFF</t><!-- will be removed but forces Reset of all Debug Vars -->
   <t id="999">DEBUG</t>
   <!-- Internally used Text eg for Menus -->
-  <t id="1001">                             Mass Rename Subordinates</t><!--leading spaces intentional to center text till i find out how to do it properly-->
+  <t id="1001">Mass Rename Subordinates</t>
   <t id="1002">All Subordinates</t>
   <t id="1003">Rename all Subordinates of this Ship/Station</t>
   <t id="1004">Big Ships</t>
@@ -366,5 +366,10 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   <t id="1112">Expression => Result</t>
   <!-- X4 Version: Line Text for the Edit Name -->
   <t id="1300">Edit:</t>
+</page>
+<page id="5554303" title="Object Name Individual Name List - factions (planned)" descr="UT Command and Control" voice="no">
+  <!-- Ship names are grouped into 1000s per Faction; it will give these persistent name to Ships
+  when end of list is reached it will restart from the beginning
+  1st entry is the general name format for the Faction (willl be given once, no auto-update)-->
 </page>
 </language>

@@ -873,6 +873,10 @@ local function init()
 
 	orig.infoChangeObjectName=menu.infoChangeObjectName
 	menu.infoChangeObjectName=utRenaming.infoChangeObjectName
+	
+	menu.createRenameContext=utRenaming.createRenameContext
+	
+	menu.buttonRenameConfirm=utRenaming.buttonRenameConfirm
 end
 
 function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance)
@@ -907,7 +911,6 @@ function utRenaming.setupInfoSubmenuRows(mode, inputtable, inputobject, instance
 	end
 end
 
-
 function utRenaming.infoChangeObjectName(objectid, text, textchanged)
     if textchanged then
 		SetComponentName(objectid, text)
@@ -918,6 +921,81 @@ function utRenaming.infoChangeObjectName(objectid, text, textchanged)
 
 	orig.menu.noupdate = false
 	orig.menu.refreshInfoFrame()
+end
+
+
+function utRenaming.createRenameContext(frame)
+	local title = menu.contextMenuData.fleetrename and ReadText(1001, 7895) or ReadText(1001, 1114)
+	local startname = menu.contextMenuData.fleetrename and ffi.string(C.GetFleetName(menu.contextMenuData.component)) or ffi.string(C.GetComponentName(menu.contextMenuData.component))
+	
+	-- Added by UniTrader: override startname with the Edifable Ship Name when Renaming an Object
+	if not menu.contextMenuData.fleetrename then
+		for k,v in pairs(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")) do
+			if tostring(k) == "ID: "..tostring(menu.contextMenuData.component) then
+				startname = v
+				break
+			end
+		end
+	end
+	-- End change
+	
+	local shiptable = frame:addTable(6, { tabOrder = 2, x = Helper.borderSize, y = Helper.borderSize, width = menu.contextMenuData.width, highlightMode = "off" })
+
+	-- title
+	local row = shiptable:addRow(nil, { fixed = true, bgColor = Helper.color.transparent })
+	row[1]:setColSpan(6):createText(title, Helper.headerRowCenteredProperties)
+
+	local row = shiptable:addRow(true, { fixed = true, bgColor = Helper.color.transparent })
+	menu.contextMenuData.nameEditBox = row[1]:setColSpan(6):createEditBox({ height = Helper.standardTextHeight, description = title }):setText(startname)
+	row[1].handlers.onTextChanged = function (_, text, textchanged) menu.contextMenuData.newtext = text end
+	row[1].handlers.onEditBoxDeactivated = menu.buttonRenameConfirm
+
+	local row = shiptable:addRow(true, { fixed = true, bgColor = Helper.color.transparent })
+	row[1]:setColSpan(3):createButton({  }):setText(ReadText(1001, 2821), { halign = "center" })
+	row[1].handlers.onClick = menu.buttonRenameConfirm
+	row[4]:setColSpan(3):createButton({  }):setText(ReadText(1001, 64), { halign = "center" })
+	row[4].handlers.onClick = function () return menu.closeContextMenu("back") end
+
+
+	local row = shiptable:addRow(true, { fixed = true, bgColor = Helper.color.transparent })
+	row[1]:setColSpan(6):createText(ReadText(5554302,1001), Helper.headerRowCenteredProperties)
+	
+	local row = shiptable:addRow(true, { fixed = true, bgColor = Helper.color.transparent })
+	row[1]:setColSpan(2):createButton({  }):setText(ReadText(5554302,1002), { halign = "center" })
+	row[1].handlers.onClick = function () return utRenaming.buttonMassRename("Subordinates Name Updated") end
+	row[3]:setColSpan(2):createButton({  }):setText(ReadText(5554302,1004), { halign = "center" })
+	row[3].handlers.onClick = function () return utRenaming.buttonMassRename("Subordinates Name Updated - Big") end
+	row[5]:setColSpan(2):createButton({  }):setText(ReadText(5554302,1006), { halign = "center" })
+	row[5].handlers.onClick = function () return utRenaming.buttonMassRename("Subordinates Name Updated - Small") end
+
+
+	-- adjust frame position
+	local neededheight = shiptable.properties.y + shiptable:getVisibleHeight()
+	if frame.properties.y + neededheight + Helper.frameBorder > Helper.viewHeight then
+		menu.contextMenuData.yoffset = Helper.viewHeight - neededheight - Helper.frameBorder
+		frame.properties.y = menu.contextMenuData.yoffset
+	end
+end
+
+function utRenaming.buttonRenameConfirm()
+	if menu.contextMenuData.newtext then
+		if menu.contextMenuData.fleetrename then
+			C.SetFleetName(menu.contextMenuData.component, menu.contextMenuData.newtext)
+		else
+			SignalObject(GetComponentData(menu.contextMenuData.component, "galaxyid" ) , "Object Name Updated" , ConvertStringToLuaID(tostring(menu.contextMenuData.component)) , menu.contextMenuData.newtext)
+		end
+	end
+	menu.noupdate = false
+	menu.refreshInfoFrame()
+	menu.closeContextMenu("back")
+end
+
+
+function utRenaming.buttonMassRename(param)
+	SignalObject(GetComponentData(menu.contextMenuData.component, "galaxyid" ) , param , ConvertStringToLuaID(tostring(menu.contextMenuData.component)) , menu.contextMenuData.newtext)
+	menu.noupdate = false
+	menu.refreshInfoFrame()
+	menu.closeContextMenu("back")
 end
 
 init()
