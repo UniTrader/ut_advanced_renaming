@@ -323,18 +323,18 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   <t id="401">$currentorder</t>
   <t id="402">$ordercount</t>
   <!-- Sequence Number Expressions and Control Codes-->
-  <t id="500">/seqall</t>
-  <t id="501">/seqtype</t>
-  <t id="502">/seqsize</t>
-  <t id="503">/seqpurp</t>
-  <t id="504">/seqclass</t>
-  <t id="510">/seqdel</t>
-  <t id="511">/seqreset</t>
-  <t id="512">/seqresetall</t>
-  <t id="513">/seqresettype</t>
-  <t id="514">/seqresetsize</t>
-  <t id="515">/seqresetpurp</t>
-  <t id="516">/seqresetclass</t>
+  <t id="500">%seqall</t>
+  <t id="501">%seqtype</t>
+  <t id="502">%seqsize</t>
+  <t id="503">%seqpurp</t>
+  <t id="504">%seqclass</t>
+  <t id="510">%seqdel</t>
+  <t id="511">%seqreset</t>
+  <t id="512">%seqresetall</t>
+  <t id="513">%seqresettype</t>
+  <t id="514">%seqresetsize</t>
+  <t id="515">%seqresetpurp</t>
+  <t id="516">%seqresetclass</t>
   <!-- Debug Expression - sets or removes/resets the Debug Values for Object if present/not present -->
   <t id="998">DEBUG OFF</t><!-- will be removed but forces Reset of all Debug Vars -->
   <t id="999">DEBUG</t>
