@@ -964,9 +964,9 @@ function utRenaming.createRenameContext(frame)
 	row[1]:setColSpan(2):createButton({  }):setText(ReadText(5554302,1002), { halign = "center" })
 	row[1].handlers.onClick = function () return utRenaming.buttonMassRename("Subordinates Name Updated") end
 	row[3]:setColSpan(2):createButton({  }):setText(ReadText(5554302,1004), { halign = "center" })
-	row[3].handlers.onClick = function () return utRenaming.buttonMassRename("Subordinates Name Updated - Big") end
+	row[3].handlers.onClick = function () return utRenaming.buttonMassRename("Subordinates Name Updated - bigships") end
 	row[5]:setColSpan(2):createButton({  }):setText(ReadText(5554302,1006), { halign = "center" })
-	row[5].handlers.onClick = function () return utRenaming.buttonMassRename("Subordinates Name Updated - Small") end
+	row[5].handlers.onClick = function () return utRenaming.buttonMassRename("Subordinates Name Updated - smallships") end
 
 
 	-- adjust frame position
