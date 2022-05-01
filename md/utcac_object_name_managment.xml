@@ -28,7 +28,7 @@
       <conditions>
         <event_ui_triggered screen="'Lua_Loader'" control="'Ready'" />
       </conditions>
-	  <delay min="10ms" max="100ms"/>
+      <delay min="10ms" max="100ms"/>
       <actions>
         <debug_text filter="general" text="'utrenaming lua loader call'" chance="0"/>
         <raise_lua_event name="'Lua_Loader.Load'" param="'extensions.ut_advanced_renaming.utrenaming'"/>
@@ -183,8 +183,8 @@
                   </do_else>
                 </do_elseif>
                 <do_else>
-                  <do_if value="@readtext.{5554302}.{8} != ''">
-                    <set_value name="player.entity.$unformatted_names.{$object}" exact="@readtext.{5554302}.{8}"/>
+                  <do_if value="@readtext.{5554302}.{9} != ''">
+                    <set_value name="player.entity.$unformatted_names.{$object}" exact="@readtext.{5554302}.{9}"/>
                   </do_if>
                   <do_else>
                     <set_value name="$skiprename"/>
@@ -206,7 +206,7 @@
               <event_object_signalled group="$NamedObjectsDynamic" param="'Object Name Updated'" comment="for Update Signalling from other Scripts"/>
             </check_any>
           </conditions>
-		  <delay min="100ms" max="1000ms"/>
+          <delay min="100ms" max="1000ms"/>
           <actions>
             <set_value name="$object" exact="event.object"/>
             <include_actions ref="RenameActions"/>
@@ -245,8 +245,8 @@
                   <replace string="{5554302,117}" with="$subordinates.count"/>
                   <replace string="{5554302,118}" with="( if $subordinates.count ge 100 and $i lt 100  then {5554302,122} else '' ) + ( if $subordinates.count ge 10 and $i lt 10  then {5554302,122} else '' ) + $i"/>
                 </substitute_text>
-                <!--<set_value name="player.entity.$unformatted_names.{$subordinates.{$i}}" exact="$objectname"/>
-                <add_to_group groupname="md.UT_CAC_Object_Name_Managment.Init.$NamedObjects" object="$object"/>-->
+                <set_value name="player.entity.$unformatted_names.{$subordinates.{$i}}" exact="$objectname"/>
+                <add_to_group groupname="md.UT_CAC_Object_Name_Managment.Init.$NamedObjects" object="$object"/>
                 <signal_objects object="player.galaxy" param="'Object Name Updated'" param2="$subordinates.{$i}" param3="$objectname"/>
               </do_all>
               <remove_value name="$subordinates"/>
@@ -313,7 +313,7 @@
               <check_any>
                 <check_value value="$NamedObjectsDynamic.indexof.{event.param.boardee}"/>
                 <check_value value="$NamedObjectsDynamic.indexof.{event.param.boarder}"/>
-			  </check_any>
+              </check_any>
             </check_all>
           </conditions>
           <actions>
@@ -395,66 +395,71 @@
           </do_if>
           <!-- ========= -->
           <!-- Check for Sequence Number reset presence and perform according actions -->
-          <substitute_text text="$nameB" source="$nameA" comment="Current id reset">
-            <replace string="{5554302,510}" with="''"/>
+          <substitute_text text="$nameB" source="$nameA">
+            <replace string="{5554302,500}" with="''"/>
           </substitute_text>
           <do_if value="$nameA != $nameB">
-            <remove_value name="player.entity.$current_id.{$object}"/>
-            <set_value name="$nameA" exact="$nameB"/>
-            <set_value name="$debug" exact="'%1\nIDRES1:  %2'.[$debug,$nameA]" chance="$debug? *100" comment="fill debug output Value"/>
-            <set_value name="player.entity.$unformatted_names.{$object}" exact="$nameB"/>
-          </do_if>
-          <substitute_text text="$nameB" source="$nameA" comment="Sequence Numbering Reset (all cases)">
-            <replace string="{5554302,511}" with="''"/>
-          </substitute_text>
-          <do_if value="$nameA != $nameB">
-            <substitute_text text="$nameB" source="$nameA" comment="Sequence Numbering Reset (Reset all sequence numbers)">
-              <replace string="{5554302,512}" with="''"/>
+            <set_value name="$debug" exact="'%1\nSequence expression detected'.[$debug]" chance="$debug? *100" comment="fill debug output Value"/>
+            <substitute_text text="$nameB" source="$nameA" comment="Current id reset">
+              <replace string="{5554302,510}" with="''"/>
             </substitute_text>
             <do_if value="$nameA != $nameB">
-              <set_value name="player.entity.$sequence_overall" exact="0"/>
+              <remove_value name="player.entity.$current_id.{$object}"/>
               <set_value name="$nameA" exact="$nameB"/>
-              <debug_to_file text="'Overall Sequence reset'" name="'Advanced Renaming.txt'" output="true" chance="$debug? *100"/>
+              <set_value name="$debug" exact="'%1\nIDRES1:  %2'.[$debug,$nameA]" chance="$debug? *100" comment="fill debug output Value"/>
+              <set_value name="player.entity.$unformatted_names.{$object}" exact="$nameB"/>
             </do_if>
-            <substitute_text text="$nameB" source="$nameA" comment="Sequence Numbering Reset (Object Type sequence numbers)">
-              <replace string="{5554302,513}" with="''"/>
+            <substitute_text text="$nameB" source="$nameA" comment="Sequence Numbering Reset (all cases)">
+              <replace string="{5554302,511}" with="''"/>
             </substitute_text>
             <do_if value="$nameA != $nameB">
-              <set_value name="player.entity.$sequence_type.{$object.macro}" exact="0"/>
-              <set_value name="$nameA" exact="$nameB"/>
-              <debug_to_file text="'Object Type Sequence reset'" name="'Advanced Renaming.txt'" output="true" chance="$debug? *100"/>
-            </do_if>
-            <substitute_text text="$nameB" source="$nameA" comment="Sequence Numbering Reset (Size sequence numbers)">
-              <replace string="{5554302,514}" with="''"/>
-            </substitute_text>
-            <do_if value="$nameA != $nameB">
-              <set_value name="player.entity.$sequence_size.{$object.class}" exact="0"/>
-              <set_value name="$nameA" exact="$nameB"/>
-              <debug_to_file text="'Object Size Sequence reset'" name="'Advanced Renaming.txt'" output="true" chance="$debug? *100"/>
-            </do_if>
-            <substitute_text text="$nameB" source="$nameA" comment="Sequence Numbering Reset (Purpose sequence numbers)">
-              <replace string="{5554302,515}" with="''"/>
-            </substitute_text>
-            <do_if value="$nameA != $nameB">
-              <set_value name="player.entity.$sequence_purpose.{$object.primarypurpose}" exact="0"/>
-              <set_value name="$nameA" exact="$nameB"/>
-              <debug_to_file text="'Object Purpose Sequence reset'" name="'Advanced Renaming.txt'" output="true" chance="$debug? *100"/>
-            </do_if>
-            <substitute_text text="$nameB" source="$nameA" comment="Sequence Numbering Reset (Size/purpose combination sequence numbers - class)">
-              <replace string="{5554302,516}" with="''"/>
-            </substitute_text>
-            <do_if value="$nameA != $nameB">
-              <do_if value="not player.entity.$sequence_sizepurppose.{$object.class}?">
-                <set_value name="player.entity.$sequence_sizepurppose.{$object.class}" exact="table[]"/>
+              <substitute_text text="$nameB" source="$nameA" comment="Sequence Numbering Reset (Reset all sequence numbers)">
+                <replace string="{5554302,512}" with="''"/>
+              </substitute_text>
+              <do_if value="$nameA != $nameB">
+                <set_value name="player.entity.$sequence_overall" exact="0"/>
+                <set_value name="$nameA" exact="$nameB"/>
+                <set_value name="$debug" exact="$debug+'\nOverall Sequence reset'" chance="$debug? *100"/>
               </do_if>
-              <set_value name="player.entity.$sequence_sizepurppose.{$object.class}.{$object.primarypurpose}" exact="0"/>
-              <set_value name="$nameA" exact="$nameB"/>
-              <debug_to_file text="'Object Class Sequence reset'" name="'Advanced Renaming.txt'" output="true" chance="$debug? *100"/>
+              <substitute_text text="$nameB" source="$nameA" comment="Sequence Numbering Reset (Object Type sequence numbers)">
+                <replace string="{5554302,513}" with="''"/>
+              </substitute_text>
+              <do_if value="$nameA != $nameB">
+                <set_value name="player.entity.$sequence_type.{$object.macro}" exact="0"/>
+                <set_value name="$nameA" exact="$nameB"/>
+                <set_value name="$debug" exact="$debug+'\nObject Type Sequence reset'" chance="$debug? *100"/>
+              </do_if>
+              <substitute_text text="$nameB" source="$nameA" comment="Sequence Numbering Reset (Size sequence numbers)">
+                <replace string="{5554302,514}" with="''"/>
+              </substitute_text>
+              <do_if value="$nameA != $nameB">
+                <set_value name="player.entity.$sequence_size.{$object.class}" exact="0"/>
+                <set_value name="$nameA" exact="$nameB"/>
+                <set_value name="$debug" exact="$debug+'\nObject Size Sequence reset'" chance="$debug? *100"/>
+              </do_if>
+              <substitute_text text="$nameB" source="$nameA" comment="Sequence Numbering Reset (Purpose sequence numbers)">
+                <replace string="{5554302,515}" with="''"/>
+              </substitute_text>
+              <do_if value="$nameA != $nameB">
+                <set_value name="player.entity.$sequence_purpose.{$object.primarypurpose}" exact="0"/>
+                <set_value name="$nameA" exact="$nameB"/>
+                <set_value name="$debug" exact="$debug+'\nObject Purpose Sequence reset'" chance="$debug? *100"/>
+              </do_if>
+              <substitute_text text="$nameB" source="$nameA" comment="Sequence Numbering Reset (Size/purpose combination sequence numbers - class)">
+                <replace string="{5554302,516}" with="''"/>
+              </substitute_text>
+              <do_if value="$nameA != $nameB">
+                <do_if value="not player.entity.$sequence_sizepurppose.{$object.class}?">
+                  <set_value name="player.entity.$sequence_sizepurppose.{$object.class}" exact="table[]"/>
+                </do_if>
+                <set_value name="player.entity.$sequence_sizepurppose.{$object.class}.{$object.primarypurpose}" exact="0"/>
+                <set_value name="$nameA" exact="$nameB"/>
+                <set_value name="$debug" exact="$debug+'\nObject Class Sequence reset'" chance="$debug? *100"/>
+              </do_if>
+              <set_value name="$debug" exact="'%1\nIDRES2:  %2'.[$debug,$nameA]" chance="$debug? *100" comment="fill debug output Value"/>
+              <set_value name="player.entity.$unformatted_names.{$object}" exact="$nameB"/>
             </do_if>
-            <set_value name="$debug" exact="'%1\nIDRES2:  %2'.[$debug,$nameA]" chance="$debug? *100" comment="fill debug output Value"/>
-            <set_value name="player.entity.$unformatted_names.{$object}" exact="$nameB"/>
           </do_if>
-          
           <!--=====-->
           <!-- Perform Static Replacements (Preffered Marking Key / ) -->
           <get_text_ids_in_range result="$keys" page="5554301" start="0" end="1999" factor="2"/>
@@ -464,7 +469,7 @@
             </substitute_text>
           </do_all>
           <set_value name="$debug" exact="'%1\nCUSTOM: (Not seperate from next yet)\nLOCAL:   %2'.[$debug,$nameA]" chance="$debug? *100" comment="fill debug output Value"/>
-		  
+
           <get_text_ids_in_range result="$keys" page="5554301" start="2000" end="3000" factor="2"/>
           <do_all exact="$keys.count" counter="$i" reverse="false">
             <substitute_text text="$nameA">
@@ -564,59 +569,89 @@
             <replace string="{5554302,116}" with="$object.macro.shortname"/>
             -->
           </substitute_text>
-          
+
           <!-- Ship Sequence Numbers-->
-          <do_if value="not player.entity.$current_id.{$object}? and $object.pilot.$current_id?" comment="Compatibility check for older Version">
-            <set_value name="player.entity.$current_id.{$object}" exact="$object.pilot.$current_id"/>
-            <remove_value name="$object.pilot.$current_id"/>
-          </do_if>
-          <do_if value="not player.entity.$current_id.{$object}?">
-            <substitute_text text="$nameB" source="$nameA">
-              <replace string="{5554302,500}" with="''"/>
-            </substitute_text>
-            <do_if value="$nameA != $nameB">
-              <set_value name="player.entity.$sequence_overall" operation="add"/>
-              <set_value name="player.entity.$current_id.{$object}" exact="player.entity.$sequence_overall"/>
-              <debug_to_file text="'Set id from Overall: '+ player.entity.$current_id.{$object}" name="'Advanced Renaming.txt'" output="true" chance="$debug? *100"/>
+          <substitute_text text="$nameB" source="$nameA">
+            <replace string="{5554302,500}" with="''"/>
+          </substitute_text>
+          <do_if value="$nameA != $nameB">
+            <set_value name="$debug" exact="'%1\nSequence expression detected'.[$debug]" chance="$debug? *100" comment="fill debug output Value"/>
+            <!-- Get a sequence Number if we have none yet -->
+            <do_if value="player.entity.$current_id.{$object}?">
+              <set_value name="$tmp" exact="player.entity.$current_id.{$object}"/>
+              <set_value name="$debug" exact="$debug+'\nSet id from Stored Value: '+ player.entity.$current_id.{$object}" chance="$debug? *100"/>
             </do_if>
             <do_else>
+              <set_value name="$tmp" exact="player.entity.$sequence_overall+1"/>
+            </do_else>
+            <substitute_text text="$nameB" source="$nameA">
+              <replace string="{5554302,501}" with="( if player.entity.$sequence_overall ge 100 and $tmp lt 100  then {5554302,122} else '' ) + ( if player.entity.$sequence_overall ge 10 and $tmp lt 10  then {5554302,122} else '' ) + $tmp"/>
+            </substitute_text>
+            <do_if value="$nameA != $nameB">
+              <do_if value="not player.entity.$current_id.{$object}?">
+                <set_value name="player.entity.$sequence_overall" operation="add"/>
+                <set_value name="player.entity.$current_id.{$object}" exact="player.entity.$sequence_overall"/>
+                <set_value name="$debug" exact="$debug+'\nSet id from Overall: '+ player.entity.$current_id.{$object}" chance="$debug? *100"/>
+              </do_if>
+            </do_if>
+            <do_else>
+              <do_if value="not player.entity.$current_id.{$object}?">
+                <set_value name="$tmp" exact="player.entity.$sequence_type.{$object.macro}+1"/>
+              </do_if>
               <substitute_text text="$nameB" source="$nameA">
-                <replace string="{5554302,501}" with="''"/>
+                <replace string="{5554302,502}" with="( if player.entity.$sequence_type.{$object.macro} ge 100 and $tmp lt 100  then {5554302,122} else '' ) + ( if player.entity.$sequence_type.{$object.macro} ge 10 and $tmp lt 10  then {5554302,122} else '' ) + $tmp"/>
               </substitute_text>
               <do_if value="$nameA != $nameB">
-                <set_value name="player.entity.$sequence_type.{$object.macro}" operation="add"/>
-                <set_value name="player.entity.$current_id.{$object}" exact="player.entity.$sequence_type.{$object.macro}"/>
-                <debug_to_file text="'Set id from Type: '+ player.entity.$current_id.{$object}" name="'Advanced Renaming.txt'" output="true" chance="$debug? *100"/>
+                <do_if value="not player.entity.$current_id.{$object}?">
+                  <set_value name="player.entity.$sequence_type.{$object.macro}" operation="add"/>
+                  <set_value name="player.entity.$current_id.{$object}" exact="player.entity.$sequence_type.{$object.macro}"/>
+                  <set_value name="$debug" exact="$debug+'\nSet id from Type: '+ player.entity.$current_id.{$object}" chance="$debug? *100"/>
+                </do_if>
               </do_if>
               <do_else>
-              <substitute_text text="$nameB" source="$nameA">
-                <replace string="{5554302,502}" with="''"/>
-              </substitute_text>
+                <do_if value="not player.entity.$current_id.{$object}?">
+                  <set_value name="$tmp" exact="player.entity.$sequence_size.{$object.class}+1"/>
+                </do_if>
+                <substitute_text text="$nameB" source="$nameA">
+                  <replace string="{5554302,503}" with="( if player.entity.$sequence_size.{$object.class} ge 100 and $tmp lt 100  then {5554302,122} else '' ) + ( if player.entity.$sequence_size.{$object.class} ge 10 and $tmp lt 10  then {5554302,122} else '' ) + $tmp"/>
+                </substitute_text>
                 <do_if value="$nameA != $nameB">
-                  <set_value name="player.entity.$sequence_size.{$object.class}" operation="add"/>
-                  <set_value name="player.entity.$current_id.{$object}" exact="player.entity.$sequence_size.{$object.class}"/>
-                <debug_to_file text="'Set id from Size: '+ player.entity.$current_id.{$object}" name="'Advanced Renaming.txt'" output="true" chance="$debug? *100"/>
+                  <do_if value="not player.entity.$current_id.{$object}?">
+                    <set_value name="player.entity.$sequence_size.{$object.class}" operation="add"/>
+                    <set_value name="player.entity.$current_id.{$object}" exact="player.entity.$sequence_size.{$object.class}"/>
+                    <set_value name="$debug" exact="$debug+'\nSet id from Size: '+ player.entity.$current_id.{$object}" chance="$debug? *100"/>
+                  </do_if>
                 </do_if>
                 <do_else>
+                  <do_if value="not player.entity.$current_id.{$object}?">
+                    <set_value name="$tmp" exact="player.entity.$sequence_purpose.{$object.primarypurpose}+1"/>
+                  </do_if>
                   <substitute_text text="$nameB" source="$nameA">
-                    <replace string="{5554302,503}" with="''"/>
+                    <replace string="{5554302,504}" with="( if player.entity.$sequence_purpose.{$object.primarypurpose} ge 100 and $tmp lt 100  then {5554302,122} else '' ) + ( if player.entity.$sequence_purpose.{$object.primarypurpose} ge 10 and $tmp lt 10  then {5554302,122} else '' ) + $tmp"/>
                   </substitute_text>
-                  <do_if value="$nameA != $nameB">
-                    <set_value name="player.entity.$sequence_purpose.{$object.primarypurpose}" operation="add"/>
-                    <set_value name="player.entity.$current_id.{$object}" exact="player.entity.$sequence_purpose.{$object.primarypurpose}"/>
-                    <debug_to_file text="'Set id from Purpose: '+ player.entity.$current_id.{$object}" name="'Advanced Renaming.txt'" output="true" chance="$debug? *100"/>
+                  <do_if value="$nameA != $nameB">>
+                    <do_if value="not player.entity.$current_id.{$object}?">
+                      <set_value name="player.entity.$sequence_purpose.{$object.primarypurpose}" operation="add"/>
+                      <set_value name="player.entity.$current_id.{$object}" exact="player.entity.$sequence_purpose.{$object.primarypurpose}"/>
+                      <set_value name="$debug" exact="$debug+'\nSet id from Purpose: '+ player.entity.$current_id.{$object}" chance="$debug? *100"/>
+                    </do_if>
                   </do_if>
                   <do_else>
+                    <do_if value="not player.entity.$current_id.{$object}?">
+                      <set_value name="$tmp" exact="player.entity.$sequence_sizepurppose.{$object.class}.{$object.primarypurpose}+1"/>
+                    </do_if>
                     <substitute_text text="$nameB" source="$nameA">
-                      <replace string="{5554302,504}" with="''"/>
+                      <replace string="{5554302,505}" with="''"/>
                     </substitute_text>
                     <do_if value="$nameA != $nameB">
-                      <do_if value="notplayer.entity.$sequence_sizepurppose.{$object.class}?">
-                        <set_value name="player.entity.$sequence_sizepurppose.{$object.class}" exact="table[]"/>
+                      <do_if value="not player.entity.$current_id.{$object}?">
+                        <do_if value="notplayer.entity.$sequence_sizepurppose.{$object.class}?">
+                          <set_value name="player.entity.$sequence_sizepurppose.{$object.class}" exact="table[]"/>
+                        </do_if>
+                        <set_value name="player.entity.$sequence_sizepurppose.{$object.class}.{$object.primarypurpose}" operation="add"/>
+                        <set_value name="player.entity.$current_id.{$object}" exact="player.entity.$sequence_sizepurppose.{$object.class}.{$object.primarypurpose}"/>
+                        <set_value name="$debug" exact="$debug+'\nSet id from Class: '+ player.entity.$current_id.{$object}" chance="$debug? *100"/>
                       </do_if>
-                      <set_value name="player.entity.$sequence_sizepurppose.{$object.class}.{$object.primarypurpose}" operation="add"/>
-                      <set_value name="player.entity.$current_id.{$object}" exact="player.entity.$sequence_sizepurppose.{$object.class}.{$object.primarypurpose}"/>
-                      <debug_to_file text="'Set id from Class: '+ player.entity.$current_id.{$object}" name="'Advanced Renaming.txt'" output="true" chance="$debug? *100"/>
                     </do_if>
                     <do_else>
                     </do_else>
@@ -624,17 +659,19 @@
                 </do_else>
               </do_else>
             </do_else>
+
+            <!--substitute_text text="$nameA">
+              <replace string="{5554302,501}" with="player.entity.$current_id.{$object}"/>
+              <replace string="{5554302,502}" with="player.entity.$current_id.{$object}"/>
+              <replace string="{5554302,503}" with="player.entity.$current_id.{$object}"/>
+              <replace string="{5554302,504}" with="player.entity.$current_id.{$object}"/>
+              <replace string="{5554302,505}" with="player.entity.$current_id.{$object}"/>
+            </substitute_text-->
+            <set_value name="$debug" exact="'%1\nSEQUENC: %2'.[$debug,$nameB ]" chance="$debug? *100" comment="fill debug output Value"/>
           </do_if>
-          <substitute_text text="$nameA">
-            <replace string="{5554302,500}" with="player.entity.$current_id.{$object}"/>
-            <replace string="{5554302,501}" with="player.entity.$current_id.{$object}"/>
-            <replace string="{5554302,502}" with="player.entity.$current_id.{$object}"/>
-            <replace string="{5554302,503}" with="player.entity.$current_id.{$object}"/>
-            <replace string="{5554302,504}" with="player.entity.$current_id.{$object}"/>
-          </substitute_text>
-          
+
           <!-- From here on $nameA contains the visible name (with frequently changing content) and $nameB the short variation without frequently changing content - if both are identical after this there is no need for Updates -->
-          <set_value name="$nameB" exact="$nameA"/>
+          <set_value name="$nameA" exact="$nameB"/>
           <!-- Perform Script-Dynamic Replacements ( Marking Key $ ) - no Registration for Automated Update Event, send Signal or Include Actions yourself.-->
           <!-- (feel free to add your own Values to the local table $namereplacement though ;) -->
           <do_if value="not player.entity.$namereplacement.{$object}?">
@@ -736,7 +773,7 @@
           <!-- Find Primary and Secondary Ware in Cargo -->
           <set_value name="$cargolist" exact="@$object.cargo.list"/>
           <!-- Old Code from XR
-		  <do_if value="$cargolist.indexof.{ware.fuelcells}">
+      <do_if value="$cargolist.indexof.{ware.fuelcells}">
             <remove_value name="$cargolist.{$cargolist.indexof.{ware.fuelcells}}"/>
           </do_if-->
           <set_value name="$primarycargo" exact="null"/>
@@ -837,6 +874,8 @@ else 'null'"/-->
           <remove_value name="$primarycargo"/>
           <remove_value name="$secondarycargo"/>
           <remove_value name="$cargolist"/>
+          
+          <set_value name="$debug" exact="'%1\nDYNAMIC: %2 %4 %3'.[$debug,$nameA,@$nameB,if $nameA == @$nameB then '==' else '!=' ]" chance="$debug? *100" comment="fill debug output Value"/>
           <!-- if the Name contains something dynamic - add it to the Update-Group, otherwise remove it -->
           <do_if value="$nameA != $nameB">
             <add_to_group groupname="md.UT_CAC_Object_Name_Managment.Init.$NamedObjectsDynamic" object="$object" comment="since this code might be included elsewhere refer to this var with mdscript/cue"/>
@@ -845,7 +884,6 @@ else 'null'"/-->
             <remove_from_group group="md.UT_CAC_Object_Name_Managment.Init.$NamedObjectsDynamic" object="$object"/>
             <remove_value name="$nameB"/>
           </do_else>
-          <set_value name="$debug" exact="'%1\nDYNAMIC: %2 %4 %3'.[$debug,$nameA,@$nameB,if $nameA == @$nameB then '==' else '!=' ]" chance="$debug? *100" comment="fill debug output Value"/>
           <!-- Post-dynamic substitutions -->
           <get_text_ids_in_range result="$keys" page="5554301" start="10000" end="12000" factor="2"/>
           <do_if value="$nameB?">

@@ -323,11 +323,12 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   <t id="401">$currentorder</t>
   <t id="402">$ordercount</t>
   <!-- Sequence Number Expressions and Control Codes-->
-  <t id="500">%seqall</t>
-  <t id="501">%seqtype</t>
-  <t id="502">%seqsize</t>
-  <t id="503">%seqpurp</t>
-  <t id="504">%seqclass</t>
+  <t id="500">%seq</t><!-- Common Prefix for all Sequence entries, so we can quickly check if any are present -->
+  <t id="501">%seqall</t>
+  <t id="502">%seqtype</t>
+  <t id="503">%seqsize</t>
+  <t id="504">%seqpurp</t>
+  <t id="505">%seqclass</t>
   <t id="510">%seqdel</t>
   <t id="511">%seqreset</t>
   <t id="512">%seqresetall</t>
