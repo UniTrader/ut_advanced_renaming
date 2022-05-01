@@ -772,21 +772,20 @@
           <!-- Generate the Long Name -->
           <!-- Find Primary and Secondary Ware in Cargo -->
           <set_value name="$cargolist" exact="@$object.cargo.list"/>
-          <!-- Old Code from XR
-      <do_if value="$cargolist.indexof.{ware.fuelcells}">
-            <remove_value name="$cargolist.{$cargolist.indexof.{ware.fuelcells}}"/>
-          </do_if-->
           <set_value name="$primarycargo" exact="null"/>
           <set_value name="$secondarycargo" exact="null"/>
           <do_all exact="$cargolist.count" counter="$i">
-            <do_if value="( @$object.cargo.{$cargolist.{$i}} * @$cargolist.{$i}.volume gt ( @$object.cargo.{$primarycargo}.count * @$primarycargo.volume ))">
+            <do_if value="( @$object.cargo.{$cargolist.{$i}}.count * @$cargolist.{$i}.volume ) gt ( @$object.cargo.{$primarycargo}.count * @$primarycargo.volume )">
               <set_value name="$secondarycargo" exact="$primarycargo"/>
               <set_value name="$primarycargo" exact="$cargolist.{$i}"/>
             </do_if>
-            <do_elseif value="( @$object.cargo.{$cargolist.{$i}} * @$cargolist.{$i}.volume gt ( @$object.cargo.{$secondarycargo}.count * @$secondarycargo.volume ))">
+            <do_elseif value="( @$object.cargo.{$cargolist.{$i}}.count * @$cargolist.{$i}.volume ) gt ( @$object.cargo.{$secondarycargo}.count * @$secondarycargo.volume )">
               <set_value name="$secondarycargo" exact="$cargolist.{$i}"/>
             </do_elseif>
           </do_all>
+          <set_value name="$primarycargo" exact="if $primarycargo then $primarycargo.name else {5554302,125}"/>
+          <set_value name="$secondarycargo" exact="if $secondarycargo then $secondarycargo.name else {5554302,127}"/>
+          
           <substitute_text text="$nameA">
             <!-- Skill-based Expressions -->
             <!--replace string="{5554302,10}" with="@$object.boardingnpc.skill.combinedskill"/>
@@ -858,8 +857,8 @@ else 'null'"/-->
             <replace string="{5554302,307}" with="$object.builds.inprogress.count"/>
             <!-- Trade relevant Replacements -->
             <replace string="{5554302,123}" with="$object.money.formatted.{'%s%Cr'}"/>
-            <replace string="{5554302,124}" with="if $primarycargo then $primarycargo.name else {5554302,125}"/>
-            <replace string="{5554302,126}" with="if $secondarycargo then $secondarycargo.name else {5554302,127}"/>
+            <replace string="{5554302,124}" with="$primarycargo"/>
+            <replace string="{5554302,126}" with="$secondarycargo"/>
             <replace string="{5554302,128}" with="@$object.cargo.free.all"/>
             <replace string="{5554302,129}" with="@$object.cargo.capacity.all"/>
             <replace string="{5554302,130}" with="@$object.cargo.capacity.all - @$object.cargo.free.all"/>
