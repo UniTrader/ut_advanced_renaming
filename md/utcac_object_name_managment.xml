@@ -690,36 +690,6 @@
           <!-- First generate the short Name by replacing all Dynamic Expressions with an empty String ( =removing them) -->
           <substitute_text text="$nameB">
             <!-- Skill-based Expressions -->
-            <replace string="{5554302,10}" with="''"/>
-            <replace string="{5554302,11}" with="''"/>
-            <replace string="{5554302,12}" with="''"/>
-            <replace string="{5554302,13}" with="''"/>
-            <replace string="{5554302,14}" with="''"/>
-            <replace string="{5554302,15}" with="''"/>
-            <replace string="{5554302,16}" with="''"/>
-            <replace string="{5554302,17}" with="''"/>
-            <replace string="{5554302,18}" with="''"/>
-            <replace string="{5554302,19}" with="''"/>
-            <replace string="{5554302,20}" with="''"/>
-            <replace string="{5554302,21}" with="''"/>
-            <replace string="{5554302,22}" with="''"/>
-            <replace string="{5554302,23}" with="''"/>
-            <replace string="{5554302,24}" with="''"/>
-            <replace string="{5554302,25}" with="''"/>
-            <replace string="{5554302,26}" with="''"/>
-            <replace string="{5554302,27}" with="''"/>
-            <replace string="{5554302,28}" with="''"/>
-            <replace string="{5554302,29}" with="''"/>
-            <replace string="{5554302,30}" with="''"/>
-            <replace string="{5554302,31}" with="''"/>
-            <replace string="{5554302,32}" with="''"/>
-            <replace string="{5554302,33}" with="''"/>
-            <replace string="{5554302,34}" with="''"/>
-            <replace string="{5554302,35}" with="''"/>
-            <replace string="{5554302,36}" with="''"/>
-            <replace string="{5554302,37}" with="''"/>
-            <replace string="{5554302,38}" with="''"/>
-            <replace string="{5554302,39}" with="''"/>
             <replace string="{5554302,40}" with="''"/>
             <replace string="{5554302,41}" with="''"/>
             <replace string="{5554302,42}" with="''"/>
@@ -740,6 +710,36 @@
             <replace string="{5554302,57}" with="''"/>
             <replace string="{5554302,58}" with="''"/>
             <replace string="{5554302,59}" with="''"/>
+            <replace string="{5554302,60}" with="''"/>
+            <replace string="{5554302,61}" with="''"/>
+            <replace string="{5554302,62}" with="''"/>
+            <replace string="{5554302,63}" with="''"/>
+            <replace string="{5554302,64}" with="''"/>
+            <replace string="{5554302,65}" with="''"/>
+            <replace string="{5554302,66}" with="''"/>
+            <replace string="{5554302,67}" with="''"/>
+            <replace string="{5554302,68}" with="''"/>
+            <replace string="{5554302,69}" with="''"/>
+            <replace string="{5554302,70}" with="''"/>
+            <replace string="{5554302,71}" with="''"/>
+            <replace string="{5554302,72}" with="''"/>
+            <replace string="{5554302,73}" with="''"/>
+            <replace string="{5554302,74}" with="''"/>
+            <replace string="{5554302,75}" with="''"/>
+            <replace string="{5554302,76}" with="''"/>
+            <replace string="{5554302,77}" with="''"/>
+            <replace string="{5554302,78}" with="''"/>
+            <replace string="{5554302,79}" with="''"/>
+            <replace string="{5554302,80}" with="''"/>
+            <replace string="{5554302,81}" with="''"/>
+            <replace string="{5554302,82}" with="''"/>
+            <replace string="{5554302,83}" with="''"/>
+            <replace string="{5554302,84}" with="''"/>
+            <replace string="{5554302,85}" with="''"/>
+            <replace string="{5554302,86}" with="''"/>
+            <replace string="{5554302,87}" with="''"/>
+            <replace string="{5554302,88}" with="''"/>
+            <replace string="{5554302,89}" with="''"/>
             <!-- Boarding Stuff -->
             <replace string="{5554302,90}" with="''"/>
             <replace string="{5554302,91}" with="''"/>
@@ -788,60 +788,60 @@
           
           <substitute_text text="$nameA">
             <!-- Skill-based Expressions -->
-            <!--replace string="{5554302,10}" with="@$object.boardingnpc.skill.combinedskill"/>
-            <replace string="{5554302,11}" with="@$object.boardingnpc.skill.boarding"/>
-            <replace string="{5554302,12}" with="@$object.boardingnpc.skill.combat"/>
-            <replace string="{5554302,13}" with="@$object.boardingnpc.skill.engineering"/>
-            <replace string="{5554302,14}" with="@$object.boardingnpc.skill.leadership"/>
-            <replace string="{5554302,15}" with="@$object.boardingnpc.skill.management"/>
-            <replace string="{5554302,16}" with="@$object.boardingnpc.skill.navigation"/>
-            <replace string="{5554302,17}" with="@$object.boardingnpc.skill.morale"/>
-            <replace string="{5554302,18}" with="@$object.boardingnpc.skill.science"/>
-            <replace string="{5554302,19}" with="if $object.boardingnpc.exists then ( '' + 
+            <!--replace string="{5554302,40}" with="@$object.boardingnpc.skill.combinedskill"/>
+            <replace string="{5554302,41}" with="@$object.boardingnpc.skill.boarding"/>
+            <replace string="{5554302,42}" with="@$object.boardingnpc.skill.combat"/>
+            <replace string="{5554302,43}" with="@$object.boardingnpc.skill.engineering"/>
+            <replace string="{5554302,44}" with="@$object.boardingnpc.skill.leadership"/>
+            <replace string="{5554302,45}" with="@$object.boardingnpc.skill.management"/>
+            <replace string="{5554302,46}" with="@$object.boardingnpc.skill.navigation"/>
+            <replace string="{5554302,47}" with="@$object.boardingnpc.skill.morale"/>
+            <replace string="{5554302,48}" with="@$object.boardingnpc.skill.science"/>
+            <replace string="{5554302,49}" with="if $object.boardingnpc.exists then ( '' + 
 $object.boardingnpc.skill.{$object.boardingnpc.type.skilltypes.{1}} + 
 ( if $object.boardingnpc.type.skilltypes.{2}? then  + $object.boardingnpc.skill.{$object.boardingnpc.type.skilltypes.{2}} else '' ) +  
 ( if $object.boardingnpc.type.skilltypes.{3}? then  + $object.boardingnpc.skill.{$object.boardingnpc.type.skilltypes.{3}} else '' ) )
 else 'null'"/-->
-            <replace string="{5554302,20}" with="@$object.pilot.combinedskill"/>
-            <replace string="{5554302,21}" with="@$object.pilot.skill.boarding"/>
-            <replace string="{5554302,22}" with="@$object.pilot.skill.combat"/>
-            <replace string="{5554302,23}" with="@$object.pilot.skill.engineering"/>
-            <replace string="{5554302,24}" with="@$object.pilot.skill.leadership"/>
-            <replace string="{5554302,25}" with="@$object.pilot.skill.management"/>
-            <replace string="{5554302,26}" with="@$object.pilot.skill.navigation"/>
-            <replace string="{5554302,27}" with="@$object.pilot.skill.morale"/>
-            <replace string="{5554302,28}" with="@$object.pilot.skill.science"/>
-            <replace string="{5554302,29}" with="if $object.pilot.exists then ( '' +  $object.pilot.skill.{$object.pilot.type.skilltypes.{1}} +  ( if $object.pilot.type.skilltypes.{2}? then  + $object.pilot.skill.{$object.pilot.type.skilltypes.{2}} else '' ) +   ( if $object.pilot.type.skilltypes.{3}? then  + $object.pilot.skill.{$object.pilot.type.skilltypes.{3}} else '' ) ) else 'null'"/>
-            <replace string="{5554302,30}" with="@$object.defencenpc.combinedskill"/>
-            <replace string="{5554302,31}" with="@$object.defencenpc.skill.boarding"/>
-            <replace string="{5554302,32}" with="@$object.defencenpc.skill.combat"/>
-            <replace string="{5554302,33}" with="@$object.defencenpc.skill.engineering"/>
-            <replace string="{5554302,34}" with="@$object.defencenpc.skill.leadership"/>
-            <replace string="{5554302,35}" with="@$object.defencenpc.skill.management"/>
-            <replace string="{5554302,36}" with="@$object.defencenpc.skill.navigation"/>
-            <replace string="{5554302,37}" with="@$object.defencenpc.skill.morale"/>
-            <replace string="{5554302,38}" with="@$object.defencenpc.skill.science"/>
-            <replace string="{5554302,39}" with="if $object.defencenpc.exists then ( '' +  $object.defencenpc.skill.{$object.defencenpc.type.skilltypes.{1}} +  ( if $object.defencenpc.type.skilltypes.{2}? then  + $object.defencenpc.skill.{$object.defencenpc.type.skilltypes.{2}} else '' ) +   ( if $object.defencenpc.type.skilltypes.{3}? then  + $object.defencenpc.skill.{$object.defencenpc.type.skilltypes.{3}} else '' ) ) else 'null'"/>
-            <replace string="{5554302,40}" with="@$object.engineer.combinedskill"/>
-            <replace string="{5554302,41}" with="@$object.engineer.skill.boarding"/>
-            <replace string="{5554302,42}" with="@$object.engineer.skill.combat"/>
-            <replace string="{5554302,43}" with="@$object.engineer.skill.engineering"/>
-            <replace string="{5554302,44}" with="@$object.engineer.skill.leadership"/>
-            <replace string="{5554302,45}" with="@$object.engineer.skill.management"/>
-            <replace string="{5554302,46}" with="@$object.engineer.skill.navigation"/>
-            <replace string="{5554302,47}" with="@$object.engineer.skill.morale"/>
-            <replace string="{5554302,48}" with="@$object.engineer.skill.science"/>
-            <replace string="{5554302,49}" with="if $object.engineer.exists then ( '' +  $object.engineer.skill.{$object.engineer.type.skilltypes.{1}} +  ( if $object.engineer.type.skilltypes.{2}? then  + $object.engineer.skill.{$object.engineer.type.skilltypes.{2}} else '' ) +   ( if $object.engineer.type.skilltypes.{3}? then  + $object.engineer.skill.{$object.engineer.type.skilltypes.{3}} else '' ) ) else 'null'"/>
-            <replace string="{5554302,50}" with="@$object.tradenpc.combinedskill"/>
-            <replace string="{5554302,51}" with="@$object.tradenpc.skill.boarding"/>
-            <replace string="{5554302,52}" with="@$object.tradenpc.skill.combat"/>
-            <replace string="{5554302,53}" with="@$object.tradenpc.skill.engineering"/>
-            <replace string="{5554302,54}" with="@$object.tradenpc.skill.leadership"/>
-            <replace string="{5554302,55}" with="@$object.tradenpc.skill.management"/>
-            <replace string="{5554302,56}" with="@$object.tradenpc.skill.navigation"/>
-            <replace string="{5554302,57}" with="@$object.tradenpc.skill.morale"/>
-            <replace string="{5554302,58}" with="@$object.tradenpc.skill.science"/>
-            <replace string="{5554302,59}" with="if $object.tradenpc.exists then ( '' +  $object.tradenpc.skill.{$object.tradenpc.type.skilltypes.{1}} +  ( if $object.tradenpc.type.skilltypes.{2}? then  + $object.tradenpc.skill.{$object.tradenpc.type.skilltypes.{2}} else '' ) +   ( if $object.tradenpc.type.skilltypes.{3}? then  + $object.tradenpc.skill.{$object.tradenpc.type.skilltypes.{3}} else '' ) ) else 'null'"/>
+            <replace string="{5554302,50}" with="@$object.pilot.combinedskill"/>
+            <replace string="{5554302,51}" with="@$object.pilot.skill.boarding"/>
+            <replace string="{5554302,52}" with="@$object.pilot.skill.combat"/>
+            <replace string="{5554302,53}" with="@$object.pilot.skill.engineering"/>
+            <replace string="{5554302,54}" with="@$object.pilot.skill.leadership"/>
+            <replace string="{5554302,55}" with="@$object.pilot.skill.management"/>
+            <replace string="{5554302,56}" with="@$object.pilot.skill.navigation"/>
+            <replace string="{5554302,57}" with="@$object.pilot.skill.morale"/>
+            <replace string="{5554302,58}" with="@$object.pilot.skill.science"/>
+            <replace string="{5554302,59}" with="if $object.pilot.exists then ( '' +  $object.pilot.skill.{$object.pilot.type.skilltypes.{1}} +  ( if $object.pilot.type.skilltypes.{2}? then  + $object.pilot.skill.{$object.pilot.type.skilltypes.{2}} else '' ) +   ( if $object.pilot.type.skilltypes.{3}? then  + $object.pilot.skill.{$object.pilot.type.skilltypes.{3}} else '' ) ) else 'null'"/>
+            <replace string="{5554302,60}" with="@$object.defencenpc.combinedskill"/>
+            <replace string="{5554302,61}" with="@$object.defencenpc.skill.boarding"/>
+            <replace string="{5554302,62}" with="@$object.defencenpc.skill.combat"/>
+            <replace string="{5554302,63}" with="@$object.defencenpc.skill.engineering"/>
+            <replace string="{5554302,64}" with="@$object.defencenpc.skill.leadership"/>
+            <replace string="{5554302,65}" with="@$object.defencenpc.skill.management"/>
+            <replace string="{5554302,66}" with="@$object.defencenpc.skill.navigation"/>
+            <replace string="{5554302,67}" with="@$object.defencenpc.skill.morale"/>
+            <replace string="{5554302,68}" with="@$object.defencenpc.skill.science"/>
+            <replace string="{5554302,69}" with="if $object.defencenpc.exists then ( '' +  $object.defencenpc.skill.{$object.defencenpc.type.skilltypes.{1}} +  ( if $object.defencenpc.type.skilltypes.{2}? then  + $object.defencenpc.skill.{$object.defencenpc.type.skilltypes.{2}} else '' ) +   ( if $object.defencenpc.type.skilltypes.{3}? then  + $object.defencenpc.skill.{$object.defencenpc.type.skilltypes.{3}} else '' ) ) else 'null'"/>
+            <replace string="{5554302,70}" with="@$object.engineer.combinedskill"/>
+            <replace string="{5554302,71}" with="@$object.engineer.skill.boarding"/>
+            <replace string="{5554302,72}" with="@$object.engineer.skill.combat"/>
+            <replace string="{5554302,73}" with="@$object.engineer.skill.engineering"/>
+            <replace string="{5554302,74}" with="@$object.engineer.skill.leadership"/>
+            <replace string="{5554302,75}" with="@$object.engineer.skill.management"/>
+            <replace string="{5554302,76}" with="@$object.engineer.skill.navigation"/>
+            <replace string="{5554302,77}" with="@$object.engineer.skill.morale"/>
+            <replace string="{5554302,78}" with="@$object.engineer.skill.science"/>
+            <replace string="{5554302,79}" with="if $object.engineer.exists then ( '' +  $object.engineer.skill.{$object.engineer.type.skilltypes.{1}} +  ( if $object.engineer.type.skilltypes.{2}? then  + $object.engineer.skill.{$object.engineer.type.skilltypes.{2}} else '' ) +   ( if $object.engineer.type.skilltypes.{3}? then  + $object.engineer.skill.{$object.engineer.type.skilltypes.{3}} else '' ) ) else 'null'"/>
+            <replace string="{5554302,80}" with="@$object.tradenpc.combinedskill"/>
+            <replace string="{5554302,81}" with="@$object.tradenpc.skill.boarding"/>
+            <replace string="{5554302,82}" with="@$object.tradenpc.skill.combat"/>
+            <replace string="{5554302,83}" with="@$object.tradenpc.skill.engineering"/>
+            <replace string="{5554302,84}" with="@$object.tradenpc.skill.leadership"/>
+            <replace string="{5554302,85}" with="@$object.tradenpc.skill.management"/>
+            <replace string="{5554302,86}" with="@$object.tradenpc.skill.navigation"/>
+            <replace string="{5554302,87}" with="@$object.tradenpc.skill.morale"/>
+            <replace string="{5554302,88}" with="@$object.tradenpc.skill.science"/>
+            <replace string="{5554302,89}" with="if $object.tradenpc.exists then ( '' +  $object.tradenpc.skill.{$object.tradenpc.type.skilltypes.{1}} +  ( if $object.tradenpc.type.skilltypes.{2}? then  + $object.tradenpc.skill.{$object.tradenpc.type.skilltypes.{2}} else '' ) +   ( if $object.tradenpc.type.skilltypes.{3}? then  + $object.tradenpc.skill.{$object.tradenpc.type.skilltypes.{3}} else '' ) ) else 'null'"/>
             <!-- Boarding Stuff -->
             <replace string="{5554302,90}" with="@$object.boardingmarines.count"/>
             <replace string="{5554302,91}" with="@$object.boardingmarines.combinedskill"/>
