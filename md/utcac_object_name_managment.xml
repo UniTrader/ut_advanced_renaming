@@ -135,60 +135,100 @@
             <do_if value="$object.owner == faction.player and @readtext.{5554302}.{1} != '=ReadText5554302-1='" comment="check if the Object is really owned by the player and if custom file is present">
               <do_if value="not player.entity.$unformatted_names.{$object}?">
                 <do_if value="$object.isrealclass.station">
-                  <do_if value="@readtext.{5554302}.{3} != ''">
-                    <set_value name="player.entity.$unformatted_names.{$object}" exact="@readtext.{5554302}.{3}"/>
+                  <do_if value="@readtext.{5554302}.{11} != ''">
+                    <set_value name="player.entity.$unformatted_names.{$object}" exact="@readtext.{5554302}.{11}"/>
                   </do_if>
                   <do_else>
                     <set_value name="$skiprename"/>
                   </do_else>
                 </do_if>
                 <do_elseif value="$object.isclass.ship_xl">
-                  <do_if value="@readtext.{5554302}.{4} != ''">
-                    <set_value name="player.entity.$unformatted_names.{$object}" exact="@readtext.{5554302}.{4}"/>
+                  <do_if value="@readtext.{5554302}.{12} != ''">
+                    <set_value name="player.entity.$unformatted_names.{$object}" exact="@readtext.{5554302}.{12}"/>
                   </do_if>
                   <do_else>
                     <set_value name="$skiprename"/>
                   </do_else>
                 </do_elseif>
                 <do_elseif value="$object.isclass.ship_l">
-                  <do_if value="@readtext.{5554302}.{5} != ''">
-                    <set_value name="player.entity.$unformatted_names.{$object}" exact="@readtext.{5554302}.{5}"/>
+                  <do_if value="@readtext.{5554302}.{13} != ''">
+                    <set_value name="player.entity.$unformatted_names.{$object}" exact="@readtext.{5554302}.{13}"/>
                   </do_if>
                   <do_else>
                     <set_value name="$skiprename"/>
                   </do_else>
                 </do_elseif>
                 <do_elseif value="$object.isclass.ship_m">
-                  <do_if value="@readtext.{5554302}.{6} != ''">
-                    <set_value name="player.entity.$unformatted_names.{$object}" exact="@readtext.{5554302}.{6}"/>
+                  <do_if value="@readtext.{5554302}.{14} != ''">
+                    <set_value name="player.entity.$unformatted_names.{$object}" exact="@readtext.{5554302}.{14}"/>
                   </do_if>
                   <do_else>
                     <set_value name="$skiprename"/>
                   </do_else>
                 </do_elseif>
                 <do_elseif value="$object.isclass.ship_s">
-                  <do_if value="@readtext.{5554302}.{7} != ''">
-                    <set_value name="player.entity.$unformatted_names.{$object}" exact="@readtext.{5554302}.{7}"/>
+                  <do_if value="@readtext.{5554302}.{15} != ''">
+                    <set_value name="player.entity.$unformatted_names.{$object}" exact="@readtext.{5554302}.{15}"/>
                   </do_if>
                   <do_else>
                     <set_value name="$skiprename"/>
                   </do_else>
                 </do_elseif>
                 <do_elseif value="$object.isclass.ship_xs">
-                  <do_if value="@readtext.{5554302}.{8} != ''">
-                    <set_value name="player.entity.$unformatted_names.{$object}" exact="@readtext.{5554302}.{8}"/>
+                  <do_if value="@readtext.{5554302}.{16} != ''">
+                    <set_value name="player.entity.$unformatted_names.{$object}" exact="@readtext.{5554302}.{16}"/>
                   </do_if>
                   <do_else>
                     <set_value name="$skiprename"/>
                   </do_else>
                 </do_elseif>
                 <do_else>
-                  <do_if value="@readtext.{5554302}.{9} != ''">
-                    <set_value name="player.entity.$unformatted_names.{$object}" exact="@readtext.{5554302}.{9}"/>
+                  <do_if value="@readtext.{5554302}.{17} != ''">
+                    <set_value name="player.entity.$unformatted_names.{$object}" exact="@readtext.{5554302}.{17}"/>
                   </do_if>
                   <do_else>
                     <set_value name="$skiprename"/>
                   </do_else>
+                </do_else>
+                <do_if value="$object.primarypurpose == objectpurpose.trade">
+                  <substitute_text text="player.entity.$unformatted_names.{$object}">
+                    <replace string="{5554302,20}" with="{5554302,21}"/>
+                  </substitute_text>
+                </do_if>
+                <do_elseif value="$object.primarypurpose == objectpurpose.fight">
+                  <substitute_text text="player.entity.$unformatted_names.{$object}">
+                    <replace string="{5554302,20}" with="{5554302,22}"/>
+                  </substitute_text>
+                </do_elseif>
+                <do_elseif value="$object.primarypurpose == objectpurpose.build">
+                  <substitute_text text="player.entity.$unformatted_names.{$object}">
+                    <replace string="{5554302,20}" with="{5554302,23}"/>
+                  </substitute_text>
+                </do_elseif>
+                <do_elseif value="$object.primarypurpose == objectpurpose.mine">
+                  <substitute_text text="player.entity.$unformatted_names.{$object}">
+                    <replace string="{5554302,20}" with="{5554302,24}"/>
+                  </substitute_text>
+                </do_elseif>
+                <do_elseif value="$object.primarypurpose == objectpurpose.auxiliary">
+                  <substitute_text text="player.entity.$unformatted_names.{$object}">
+                    <replace string="{5554302,20}" with="{5554302,25}"/>
+                  </substitute_text>
+                </do_elseif>
+                <do_elseif value="$object.primarypurpose == objectpurpose.hack">
+                  <substitute_text text="player.entity.$unformatted_names.{$object}">
+                    <replace string="{5554302,20}" with="{5554302,26}"/>
+                  </substitute_text>
+                </do_elseif>
+                <do_elseif value="$object.primarypurpose == objectpurpose.scan">
+                  <substitute_text text="player.entity.$unformatted_names.{$object}">
+                    <replace string="{5554302,20}" with="{5554302,27}"/>
+                  </substitute_text>
+                </do_elseif>
+                <do_else>
+                  <substitute_text text="player.entity.$unformatted_names.{$object}">
+                    <replace string="{5554302,20}" with="''"/>
+                  </substitute_text>
                 </do_else>
                 <debug_text filter="general" text="'Name set to %1'.[player.entity.$unformatted_names.{$object}]" chance="0"/>
                 <do_if value="not $skiprename?">
