@@ -318,10 +318,16 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   <t id="307">$building.inprogress</t><!-- $station.builds.inprogress.count -->
   <t id="308">$stageH#</t>
   <t id="309">$stageI#</t>
-  <!-- UT CaC Expressions -->
-  <t id="400">UT CaC</t><!-- result value for $scriptset with UT CaC -->
-  <t id="401">$currentorder</t>
-  <t id="402">$ordercount</t>
+  <!-- Station specific expressions -->
+  <t id="411">$prod.ressware</t>
+  <t id="412">$prod.resstiermin</t>
+  <t id="413">$prod.resstiermax</t>
+  <t id="421">$prod.interware</t>
+  <t id="422">$prod.intertiermin</t>
+  <t id="423">$prod.intertiermax</t>
+  <t id="431">$prod.prodware</t>
+  <t id="432">$prod.prodtiermin</t>
+  <t id="433">$prod.prodtiermax</t>
   <!-- Sequence Number Expressions and Control Codes-->
   <t id="500">%seq</t><!-- Common Prefix for all Sequence entries, so we can quickly check if any are present -->
   <t id="501">%seqall</t>

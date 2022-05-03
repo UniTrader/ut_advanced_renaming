@@ -903,11 +903,16 @@ else 'null'"/-->
             <replace string="{5554302,129}" with="@$object.cargo.capacity.all"/>
             <replace string="{5554302,130}" with="@$object.cargo.capacity.all - @$object.cargo.free.all"/>
             <replace string="{5554302,131}" with="$cargolist.count"/>
-            <!-- Values based on other Scripts -->
-            <replace string="{5554302,120}" with="$scriptset"/>
-            <!-- UT CaC Functionality -->
-            <replace string="{5554302,401}" with="if $object.controlentity.$orderlist? then $object.controlentity.$orderlist.{1}.$displayname else ''"/>
-            <replace string="{5554302,402}" with="if $object.controlentity.$orderlist? then $object.controlentity.$orderlist.count else ''"/>
+			<!-- Station related expressions -->
+            <replace string="{5554302,411}" with="if @$object.resources.pure.count == 1 then @$object.resources.pure.{1} else @$object.resources.pure.count"/>
+            <replace string="{5554302,412}" with="'WiP'"/>
+            <replace string="{5554302,413}" with="'WiP'"/>
+            <replace string="{5554302,421}" with="if @$object.resources.intermediate.count == 1 then @$object.resources.intermediate.{1} else @$object.resources.intermediate.count"/>
+            <replace string="{5554302,422}" with="'WiP'"/>
+            <replace string="{5554302,423}" with="'WiP'"/>
+            <replace string="{5554302,431}" with="if @$object.products.count == 1 then @$object.products.{1} else @$object.products.count"/>
+            <replace string="{5554302,432}" with="'WiP'"/>
+            <replace string="{5554302,433}" with="'WiP'"/>
           </substitute_text>
           <!-- remove temp Values for Cargo Expression -->
           <remove_value name="$primarycargo"/>
