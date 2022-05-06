@@ -104,6 +104,20 @@
             <remove_value name="$allstations"/>
           </actions>
         </cue>
+        <cue name="Gamestart_Load_Update" instantiate="true">
+          <conditions>
+            <check_any>
+              <event_game_started/>
+              <event_game_loaded/>
+            </check_any>
+          </conditions>
+          <actions>
+            <run_actions ref="SetWareTiers" result="$TiersByWare">
+              <param name="IsInit" value="true" />
+            </run_actions>
+
+          </actions>
+        </cue>
         <cue name="EventObjectDestroyed" instantiate="true">
           <conditions>
             <event_object_destroyed group="$NamedObjects"/>
@@ -190,37 +204,37 @@
                     <set_value name="$skiprename"/>
                   </do_else>
                 </do_else>
-                <do_if value="$object.primarypurpose == objectpurpose.trade">
+                <do_if value="$object.primarypurpose == purpose.trade">
                   <substitute_text text="player.entity.$unformatted_names.{$object}">
                     <replace string="{5554302,20}" with="{5554302,21}"/>
                   </substitute_text>
                 </do_if>
-                <do_elseif value="$object.primarypurpose == objectpurpose.fight">
+                <do_elseif value="$object.primarypurpose == purpose.fight">
                   <substitute_text text="player.entity.$unformatted_names.{$object}">
                     <replace string="{5554302,20}" with="{5554302,22}"/>
                   </substitute_text>
                 </do_elseif>
-                <do_elseif value="$object.primarypurpose == objectpurpose.build">
+                <do_elseif value="$object.primarypurpose == purpose.build">
                   <substitute_text text="player.entity.$unformatted_names.{$object}">
                     <replace string="{5554302,20}" with="{5554302,23}"/>
                   </substitute_text>
                 </do_elseif>
-                <do_elseif value="$object.primarypurpose == objectpurpose.mine">
+                <do_elseif value="$object.primarypurpose == purpose.mine">
                   <substitute_text text="player.entity.$unformatted_names.{$object}">
                     <replace string="{5554302,20}" with="{5554302,24}"/>
                   </substitute_text>
                 </do_elseif>
-                <do_elseif value="$object.primarypurpose == objectpurpose.auxiliary">
+                <do_elseif value="$object.primarypurpose == purpose.auxiliary">
                   <substitute_text text="player.entity.$unformatted_names.{$object}">
                     <replace string="{5554302,20}" with="{5554302,25}"/>
                   </substitute_text>
                 </do_elseif>
-                <do_elseif value="$object.primarypurpose == objectpurpose.hack">
+                <do_elseif value="$object.primarypurpose == purpose.hack">
                   <substitute_text text="player.entity.$unformatted_names.{$object}">
                     <replace string="{5554302,20}" with="{5554302,26}"/>
                   </substitute_text>
                 </do_elseif>
-                <do_elseif value="$object.primarypurpose == objectpurpose.scan">
+                <do_elseif value="$object.primarypurpose == purpose.scan">
                   <substitute_text text="player.entity.$unformatted_names.{$object}">
                     <replace string="{5554302,20}" with="{5554302,27}"/>
                   </substitute_text>
@@ -395,7 +409,7 @@
         </cue>
       </cues>
     </cue>
-    <library name="RenameActions">
+    <library name="RenameActions" purpose="run_actions">
       <actions>
         <!-- confirm valadity of Object, saveBlackboard Entity -->
         <do_if value="$object.exists and player.entity.$unformatted_names.{$object}?">
@@ -805,9 +819,16 @@
             <replace string="{5554302,131}" with="''"/>
             <!-- Values based on other Scripts -->
             <replace string="{5554302,120}" with="''"/>
-            <!-- UT CaC Functionality -->
-            <replace string="{5554302,401}" with="''"/>
-            <replace string="{5554302,402}" with="''"/>
+            <!-- Station related expressions -->
+            <replace string="{5554302,411}" with="''"/>
+            <replace string="{5554302,412}" with="''"/>
+            <replace string="{5554302,413}" with="''"/>
+            <replace string="{5554302,421}" with="''"/>
+            <replace string="{5554302,422}" with="''"/>
+            <replace string="{5554302,423}" with="''"/>
+            <replace string="{5554302,431}" with="''"/>
+            <replace string="{5554302,432}" with="''"/>
+            <replace string="{5554302,433}" with="''"/>
           </substitute_text>
           <!-- Generate the Long Name -->
           <!-- Find Primary and Secondary Ware in Cargo -->
@@ -825,7 +846,7 @@
           </do_all>
           <set_value name="$primarycargo" exact="if $primarycargo then $primarycargo.name else {5554302,125}"/>
           <set_value name="$secondarycargo" exact="if $secondarycargo then $secondarycargo.name else {5554302,127}"/>
-          
+
           <substitute_text text="$nameA">
             <!-- Skill-based Expressions -->
             <!--replace string="{5554302,40}" with="@$object.boardingnpc.skill.combinedskill"/>
@@ -903,7 +924,7 @@ else 'null'"/-->
             <replace string="{5554302,129}" with="@$object.cargo.capacity.all"/>
             <replace string="{5554302,130}" with="@$object.cargo.capacity.all - @$object.cargo.free.all"/>
             <replace string="{5554302,131}" with="$cargolist.count"/>
-			<!-- Station related expressions -->
+            <!-- Station related expressions -->
             <replace string="{5554302,411}" with="if @$object.resources.pure.count == 1 then @$object.resources.pure.{1} else @$object.resources.pure.count"/>
             <replace string="{5554302,412}" with="'WiP'"/>
             <replace string="{5554302,413}" with="'WiP'"/>
@@ -918,7 +939,7 @@ else 'null'"/-->
           <remove_value name="$primarycargo"/>
           <remove_value name="$secondarycargo"/>
           <remove_value name="$cargolist"/>
-          
+
           <set_value name="$debug" exact="'%1\nDYNAMIC: %2 %4 %3'.[$debug,$nameA,@$nameB,if $nameA == @$nameB then '==' else '!=' ]" chance="$debug? *100" comment="fill debug output Value"/>
           <!-- if the Name contains something dynamic - add it to the Update-Group, otherwise remove it -->
           <do_if value="$nameA != $nameB">
@@ -1000,6 +1021,52 @@ else 'null'"/-->
             <debug_to_file text="'No Unformatted Name Var set on Object: %1 - doing nothing!! (may be caused by a Script Update)'.[@$object]" name="'Advanced Renaming.txt'" output="true"/>
           </do_else>
         </do_else>
+      </actions>
+    </library>
+    <library name="SetWareTiers" purpose="run_actions">
+      <params>
+        <param name="TiersByWare" default="null" />
+        <!-- $TiersByWare.{$Ware} = tier number -->
+        <param name="Ware" default="null" />
+        <param name="IsInit" default="null" />
+        <param name="DebugIndent" default="''" />
+      </params>
+      <actions>
+        <do_if value="$IsInit">
+          <set_value name="$TiersByWare" exact="table[]" />
+        </do_if>
+        <do_if value="not $Ware">
+          <get_ware_definition result="$wares" tags="[tag.economy]" />
+        </do_if>
+        <do_else>
+          <set_value name="$wares" exact="@$Ware.resources.list" />
+        </do_else>
+        <do_if value="@$wares.count">
+          <set_value name="$resourceTier_max" exact="0" />
+          <do_for_each name="$ware_inList" in="$wares">
+            <do_if value="not $TiersByWare.{$ware_inList}?">
+              <do_if value="@$ware_inList.resources.count">
+                <run_actions ref="SetWareTier" result="$TiersByWare">
+                  <param name="TiersByWare" value="$TiersByWare" />
+                  <param name="Ware" value="$ware_inList" />
+                  <param name="DebugIndent" value="$DebugIndent + '    '" />
+                </run_actions>
+              </do_if>
+              <do_else>
+                <set_value name="$TiersByWare.{$ware_inList}" exact="0" />
+                <debug_text text="$DebugIndent + @$ware_inList + ' (no resources but in resources list of ' + $Ware + '): ' + @$TiersByWare.{$ware_inList}" chance="0" />
+              </do_else>
+            </do_if>
+            <do_if value="$TiersByWare.{$ware_inList} gt $resourceTier_max">
+              <set_value name="$resourceTier_max" exact="$TiersByWare.{$ware_inList}" />
+            </do_if>
+          </do_for_each>
+          <do_if value="$Ware">
+            <set_value name="$TiersByWare.{$Ware}" exact="$resourceTier_max + 1" />
+            <debug_text text="$DebugIndent + @$Ware + ' (has ' + $wares.count +  ' resources (' + $wares + ')): ' + @$TiersByWare.{$Ware}" chance="0" />
+          </do_if>
+        </do_if>
+        <return value="$TiersByWare" />
       </actions>
     </library>
   </cues>
