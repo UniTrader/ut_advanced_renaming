@@ -1032,41 +1032,222 @@ else 'null'"/-->
         <param name="DebugIndent" default="''" />
       </params>
       <actions>
-        <do_if value="$IsInit">
-          <set_value name="$TiersByWare" exact="table[]" />
-        </do_if>
-        <do_if value="not $Ware">
-          <get_ware_definition result="$wares" tags="[tag.economy]" />
-        </do_if>
-        <do_else>
-          <set_value name="$wares" exact="@$Ware.resources.list" />
-        </do_else>
-        <do_if value="@$wares.count">
-          <set_value name="$resourceTier_max" exact="0" />
-          <do_for_each name="$ware_inList" in="$wares">
-            <do_if value="not $TiersByWare.{$ware_inList}?">
-              <do_if value="@$ware_inList.resources.count">
-                <run_actions ref="SetWareTier" result="$TiersByWare">
-                  <param name="TiersByWare" value="$TiersByWare" />
-                  <param name="Ware" value="$ware_inList" />
-                  <param name="DebugIndent" value="$DebugIndent + '    '" />
-                </run_actions>
-              </do_if>
-              <do_else>
-                <set_value name="$TiersByWare.{$ware_inList}" exact="0" />
-                <debug_text text="$DebugIndent + @$ware_inList + ' (no resources but in resources list of ' + $Ware + '): ' + @$TiersByWare.{$ware_inList}" chance="0" />
-              </do_else>
-            </do_if>
-            <do_if value="$TiersByWare.{$ware_inList} gt $resourceTier_max">
-              <set_value name="$resourceTier_max" exact="$TiersByWare.{$ware_inList}" />
-            </do_if>
-          </do_for_each>
-          <do_if value="$Ware">
-            <set_value name="$TiersByWare.{$Ware}" exact="$resourceTier_max + 1" />
-            <debug_text text="$DebugIndent + @$Ware + ' (has ' + $wares.count +  ' resources (' + $wares + ')): ' + @$TiersByWare.{$Ware}" chance="0" />
+        <do_if value="{5554302,3} == 'kurtee' or {5554302,3} == 'kurteefood'">
+          <do_if value="$IsInit">
+            <set_value name="$TiersByWare" exact="table[]" />
           </do_if>
+          <do_if value="not $Ware">
+            <get_ware_definition result="$wares" tags="[tag.economy]" />
+          </do_if>
+          <do_else>
+            <set_value name="$wares" exact="@$Ware.resources.list" />
+          </do_else>
+          <do_if value="@$wares.count">
+            <set_value name="$resourceTier_max" exact="0" />
+            <do_for_each name="$ware_inList" in="$wares">
+              <do_if value="not $TiersByWare.{$ware_inList}?">
+                <do_if value="@$ware_inList.resources.count">
+                  <run_actions ref="SetWareTier" result="$TiersByWare">
+                    <param name="TiersByWare" value="$TiersByWare" />
+                    <param name="Ware" value="$ware_inList" />
+                    <param name="DebugIndent" value="$DebugIndent + '    '" />
+                  </run_actions>
+                </do_if>
+                <do_else>
+                  <set_value name="$TiersByWare.{$ware_inList}" exact="0" />
+                  <debug_text text="$DebugIndent + @$ware_inList + ' (no resources but in resources list of ' + $Ware + '): ' + @$TiersByWare.{$ware_inList}" chance="0" />
+                </do_else>
+              </do_if>
+              <do_if value="$TiersByWare.{$ware_inList} gt $resourceTier_max">
+                <set_value name="$resourceTier_max" exact="$TiersByWare.{$ware_inList}" />
+              </do_if>
+            </do_for_each>
+            <do_if value="$Ware">
+              <set_value name="$TiersByWare.{$Ware}" exact="$resourceTier_max + 1" />
+              <debug_text text="$DebugIndent + @$Ware + ' (has ' + $wares.count +  ' resources (' + $wares + ')): ' + @$TiersByWare.{$Ware}" chance="0" />
+            </do_if>
+          </do_if>
+          <return value="$TiersByWare" />
         </do_if>
-        <return value="$TiersByWare" />
+        <do_elseif value="{5554302,3} == 'wiki'">
+          <get_ware_definition result="$wares" tags="[tag.economy]" />
+          <set_value name="$TiersByWare" exact="table[]"/>
+          <do_for_each in="$wares">
+            <do_if value="waregroup.agricultural.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="1"/>
+            </do_if>
+            <do_elseif value="waregroup.energy.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="0"/>
+            </do_elseif>
+            <do_elseif value="waregroup.food.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="2"/>
+            </do_elseif>
+            <do_elseif value="waregroup.gases.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="0"/>
+            </do_elseif>
+            <do_elseif value="loop.element == ware.scanningarrays" comment="Wiki Tier is 5, but its in the hightech group with tier 4">
+              <set_value name="$TiersByWare.{loop.element}" exact="5"/>
+            </do_elseif>
+            <do_elseif value="waregroup.hightech.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="4"/>
+            </do_elseif>
+            <do_elseif value="waregroup.ice.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="0"/>
+            </do_elseif>
+            <do_elseif value="waregroup.minerals.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="0"/>
+            </do_elseif>
+            <do_elseif value="waregroup.pharmaceutical.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="2"/>
+            </do_elseif>
+            <do_elseif value="waregroup.refined.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="3"/>
+            </do_elseif>
+            <do_elseif value="loop.element == ware.smartchips" comment="Wiki Tier is 4, but its in the shiptech group with tier 5">
+              <set_value name="$TiersByWare.{loop.element}" exact="4"/>
+            </do_elseif>
+            <do_elseif value="waregroup.shiptech.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="5"/>
+            </do_elseif>
+            <do_elseif value="waregroup.weapontech.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="6"/>
+            </do_elseif>
+            <do_elseif value="waregroup.water.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="0"/>
+            </do_elseif>
+            <!-- Below here are the final equipment Products -->
+            <do_elseif value="waregroup.ships_argon.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="7"/>
+            </do_elseif>
+            <do_elseif value="waregroup.ships_paranid.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="7"/>
+            </do_elseif>
+            <do_elseif value="waregroup.ships_teladi.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="7"/>
+            </do_elseif>
+            <do_elseif value="waregroup.ships_split.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="7"/>
+            </do_elseif>
+            <do_elseif value="waregroup.ships_terran.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="7"/>
+            </do_elseif>
+            <do_elseif value="waregroup.drones.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="6"/>
+            </do_elseif>
+            <do_elseif value="waregroup.countermeasures.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="6"/>
+            </do_elseif>
+            <do_elseif value="waregroup.engines.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="6"/>
+            </do_elseif>
+            <do_elseif value="waregroup.missiles.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="6"/>
+            </do_elseif>
+            <do_elseif value="waregroup.shields.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="6"/>
+            </do_elseif>
+            <do_elseif value="waregroup.software.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="6"/>
+            </do_elseif>
+            <do_elseif value="waregroup.thrusters.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="6"/>
+            </do_elseif>
+            <do_elseif value="waregroup.turrets.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="6"/>
+            </do_elseif>
+            <do_elseif value="waregroup.weapons.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="6"/>
+            </do_elseif>
+          </do_for_each>
+          <return value="$TiersByWare" />
+        </do_elseif>
+        <do_else>
+          <get_ware_definition result="$wares" tags="[tag.economy]" />
+          <set_value name="$TiersByWare" exact="table[]"/>
+          <do_for_each in="$wares">
+            <do_if value="waregroup.agricultural.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="5"/><!-- 1 -->
+            </do_if>
+            <do_elseif value="waregroup.energy.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="1"/><!-- 0 -->
+            </do_elseif>
+            <do_elseif value="waregroup.food.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="6"/><!-- 2 -->
+            </do_elseif>
+            <do_elseif value="waregroup.gases.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="0"/><!-- 0 -->
+            </do_elseif>
+            <do_elseif value="waregroup.hightech.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="3"/><!-- 4 -->
+            </do_elseif>
+            <do_elseif value="waregroup.ice.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="0"/><!-- 0 -->
+            </do_elseif>
+            <do_elseif value="waregroup.minerals.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="0"/><!-- 0 -->
+            </do_elseif>
+            <do_elseif value="waregroup.pharmaceutical.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="7"/><!-- 2 -->
+            </do_elseif>
+            <do_elseif value="waregroup.refined.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="2"/><!-- 3 -->
+            </do_elseif>
+            <do_elseif value="waregroup.shiptech.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="4"/><!-- 5 -->
+            </do_elseif>
+            <do_elseif value="waregroup.weapontech.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="3"/><!-- 6 -->
+            </do_elseif>
+            <do_elseif value="waregroup.water.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="2"/><!-- 0 -->
+            </do_elseif>
+            <!-- Below here are the final equipment Products -->
+            <do_elseif value="waregroup.ships_argon.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="9"/><!-- 7 -->
+            </do_elseif>
+            <do_elseif value="waregroup.ships_paranid.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="9"/><!-- 7 -->
+            </do_elseif>
+            <do_elseif value="waregroup.ships_teladi.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="9"/><!-- 7 -->
+            </do_elseif>
+            <do_elseif value="waregroup.ships_split.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="9"/><!-- 7 -->
+            </do_elseif>
+            <do_elseif value="waregroup.ships_terran.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="9"/><!-- 7 -->
+            </do_elseif>
+            <do_elseif value="waregroup.drones.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="8"/><!-- 6 -->
+            </do_elseif>
+            <do_elseif value="waregroup.countermeasures.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="8"/><!-- 6 -->
+            </do_elseif>
+            <do_elseif value="waregroup.engines.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="8"/><!-- 6 -->
+            </do_elseif>
+            <do_elseif value="waregroup.missiles.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="8"/><!-- 6 -->
+            </do_elseif>
+            <do_elseif value="waregroup.shields.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="8"/><!-- 6 -->
+            </do_elseif>
+            <do_elseif value="waregroup.software.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="8"/><!-- 6 -->
+            </do_elseif>
+            <do_elseif value="waregroup.thrusters.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="8"/><!-- 6 -->
+            </do_elseif>
+            <do_elseif value="waregroup.turrets.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="8"/><!-- 6 -->
+            </do_elseif>
+            <do_elseif value="waregroup.weapons.{loop.element}.exists">
+              <set_value name="$TiersByWare.{loop.element}" exact="8"/><!-- 6 -->
+            </do_elseif>
+          </do_for_each>
+          <return value="$TiersByWare" />
+
+        </do_else>
       </actions>
     </library>
   </cues>
