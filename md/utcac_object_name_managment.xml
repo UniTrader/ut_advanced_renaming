@@ -846,7 +846,56 @@
           </do_all>
           <set_value name="$primarycargo" exact="if $primarycargo then $primarycargo.name else {5554302,125}"/>
           <set_value name="$secondarycargo" exact="if $secondarycargo then $secondarycargo.name else {5554302,127}"/>
-
+          <!-- Get Ware Tiers -->
+          <do_if value="$object.isclass.station">
+            <set_value name="$ressmintier" exact="10"/>
+            <set_value name="$ressmaxtier" exact="0"/>
+            <set_value name="$intermintier" exact="10"/>
+            <set_value name="$intermintier" exact="0"/>
+            <set_value name="$prodmintier" exact="10"/>
+            <set_value name="$prodmintier" exact="0"/>
+            <do_for_each in="$object.resources.pure.list">
+              <set_value name="$tier" exact="$TiersByWare.{loop.element}"/>
+              <do_if value="$ressmintier lt $tier">
+                <set_value name="$ressmintier" exact="$tier"/>
+              </do_if>
+              <do_if value="$ressmaxtier gt $tier">
+                <set_value name="$ressmaxtier" exact="$tier"/>
+              </do_if>
+            </do_for_each>
+            <do_for_each in="$object.resources.intermediate.list">
+              <set_value name="$tier" exact="$TiersByWare.{loop.element}"/>
+              <do_if value="$intermintier lt $tier">
+                <set_value name="$intermintier" exact="$tier"/>
+              </do_if>
+              <do_if value="$intermaxtier gt $tier">
+                <set_value name="$intermaxtier" exact="$tier"/>
+              </do_if>
+            </do_for_each>
+            <set_value name="$products" exact="[]"/>
+            <do_for_each in="$object.products.list">
+              <do_if value="not $object.products.{loop.element}.intermediate">
+                <append_to_list name="$products" exact="loop.element"/>
+              </do_if>
+            </do_for_each>
+            <do_for_each in="$products">
+              <set_value name="$tier" exact="$TiersByWare.{loop.element}"/>
+              <do_if value="$prodmintier lt $tier">
+                <set_value name="$prodmintier" exact="$tier"/>
+              </do_if>
+              <do_if value="$prodmaxtier gt $tier">
+                <set_value name="$prodmaxtier" exact="$tier"/>
+              </do_if>
+            </do_for_each>
+          </do_if>
+          <do_else>
+            <set_value name="$ressmintier" exact="''"/>
+            <set_value name="$ressmaxtier" exact="''"/>
+            <set_value name="$intermintier" exact="''"/>
+            <set_value name="$intermintier" exact="''"/>
+            <set_value name="$prodmintier" exact="''"/>
+            <set_value name="$prodmintier" exact="''"/>
+          </do_else>
           <substitute_text text="$nameA">
             <!-- Skill-based Expressions -->
             <!--replace string="{5554302,40}" with="@$object.boardingnpc.skill.combinedskill"/>
@@ -926,19 +975,20 @@ else 'null'"/-->
             <replace string="{5554302,131}" with="$cargolist.count"/>
             <!-- Station related expressions -->
             <replace string="{5554302,411}" with="if @$object.resources.pure.count == 1 then @$object.resources.pure.{1} else @$object.resources.pure.count"/>
-            <replace string="{5554302,412}" with="'WiP'"/>
-            <replace string="{5554302,413}" with="'WiP'"/>
+            <replace string="{5554302,412}" with="$ressmintier"/>
+            <replace string="{5554302,413}" with="$ressmaxtier"/>
             <replace string="{5554302,421}" with="if @$object.resources.intermediate.count == 1 then @$object.resources.intermediate.{1} else @$object.resources.intermediate.count"/>
-            <replace string="{5554302,422}" with="'WiP'"/>
-            <replace string="{5554302,423}" with="'WiP'"/>
-            <replace string="{5554302,431}" with="if @$object.products.count == 1 then @$object.products.{1} else @$object.products.count"/>
-            <replace string="{5554302,432}" with="'WiP'"/>
-            <replace string="{5554302,433}" with="'WiP'"/>
+            <replace string="{5554302,422}" with="$intermintier"/>
+            <replace string="{5554302,423}" with="$intermaxtier"/>
+            <replace string="{5554302,431}" with="if $products then if @products.count == 1 then $products.{1} else @$object.products.count else ''"/>
+            <replace string="{5554302,432}" with="$prodmintier"/>
+            <replace string="{5554302,433}" with="$prodmaxtier"/>
           </substitute_text>
           <!-- remove temp Values for Cargo Expression -->
           <remove_value name="$primarycargo"/>
           <remove_value name="$secondarycargo"/>
           <remove_value name="$cargolist"/>
+          <remove_value name="$products"/>
 
           <set_value name="$debug" exact="'%1\nDYNAMIC: %2 %4 %3'.[$debug,$nameA,@$nameB,if $nameA == @$nameB then '==' else '!=' ]" chance="$debug? *100" comment="fill debug output Value"/>
           <!-- if the Name contains something dynamic - add it to the Update-Group, otherwise remove it -->
