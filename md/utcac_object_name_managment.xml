@@ -239,6 +239,16 @@
                     <replace string="{5554302,20}" with="{5554302,27}"/>
                   </substitute_text>
                 </do_elseif>
+                <do_elseif value="$object.primarypurpose == purpose.salvage">
+                  <substitute_text text="player.entity.$unformatted_names.{$object}">
+                    <replace string="{5554302,20}" with="{5554302,28}"/>
+                  </substitute_text>
+                </do_elseif>
+                <do_elseif value="$object.primarypurpose == purpose.dismantling">
+                  <substitute_text text="player.entity.$unformatted_names.{$object}">
+                    <replace string="{5554302,20}" with="{5554302,29}"/>
+                  </substitute_text>
+                </do_elseif>
                 <do_else>
                   <substitute_text text="player.entity.$unformatted_names.{$object}">
                     <replace string="{5554302,20}" with="''"/>
