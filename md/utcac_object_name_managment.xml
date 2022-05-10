@@ -1082,7 +1082,7 @@ else 'null'"/-->
         <param name="DebugIndent" default="''" />
       </params>
       <actions>
-        <do_if value="{5554302,3} == 'kurtee' or {5554302,3} == 'kurteefood'">
+        <do_if value="{5554302,3} == 'kurtee' or {5554302,3} == 'auto'">
           <do_if value="$IsInit">
             <set_value name="$TiersByWare" exact="table[]" />
           </do_if>
@@ -1093,11 +1093,10 @@ else 'null'"/-->
             <set_value name="$wares" exact="@$Ware.resources.list" />
           </do_else>
           <do_if value="@$wares.count">
-            <set_value name="$resourceTier_max" exact="0" />
             <do_for_each name="$ware_inList" in="$wares">
               <do_if value="not $TiersByWare.{$ware_inList}?">
                 <do_if value="@$ware_inList.resources.count">
-                  <run_actions ref="SetWareTier" result="$TiersByWare">
+                  <run_actions ref="SetWareTiers" result="$TiersByWare">
                     <param name="TiersByWare" value="$TiersByWare" />
                     <param name="Ware" value="$ware_inList" />
                     <param name="DebugIndent" value="$DebugIndent + '    '" />
@@ -1105,16 +1104,46 @@ else 'null'"/-->
                 </do_if>
                 <do_else>
                   <set_value name="$TiersByWare.{$ware_inList}" exact="0" />
-                  <debug_text text="$DebugIndent + @$ware_inList + ' (no resources but in resources list of ' + $Ware + '): ' + @$TiersByWare.{$ware_inList}" chance="0" />
+                  <!-- <debug_text text="$DebugIndent + @$ware_inList + ': ' + @$TiersByWare.{$ware_inList} + ' (no resources but in resources list of ' + $Ware + ')'" chance="100" /> -->
+                  <debug_text text="@$ware_inList + ': ' + @$TiersByWare.{$ware_inList} + ' (no resources but in resources list of ' + $Ware + ')'" chance="100" />
                 </do_else>
               </do_if>
+            </do_for_each>
+            <set_value name="$resourceTier_max" exact="0" />
+            <do_for_each name="$ware_inList" in="$wares">
               <do_if value="$TiersByWare.{$ware_inList} gt $resourceTier_max">
                 <set_value name="$resourceTier_max" exact="$TiersByWare.{$ware_inList}" />
               </do_if>
             </do_for_each>
             <do_if value="$Ware">
               <set_value name="$TiersByWare.{$Ware}" exact="$resourceTier_max + 1" />
-              <debug_text text="$DebugIndent + @$Ware + ' (has ' + $wares.count +  ' resources (' + $wares + ')): ' + @$TiersByWare.{$Ware}" chance="0" />
+              <set_value name="$isLowTier" exact="
+          waregroup.agricultural.{$Ware}.exists or
+          waregroup.energy.{$Ware}.exists or
+          waregroup.food.{$Ware}.exists or
+          waregroup.gases.{$Ware}.exists or
+          waregroup.ice.{$Ware}.exists or
+          waregroup.minerals.{$Ware}.exists or
+          waregroup.pharmaceutical.{$Ware}.exists or
+          waregroup.water.{$Ware}.exists
+        " />
+              <do_if value="$isLowTier">
+                <do_if value="$TiersByWare.{$Ware} gt 3">
+                  <set_value name="$TiersByWare.{$Ware}" exact="$TiersByWare.{$Ware} - 1" />
+                </do_if>
+              </do_if>
+              <do_else>
+                <set_value name="$TiersByWare.{$Ware}" exact="$TiersByWare.{$Ware} + 1" />
+                <do_if value="$TiersByWare.{$Ware} gt 5">
+                  <set_value name="$TiersByWare.{$Ware}" exact="$TiersByWare.{$Ware} - 1" />
+                </do_if>
+              </do_else>
+              <!-- <debug_text text="$DebugIndent + @$Ware + ': ' + @$TiersByWare.{$Ware} + ' $isLowTier: ' + $isLowTier" chance="100" /> -->
+              <debug_text text="@$Ware + ': ' + @$TiersByWare.{$Ware} + ' $isLowTier: ' + $isLowTier" chance="100" />
+              <do_for_each name="$ware_inList" in="$wares">
+                <!-- <debug_text text="$DebugIndent + '    +' + @$ware_inList + ': ' + @$TiersByWare.{$ware_inList}" chance="100" /> -->
+                <debug_text text="'    +' + @$ware_inList + ': ' + @$TiersByWare.{$ware_inList}" chance="100" />
+              </do_for_each>
             </do_if>
           </do_if>
           <return value="$TiersByWare" />
