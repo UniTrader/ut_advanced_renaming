@@ -576,22 +576,47 @@
             </do_if>-->
           </do_if>
           <!--  Ship type (without cargo class variations - already handled by cargo type expression)-->
-          <set_value name="$type" exact="$object.macro.name"/>
-          <get_text_ids_in_range result="$keys" page="5554301" start="20000" end="21000" factor="2"/>
-          <do_all exact="$keys.count" counter="$i" reverse="false">
-            <substitute_text text="$type">
-              <replace string="readtext.{5554301}.{$keys.{$i}}" with="readtext.{5554301}.{$keys.{$i}+1}"/>
-            </substitute_text>
-          </do_all>
-          <!-- Script Set running on this Ship -->
-          <!--do_if value="true" comment="just for better node folding">
-            <do_if value="$controlentity.$orderlist?">
-              <set_value name="$scriptset" exact="{5554302,400}"/>
+          <do_if value="$object.isrealclass.station">
+            <do_if value="$object.isheadquarters or $object.isfactionheadquarters">
+              <set_value name="$type" exact="{20102,2011}"/>
             </do_if>
-            <do_else comment="Vanilla or Unknown Script Set">
-              <set_value name="$scriptset" exact="{5554302,121}"/>
+            <do_elseif value="$object.isshipyard">
+              <set_value name="$type" exact="{20102,1071}"/>
+            </do_elseif>
+            <do_elseif value="$object.iswharf">
+              <set_value name="$type" exact="{20102,1081}"/>
+            </do_elseif>
+            <do_elseif value="$object.isequipmentdock">
+              <set_value name="$type" exact="{20102,1061}"/>
+            </do_elseif>
+            <do_elseif value="$object.products.count">
+              <set_value name="$type" exact="{20102,1001}"/>
+            </do_elseif>
+            <do_elseif value="$object.isrecyclingfacility">
+              <set_value name="$type" exact="{20204,10007}"/>
+            </do_elseif>
+            <do_elseif value="$object.istradestation">
+              <set_value name="$type" exact="{20102,1051}"/>
+            </do_elseif>
+            <do_elseif value="$object.ispiratebase">
+              <set_value name="$type" exact="{20102,1501}"/>
+            </do_elseif>
+            <do_elseif value="$object.isdefencestation">
+              <set_value name="$type" exact="{20102,1041}"/>
+            </do_elseif>
+            <do_else>
+              <set_value name="$type" exact="$object.macro.name"/>
             </do_else>
-          </do_if-->
+          </do_if>
+          <do_else>
+            <set_value name="$type" exact="$object.macro.name"/>
+            <get_text_ids_in_range result="$keys" page="5554301" start="20000" end="21000" factor="2"/>
+            <do_all exact="$keys.count" counter="$i" reverse="false">
+              <substitute_text text="$type">
+                <replace string="readtext.{5554301}.{$keys.{$i}}" with="readtext.{5554301}.{$keys.{$i}+1}"/>
+              </substitute_text>
+            </do_all>
+          </do_else>
           <!-- - - - - - - - - - - - -->
           <!-- Actual Replacements in the Name -->
           <!-- Expressions which always have the same Result - just change the content of the name Var -->
@@ -604,7 +629,7 @@
             <replace string="{5554302,104}" with="$object.cluster.name"/>
             <replace string="{5554302,105}" with="$type"/>
             <replace string="{5554302,106}" with="$type"/>
-            <replace string="{5554302,107}" with="$object.macro.name"/>
+            <replace string="{5554302,107}" with="if $object.isrealclass.station then $type else $object.macro.name"/>
             <replace string="{5554302,108}" with="{5554301,11001} + $object.primarypurpose"/>
             <!-- will be post-dynamic replaced with proper Purpose Name -->
             <replace string="{5554302,109}" with="{5554301,11015} + $object.class"/>
