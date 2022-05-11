@@ -45,27 +45,27 @@
         <do_if value="not player.entity.$namereplacement?">
           <set_value name="player.entity.$namereplacement" exact="table[]"/>
         </do_if>
-        <set_value name="player.entity.$shortname" exact="table[]"/>
+        <set_value name="$shortname" exact="table[]"/>
         <!-- Set Up Sequence Number Variables -->
-        <set_value name="player.entity.$sequence_overall" exact="0"/>
-        <set_value name="player.entity.$sequence_type" exact="table[]"/>
-        <set_value name="player.entity.$sequence_size" exact="table[]"/>
-        <set_value name="player.entity.$sequence_purpose" exact="table[]"/>
-        <set_value name="player.entity.$sequence_sizepurpose" exact="table[]"/>
-        <set_value name="player.entity.$current_id" exact="table[]"/>
+        <set_value name="$sequence_overall" exact="0"/>
+        <set_value name="$sequence_type" exact="table[]"/>
+        <set_value name="$sequence_size" exact="table[]"/>
+        <set_value name="$sequence_purpose" exact="table[]"/>
+        <set_value name="$sequence_sizepurpose" exact="table[]"/>
+        <set_value name="$current_id" exact="table[]"/>
         <!-- set current User Expression Version so Update on load only happens when it changed -->
         <set_value name="$customversion" exact="if @readtext.{5554302}.{1} != '=ReadText5554302-1=' then readtext.{5554302}.{1} else null"/>
       </actions>
       <patch sinceversion="2" comment="Add Sequence Number count Variables">
         <!-- Set Up Sequence Number Variables -->
-        <set_value name="player.entity.$sequence_overall" exact="0"/>
-        <set_value name="player.entity.$sequence_type" exact="table[]"/>
-        <set_value name="player.entity.$sequence_size" exact="table[]"/>
-        <set_value name="player.entity.$sequence_purpose" exact="table[]"/>
-        <set_value name="player.entity.$sequence_sizepurpose" exact="table[]"/>
+        <set_value name="$sequence_overall" exact="0"/>
+        <set_value name="$sequence_type" exact="table[]"/>
+        <set_value name="$sequence_size" exact="table[]"/>
+        <set_value name="$sequence_purpose" exact="table[]"/>
+        <set_value name="$sequence_sizepurpose" exact="table[]"/>
       </patch>
       <patch sinceversion="3" comment="Fix for stored sequence number">
-        <set_value name="player.entity.$current_id" exact="table[]"/>
+        <set_value name="$current_id" exact="table[]"/>
       </patch>
       <cues>
         <cue name="Check_Redundant_Mods" instantiate="true">
@@ -125,7 +125,7 @@
           <actions>
             <remove_value name="player.entity.$unformatted_names.{event.object}"/>
             <remove_value name="player.entity.$namereplacement.{event.object}"/>
-            <remove_value name="player.entity.$shortname.{event.object}"/>
+            <remove_value name="$shortname.{event.object}"/>
           </actions>
         </cue>
         <cue name="NameUpdate_Initialize" instantiate="true">
@@ -468,7 +468,7 @@
               <replace string="{5554302,510}" with="''"/>
             </substitute_text>
             <do_if value="$nameA != $nameB">
-              <remove_value name="player.entity.$current_id.{$object}"/>
+              <remove_value name="$current_id.{$object}"/>
               <set_value name="$nameA" exact="$nameB"/>
               <set_value name="$debug" exact="'%1\nIDRES1:  %2'.[$debug,$nameA]" chance="$debug? *100" comment="fill debug output Value"/>
               <set_value name="player.entity.$unformatted_names.{$object}" exact="$nameB"/>
@@ -481,7 +481,7 @@
                 <replace string="{5554302,512}" with="''"/>
               </substitute_text>
               <do_if value="$nameA != $nameB">
-                <set_value name="player.entity.$sequence_overall" exact="0"/>
+                <set_value name="$sequence_overall" exact="0"/>
                 <set_value name="$nameA" exact="$nameB"/>
                 <set_value name="$debug" exact="$debug+'\nOverall Sequence reset'" chance="$debug? *100"/>
               </do_if>
@@ -489,7 +489,7 @@
                 <replace string="{5554302,513}" with="''"/>
               </substitute_text>
               <do_if value="$nameA != $nameB">
-                <set_value name="player.entity.$sequence_type.{$object.macro}" exact="0"/>
+                <set_value name="$sequence_type.{$object.macro}" exact="0"/>
                 <set_value name="$nameA" exact="$nameB"/>
                 <set_value name="$debug" exact="$debug+'\nObject Type Sequence reset'" chance="$debug? *100"/>
               </do_if>
@@ -497,7 +497,7 @@
                 <replace string="{5554302,514}" with="''"/>
               </substitute_text>
               <do_if value="$nameA != $nameB">
-                <set_value name="player.entity.$sequence_size.{$object.class}" exact="0"/>
+                <set_value name="$sequence_size.{$object.class}" exact="0"/>
                 <set_value name="$nameA" exact="$nameB"/>
                 <set_value name="$debug" exact="$debug+'\nObject Size Sequence reset'" chance="$debug? *100"/>
               </do_if>
@@ -505,7 +505,7 @@
                 <replace string="{5554302,515}" with="''"/>
               </substitute_text>
               <do_if value="$nameA != $nameB">
-                <set_value name="player.entity.$sequence_purpose.{$object.primarypurpose}" exact="0"/>
+                <set_value name="$sequence_purpose.{$object.primarypurpose}" exact="0"/>
                 <set_value name="$nameA" exact="$nameB"/>
                 <set_value name="$debug" exact="$debug+'\nObject Purpose Sequence reset'" chance="$debug? *100"/>
               </do_if>
@@ -513,10 +513,10 @@
                 <replace string="{5554302,516}" with="''"/>
               </substitute_text>
               <do_if value="$nameA != $nameB">
-                <do_if value="not player.entity.$sequence_sizepurppose.{$object.class}?">
-                  <set_value name="player.entity.$sequence_sizepurppose.{$object.class}" exact="table[]"/>
+                <do_if value="not $sequence_sizepurppose.{$object.class}?">
+                  <set_value name="$sequence_sizepurppose.{$object.class}" exact="table[]"/>
                 </do_if>
-                <set_value name="player.entity.$sequence_sizepurppose.{$object.class}.{$object.primarypurpose}" exact="0"/>
+                <set_value name="$sequence_sizepurppose.{$object.class}.{$object.primarypurpose}" exact="0"/>
                 <set_value name="$nameA" exact="$nameB"/>
                 <set_value name="$debug" exact="$debug+'\nObject Class Sequence reset'" chance="$debug? *100"/>
               </do_if>
@@ -622,7 +622,7 @@
           <!-- Expressions which always have the same Result - just change the content of the name Var -->
           <substitute_text text="$nameA">
             <replace string="{5554302,200}" with="$cargotype"/>
-            <replace string="{5554302,100}" with="if player.entity.$shortname.{$object.commander} then player.entity.$shortname.{$object.commander} else $object.commander.name"/>
+            <replace string="{5554302,100}" with="if $shortname.{$object.commander} then $shortname.{$object.commander} else $object.commander.name"/>
             <replace string="{5554302,101}" with="$object.commander.sector.name"/>
             <replace string="{5554302,102}" with="$object.commander.cluster.name"/>
             <replace string="{5554302,103}" with="$object.sector.name"/>
@@ -666,80 +666,80 @@
           <do_if value="$nameA != $nameB">
             <set_value name="$debug" exact="'%1\nSequence expression detected'.[$debug]" chance="$debug? *100" comment="fill debug output Value"/>
             <!-- Get a sequence Number if we have none yet -->
-            <do_if value="player.entity.$current_id.{$object}?">
-              <set_value name="$tmp" exact="player.entity.$current_id.{$object}"/>
-              <set_value name="$debug" exact="$debug+'\nSet id from Stored Value: '+ player.entity.$current_id.{$object}" chance="$debug? *100"/>
+            <do_if value="$current_id.{$object}?">
+              <set_value name="$tmp" exact="$current_id.{$object}"/>
+              <set_value name="$debug" exact="$debug+'\nSet id from Stored Value: '+ $current_id.{$object}" chance="$debug? *100"/>
             </do_if>
             <do_else>
-              <set_value name="$tmp" exact="player.entity.$sequence_overall+1"/>
+              <set_value name="$tmp" exact="$sequence_overall+1"/>
             </do_else>
             <substitute_text text="$nameB" source="$nameA">
-              <replace string="{5554302,501}" with="( if player.entity.$sequence_overall ge 100 and $tmp lt 100  then {5554302,122} else '' ) + ( if player.entity.$sequence_overall ge 10 and $tmp lt 10  then {5554302,122} else '' ) + $tmp"/>
+              <replace string="{5554302,501}" with="( if $sequence_overall ge 100 and $tmp lt 100  then {5554302,122} else '' ) + ( if $sequence_overall ge 10 and $tmp lt 10  then {5554302,122} else '' ) + $tmp"/>
             </substitute_text>
             <do_if value="$nameA != $nameB">
-              <do_if value="not player.entity.$current_id.{$object}?">
-                <set_value name="player.entity.$sequence_overall" operation="add"/>
-                <set_value name="player.entity.$current_id.{$object}" exact="player.entity.$sequence_overall"/>
-                <set_value name="$debug" exact="$debug+'\nSet id from Overall: '+ player.entity.$current_id.{$object}" chance="$debug? *100"/>
+              <do_if value="not $current_id.{$object}?">
+                <set_value name="$sequence_overall" operation="add"/>
+                <set_value name="$current_id.{$object}" exact="$sequence_overall"/>
+                <set_value name="$debug" exact="$debug+'\nSet id from Overall: '+ $current_id.{$object}" chance="$debug? *100"/>
               </do_if>
             </do_if>
             <do_else>
-              <do_if value="not player.entity.$current_id.{$object}?">
-                <set_value name="$tmp" exact="player.entity.$sequence_type.{$object.macro}+1"/>
+              <do_if value="not $current_id.{$object}?">
+                <set_value name="$tmp" exact="$sequence_type.{$object.macro}+1"/>
               </do_if>
               <substitute_text text="$nameB" source="$nameA">
-                <replace string="{5554302,502}" with="( if player.entity.$sequence_type.{$object.macro} ge 100 and $tmp lt 100  then {5554302,122} else '' ) + ( if player.entity.$sequence_type.{$object.macro} ge 10 and $tmp lt 10  then {5554302,122} else '' ) + $tmp"/>
+                <replace string="{5554302,502}" with="( if $sequence_type.{$object.macro} ge 100 and $tmp lt 100  then {5554302,122} else '' ) + ( if $sequence_type.{$object.macro} ge 10 and $tmp lt 10  then {5554302,122} else '' ) + $tmp"/>
               </substitute_text>
               <do_if value="$nameA != $nameB">
-                <do_if value="not player.entity.$current_id.{$object}?">
-                  <set_value name="player.entity.$sequence_type.{$object.macro}" operation="add"/>
-                  <set_value name="player.entity.$current_id.{$object}" exact="player.entity.$sequence_type.{$object.macro}"/>
-                  <set_value name="$debug" exact="$debug+'\nSet id from Type: '+ player.entity.$current_id.{$object}" chance="$debug? *100"/>
+                <do_if value="not $current_id.{$object}?">
+                  <set_value name="$sequence_type.{$object.macro}" operation="add"/>
+                  <set_value name="$current_id.{$object}" exact="$sequence_type.{$object.macro}"/>
+                  <set_value name="$debug" exact="$debug+'\nSet id from Type: '+ $current_id.{$object}" chance="$debug? *100"/>
                 </do_if>
               </do_if>
               <do_else>
-                <do_if value="not player.entity.$current_id.{$object}?">
-                  <set_value name="$tmp" exact="player.entity.$sequence_size.{$object.class}+1"/>
+                <do_if value="not $current_id.{$object}?">
+                  <set_value name="$tmp" exact="$sequence_size.{$object.class}+1"/>
                 </do_if>
                 <substitute_text text="$nameB" source="$nameA">
-                  <replace string="{5554302,503}" with="( if player.entity.$sequence_size.{$object.class} ge 100 and $tmp lt 100  then {5554302,122} else '' ) + ( if player.entity.$sequence_size.{$object.class} ge 10 and $tmp lt 10  then {5554302,122} else '' ) + $tmp"/>
+                  <replace string="{5554302,503}" with="( if $sequence_size.{$object.class} ge 100 and $tmp lt 100  then {5554302,122} else '' ) + ( if $sequence_size.{$object.class} ge 10 and $tmp lt 10  then {5554302,122} else '' ) + $tmp"/>
                 </substitute_text>
                 <do_if value="$nameA != $nameB">
-                  <do_if value="not player.entity.$current_id.{$object}?">
-                    <set_value name="player.entity.$sequence_size.{$object.class}" operation="add"/>
-                    <set_value name="player.entity.$current_id.{$object}" exact="player.entity.$sequence_size.{$object.class}"/>
-                    <set_value name="$debug" exact="$debug+'\nSet id from Size: '+ player.entity.$current_id.{$object}" chance="$debug? *100"/>
+                  <do_if value="not $current_id.{$object}?">
+                    <set_value name="$sequence_size.{$object.class}" operation="add"/>
+                    <set_value name="$current_id.{$object}" exact="$sequence_size.{$object.class}"/>
+                    <set_value name="$debug" exact="$debug+'\nSet id from Size: '+ $current_id.{$object}" chance="$debug? *100"/>
                   </do_if>
                 </do_if>
                 <do_else>
-                  <do_if value="not player.entity.$current_id.{$object}?">
-                    <set_value name="$tmp" exact="player.entity.$sequence_purpose.{$object.primarypurpose}+1"/>
+                  <do_if value="not $current_id.{$object}?">
+                    <set_value name="$tmp" exact="$sequence_purpose.{$object.primarypurpose}+1"/>
                   </do_if>
                   <substitute_text text="$nameB" source="$nameA">
-                    <replace string="{5554302,504}" with="( if player.entity.$sequence_purpose.{$object.primarypurpose} ge 100 and $tmp lt 100  then {5554302,122} else '' ) + ( if player.entity.$sequence_purpose.{$object.primarypurpose} ge 10 and $tmp lt 10  then {5554302,122} else '' ) + $tmp"/>
+                    <replace string="{5554302,504}" with="( if $sequence_purpose.{$object.primarypurpose} ge 100 and $tmp lt 100  then {5554302,122} else '' ) + ( if $sequence_purpose.{$object.primarypurpose} ge 10 and $tmp lt 10  then {5554302,122} else '' ) + $tmp"/>
                   </substitute_text>
                   <do_if value="$nameA != $nameB">>
-                    <do_if value="not player.entity.$current_id.{$object}?">
-                      <set_value name="player.entity.$sequence_purpose.{$object.primarypurpose}" operation="add"/>
-                      <set_value name="player.entity.$current_id.{$object}" exact="player.entity.$sequence_purpose.{$object.primarypurpose}"/>
-                      <set_value name="$debug" exact="$debug+'\nSet id from Purpose: '+ player.entity.$current_id.{$object}" chance="$debug? *100"/>
+                    <do_if value="not $current_id.{$object}?">
+                      <set_value name="$sequence_purpose.{$object.primarypurpose}" operation="add"/>
+                      <set_value name="$current_id.{$object}" exact="$sequence_purpose.{$object.primarypurpose}"/>
+                      <set_value name="$debug" exact="$debug+'\nSet id from Purpose: '+ $current_id.{$object}" chance="$debug? *100"/>
                     </do_if>
                   </do_if>
                   <do_else>
-                    <do_if value="not player.entity.$current_id.{$object}?">
-                      <set_value name="$tmp" exact="player.entity.$sequence_sizepurppose.{$object.class}.{$object.primarypurpose}+1"/>
+                    <do_if value="not $current_id.{$object}?">
+                      <set_value name="$tmp" exact="$sequence_sizepurppose.{$object.class}.{$object.primarypurpose}+1"/>
                     </do_if>
                     <substitute_text text="$nameB" source="$nameA">
                       <replace string="{5554302,505}" with="''"/>
                     </substitute_text>
                     <do_if value="$nameA != $nameB">
-                      <do_if value="not player.entity.$current_id.{$object}?">
-                        <do_if value="notplayer.entity.$sequence_sizepurppose.{$object.class}?">
-                          <set_value name="player.entity.$sequence_sizepurppose.{$object.class}" exact="table[]"/>
+                      <do_if value="not $current_id.{$object}?">
+                        <do_if value="not$sequence_sizepurppose.{$object.class}?">
+                          <set_value name="$sequence_sizepurppose.{$object.class}" exact="table[]"/>
                         </do_if>
-                        <set_value name="player.entity.$sequence_sizepurppose.{$object.class}.{$object.primarypurpose}" operation="add"/>
-                        <set_value name="player.entity.$current_id.{$object}" exact="player.entity.$sequence_sizepurppose.{$object.class}.{$object.primarypurpose}"/>
-                        <set_value name="$debug" exact="$debug+'\nSet id from Class: '+ player.entity.$current_id.{$object}" chance="$debug? *100"/>
+                        <set_value name="$sequence_sizepurppose.{$object.class}.{$object.primarypurpose}" operation="add"/>
+                        <set_value name="$current_id.{$object}" exact="$sequence_sizepurppose.{$object.class}.{$object.primarypurpose}"/>
+                        <set_value name="$debug" exact="$debug+'\nSet id from Class: '+ $current_id.{$object}" chance="$debug? *100"/>
                       </do_if>
                     </do_if>
                     <do_else>
@@ -750,11 +750,11 @@
             </do_else>
 
             <!--substitute_text text="$nameA">
-              <replace string="{5554302,501}" with="player.entity.$current_id.{$object}"/>
-              <replace string="{5554302,502}" with="player.entity.$current_id.{$object}"/>
-              <replace string="{5554302,503}" with="player.entity.$current_id.{$object}"/>
-              <replace string="{5554302,504}" with="player.entity.$current_id.{$object}"/>
-              <replace string="{5554302,505}" with="player.entity.$current_id.{$object}"/>
+              <replace string="{5554302,501}" with="$current_id.{$object}"/>
+              <replace string="{5554302,502}" with="$current_id.{$object}"/>
+              <replace string="{5554302,503}" with="$current_id.{$object}"/>
+              <replace string="{5554302,504}" with="$current_id.{$object}"/>
+              <replace string="{5554302,505}" with="$current_id.{$object}"/>
             </substitute_text-->
             <set_value name="$debug" exact="'%1\nSEQUENC: %2'.[$debug,$nameB ]" chance="$debug? *100" comment="fill debug output Value"/>
           </do_if>
@@ -1054,7 +1054,7 @@ else 'null'"/-->
               <replace string="'    '" with="' '"/>
               <replace string="'  '" with="' '"/>
             </substitute_text>
-            <set_value name="player.entity.$shortname.$object" exact="$nameB"/>
+            <set_value name="$shortname.$object" exact="$nameB"/>
           </do_if>
           <do_else>
             <do_all exact="$keys.count" counter="$i" reverse="false">
@@ -1062,7 +1062,7 @@ else 'null'"/-->
                 <replace string="readtext.{5554301}.{$keys.{$i}}" with="readtext.{5554301}.{$keys.{$i}+1}"/>
               </substitute_text>
             </do_all>
-            <remove_value name="player.entity.$shortname.$object"/>
+            <remove_value name="$shortname.$object"/>
           </do_else>
           <set_value name="$debug" exact="'%1\nPOSTDYN: %2    %3'.[$debug,$nameA,@$nameB]" chance="$debug? *100" comment="fill debug output Value"/>
           <do_if value="$nameA == ''">
