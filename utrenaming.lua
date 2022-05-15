@@ -928,7 +928,7 @@ function utRenaming.createRenameContext(frame)
 	local title = menu.contextMenuData.fleetrename and ReadText(1001, 7895) or ReadText(1001, 1114)
 	local startname = menu.contextMenuData.fleetrename and ffi.string(C.GetFleetName(menu.contextMenuData.component)) or ffi.string(C.GetComponentName(menu.contextMenuData.component))
 	
-	-- Added by UniTrader: override startname with the Edifable Ship Name when Renaming an Object
+	-- Added by UniTrader: override startname with the Editable Ship Name when Renaming an Object
 	if not menu.contextMenuData.fleetrename then
 		for k,v in pairs(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")) do
 			if tostring(k) == "ID: "..tostring(menu.contextMenuData.component) then
