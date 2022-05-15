@@ -204,58 +204,58 @@
                     <set_value name="$skiprename"/>
                   </do_else>
                 </do_else>
-                <do_if value="$object.primarypurpose == purpose.trade">
-                  <substitute_text text="player.entity.$unformatted_names.{$object}">
-                    <replace string="{5554302,20}" with="{5554302,21}"/>
-                  </substitute_text>
-                </do_if>
-                <do_elseif value="$object.primarypurpose == purpose.fight">
-                  <substitute_text text="player.entity.$unformatted_names.{$object}">
-                    <replace string="{5554302,20}" with="{5554302,22}"/>
-                  </substitute_text>
-                </do_elseif>
-                <do_elseif value="$object.primarypurpose == purpose.build">
-                  <substitute_text text="player.entity.$unformatted_names.{$object}">
-                    <replace string="{5554302,20}" with="{5554302,23}"/>
-                  </substitute_text>
-                </do_elseif>
-                <do_elseif value="$object.primarypurpose == purpose.mine">
-                  <substitute_text text="player.entity.$unformatted_names.{$object}">
-                    <replace string="{5554302,20}" with="{5554302,24}"/>
-                  </substitute_text>
-                </do_elseif>
-                <do_elseif value="$object.primarypurpose == purpose.auxiliary">
-                  <substitute_text text="player.entity.$unformatted_names.{$object}">
-                    <replace string="{5554302,20}" with="{5554302,25}"/>
-                  </substitute_text>
-                </do_elseif>
-                <do_elseif value="$object.primarypurpose == purpose.hack">
-                  <substitute_text text="player.entity.$unformatted_names.{$object}">
-                    <replace string="{5554302,20}" with="{5554302,26}"/>
-                  </substitute_text>
-                </do_elseif>
-                <do_elseif value="$object.primarypurpose == purpose.scan">
-                  <substitute_text text="player.entity.$unformatted_names.{$object}">
-                    <replace string="{5554302,20}" with="{5554302,27}"/>
-                  </substitute_text>
-                </do_elseif>
-                <do_elseif value="$object.primarypurpose == purpose.salvage">
-                  <substitute_text text="player.entity.$unformatted_names.{$object}">
-                    <replace string="{5554302,20}" with="{5554302,28}"/>
-                  </substitute_text>
-                </do_elseif>
-                <do_elseif value="$object.primarypurpose == purpose.dismantling">
-                  <substitute_text text="player.entity.$unformatted_names.{$object}">
-                    <replace string="{5554302,20}" with="{5554302,29}"/>
-                  </substitute_text>
-                </do_elseif>
-                <do_else>
-                  <substitute_text text="player.entity.$unformatted_names.{$object}">
-                    <replace string="{5554302,20}" with="''"/>
-                  </substitute_text>
-                </do_else>
-                <debug_text filter="general" text="'Name set to %1'.[player.entity.$unformatted_names.{$object}]" chance="0"/>
-                <do_if value="not $skiprename?">
+                <do_if value="not $skiprename?" comment="no initial name set - no need to do any of this">
+                  <do_if value="$object.primarypurpose == purpose.trade">
+                    <substitute_text text="player.entity.$unformatted_names.{$object}">
+                      <replace string="{5554302,20}" with="{5554302,21}"/>
+                    </substitute_text>
+                  </do_if>
+                  <do_elseif value="$object.primarypurpose == purpose.fight">
+                    <substitute_text text="player.entity.$unformatted_names.{$object}">
+                      <replace string="{5554302,20}" with="{5554302,22}"/>
+                    </substitute_text>
+                  </do_elseif>
+                  <do_elseif value="$object.primarypurpose == purpose.build">
+                    <substitute_text text="player.entity.$unformatted_names.{$object}">
+                      <replace string="{5554302,20}" with="{5554302,23}"/>
+                    </substitute_text>
+                  </do_elseif>
+                  <do_elseif value="$object.primarypurpose == purpose.mine">
+                    <substitute_text text="player.entity.$unformatted_names.{$object}">
+                      <replace string="{5554302,20}" with="{5554302,24}"/>
+                    </substitute_text>
+                  </do_elseif>
+                  <do_elseif value="$object.primarypurpose == purpose.auxiliary">
+                    <substitute_text text="player.entity.$unformatted_names.{$object}">
+                      <replace string="{5554302,20}" with="{5554302,25}"/>
+                    </substitute_text>
+                  </do_elseif>
+                  <do_elseif value="$object.primarypurpose == purpose.hack">
+                    <substitute_text text="player.entity.$unformatted_names.{$object}">
+                      <replace string="{5554302,20}" with="{5554302,26}"/>
+                    </substitute_text>
+                  </do_elseif>
+                  <do_elseif value="$object.primarypurpose == purpose.scan">
+                    <substitute_text text="player.entity.$unformatted_names.{$object}">
+                      <replace string="{5554302,20}" with="{5554302,27}"/>
+                    </substitute_text>
+                  </do_elseif>
+                  <do_elseif value="$object.primarypurpose == purpose.salvage">
+                    <substitute_text text="player.entity.$unformatted_names.{$object}">
+                      <replace string="{5554302,20}" with="{5554302,28}"/>
+                    </substitute_text>
+                  </do_elseif>
+                  <do_elseif value="$object.primarypurpose == purpose.dismantling">
+                    <substitute_text text="player.entity.$unformatted_names.{$object}">
+                      <replace string="{5554302,20}" with="{5554302,29}"/>
+                    </substitute_text>
+                  </do_elseif>
+                  <do_else>
+                    <substitute_text text="player.entity.$unformatted_names.{$object}">
+                      <replace string="{5554302,20}" with="''"/>
+                    </substitute_text>
+                  </do_else>
+                  <debug_text filter="general" text="'Name set to %1'.[player.entity.$unformatted_names.{$object}]" chance="0"/>
                   <include_actions ref="RenameActions"/>
                 </do_if>
               </do_if>
