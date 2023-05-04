@@ -419,7 +419,7 @@
         </cue>
       </cues>
     </cue>
-    <library name="RenameActions" purpose="run_actions">
+    <library name="RenameActions" purpose="include_actions">
       <actions>
         <!-- confirm valadity of Object, saveBlackboard Entity -->
         <do_if value="$object.exists and player.entity.$unformatted_names.{$object}?">
