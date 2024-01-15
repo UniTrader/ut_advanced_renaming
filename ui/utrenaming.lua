@@ -20,10 +20,15 @@ end
 
 function utRenaming.setupInfoSubmenuRows(row, instance, inputobject, objectname)
 	row[2]:createText(locrowdata[2], { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize, font = Helper.standardFont, x = Helper.standardTextOffsetx })
-	menu.shipNameEditBox = row[3]:setColSpan(6):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(objectname, { halign = "right" })
-	row[3].handlers.onEditBoxActivated = function (widget) return utRenaming.unformatText(widget, instance, inputobject, row) end
-	row[3].handlers.onEditBoxDeactivated = function(_, text, textchanged) return menu.infoChangeObjectName(inputobject, text, textchanged) end
-	menu.shipNameEditBox.properties.text.halign = "left"
+
+	local index, span = 4, 5
+	if ReadText(5554302, 2) == "yes" then 
+		index, span = 3, 6
+	end
+
+	menu.shipNameEditBox = row[index]:setColSpan(span):createEditBox({ height = config.mapRowHeight, description = locrowdata[2] }):setText(objectname, { halign = "right" })
+	row[index].handlers.onEditBoxActivated = function (widget) return utRenaming.unformatText(widget, instance, inputobject, row) end
+	row[index].handlers.onEditBoxDeactivated = function(_, text, textchanged) return menu.infoChangeObjectName(inputobject, text, textchanged) end
 end
 
 function utRenaming.unformatText(widget, instance, inputobject, row)
