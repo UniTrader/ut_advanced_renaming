@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <mdscript name="UT_CAC_Object_Name_Managment" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://utnas/~unitrader/XRebirthxsds/md.xsd">
   <cues>
     <!--cue name="RegisterUI_G_Workaround" version="1" instantiate="true">
@@ -32,7 +32,7 @@
       <actions>
         <debug_text filter="general" text="'utrenaming lua loader call'" chance="0"/>
         <raise_lua_event name="'Lua_Loader.Load'" param="'extensions.kuertee_ui_extensions.ui.kuertee_menu_map'"/>
-        <raise_lua_event name="'Lua_Loader.Load'" param="'extensions.ut_advanced_renaming.utrenaming'"/>
+        <raise_lua_event name="'Lua_Loader.Load'" param="'extensions.ut_advanced_renaming.ui.utrenaming'"/>
       </actions>
     </cue>
     <cue name="Init" version="3">
