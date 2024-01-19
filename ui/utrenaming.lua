@@ -55,14 +55,15 @@ function utRenaming.createRenameContext(frame, shiptable)
 	if not menu.contextMenuData.fleetrename then
 		if shiptable == nil then
 			for k,v in pairs(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")) do
-			if not menu.contextMenuData.fleetrename then
-				for k,v in pairs(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")) do
-					if tostring(k) == "ID: "..tostring(menu.contextMenuData.component) then
-						startname = v
-						break
+				if not menu.contextMenuData.fleetrename then
+					for k,v in pairs(GetNPCBlackboard(ConvertStringTo64Bit(tostring(C.GetPlayerID())) , "$unformatted_names")) do
+						if tostring(k) == "ID: "..tostring(menu.contextMenuData.component) then
+							startname = v
+							break
+						end
 					end
+					return startname
 				end
-				return startname
 			end
 		else
 			local row = shiptable:addRow(true, { fixed = true, bgColor = Helper.color.transparent })
