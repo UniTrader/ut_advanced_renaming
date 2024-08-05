@@ -363,21 +363,25 @@
         </cue>
         <cue name="NameUpdateEventObject" instantiate="true">
           <conditions>
-            <check_all>
-              <check_any>
-                <event_object_changed_subordinategroup group="$NamedObjects"/>
-                <event_object_changed_assignment group="$NamedObjects"/>
-                <event_control_entity_added group="$NamedObjects"/>
-                <event_player_build_finished/>
-                <event_player_trade_completed/>
-                <event_object_order_cancelled group="$NamedObjects"/>
-                <event_object_order_finished group="$NamedObjects"/>
-                <event_object_order_ready group="$NamedObjects"/>
-                <!--event_build_finished/>
+            <check_any>
+              <event_player_build_finished/>
+              <event_player_trade_completed/>
+              <check_all>
+                <check_any>
+                  <event_object_changed_subordinategroup group="$NamedObjects"/>
+                  <event_object_changed_assignment group="$NamedObjects"/>
+                  <event_control_entity_added group="$NamedObjects"/>
+                  <event_object_order_cancelled group="$NamedObjects"/>
+                  <event_object_order_finished group="$NamedObjects"/>
+                  <event_object_order_ready group="$NamedObjects"/>
+                  <!--event_build_finished/>
                 <event_trade_completed/-->
-              </check_any>
-              <!--<check_value value="$NamedObjectsDynamic.indexof.{event.object}"/>-->
-            </check_all>
+                </check_any>
+                <!--<check_value value="$NamedObjectsDynamic.indexof.{event.object}"/>-->
+                <check_value value="event.object.isclass.buildprocessor" negate="true"/>
+                <check_value value="event.object.owner == faction.player"/>
+              </check_all>
+            </check_any>
           </conditions>
           <actions>
             <do_if value="event.name == 'event_player_trade_completed'">
