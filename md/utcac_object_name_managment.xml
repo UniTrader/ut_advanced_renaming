@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<mdscript name="UT_CAC_Object_Name_Managment" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://utnas/~unitrader/XRebirthxsds/md.xsd">
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<mdscript xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="UT_CAC_Object_Name_Managment" xsi:noNamespaceSchemaLocation="http://localhost/x4mod/libraries/md.xsd">
   <cues>
     <!--cue name="RegisterUI_G_Workaround" version="1" instantiate="true">
       <conditions>
@@ -26,7 +26,7 @@
     </cue-->
     <cue name="RegisterUI_Lua_Loader" instantiate="true">
       <conditions>
-        <event_ui_triggered screen="'Lua_Loader'" control="'Ready'" />
+        <event_ui_triggered screen="'Lua_Loader'" control="'Ready'"/>
       </conditions>
       <delay min="10ms" max="100ms"/>
       <actions>
@@ -38,8 +38,8 @@
     <cue name="Init" version="3">
       <actions>
         <!-- Set Up all Groups needed for Automatic Name Upates -->
-        <create_group groupname="$NamedObjects" comment="group to keep track of all Named Objects (for future Force-Updates of Non-Dynamic Names)"/>
-        <create_group groupname="$NamedObjectsDynamic" comment="group to keep track of all Named Objects which have Dnamic Name Parts (to handle update Signals)"/>
+        <create_group groupname="$NamedObjects" comment="group to keep track of all Named Objects (for Updates)"/>
+        <!--<create_group groupname="$NamedObjectsDynamic" comment="group to keep track of all Named Objects which have Dnamic Name Parts (to handle update Signals)"/>-->
         <do_if value="not player.entity.$unformatted_names?">
           <set_value name="player.entity.$unformatted_names" exact="table[]"/>
         </do_if>
@@ -114,9 +114,8 @@
           </conditions>
           <actions>
             <run_actions ref="SetWareTiers" result="$TiersByWare">
-              <param name="IsInit" value="true" />
+              <param name="IsInit" value="true"/>
             </run_actions>
-
           </actions>
         </cue>
         <cue name="EventObjectDestroyed" instantiate="true">
@@ -131,18 +130,22 @@
         </cue>
         <cue name="NameUpdate_Initialize" instantiate="true">
           <conditions>
-            <check_any>
-              <event_player_built_ship/>
-              <event_player_build_plot_changed/>
-              <!--event_player_built_station/-->
-              <event_lasertower_launched space="player.galaxy"/>
-              <event_mine_launched space="player.galaxy"/>
-              <event_navbeacon_launched space="player.galaxy"/>
-              <event_satellite_launched space="player.galaxy"/>
-              <event_resourceprobe_launched space="player.galaxy"/>
-              <event_contained_object_changed_owner space="player.galaxy" owner="faction.player"/>
-              <event_cue_signalled/>
-            </check_any>
+            <check_all>
+              <check_any>
+                <event_player_build_finished/>
+                <event_player_built_ship comment="triggers before completion it seems - too early. using build_finished instead"/>
+                <event_player_build_plot_changed comment="rendundant - build finished has same purpose"/>
+                <event_player_built_station/>
+                <event_lasertower_launched space="player.galaxy"/>
+                <event_mine_launched space="player.galaxy"/>
+                <event_navbeacon_launched space="player.galaxy"/>
+                <event_satellite_launched space="player.galaxy"/>
+                <event_resourceprobe_launched space="player.galaxy"/>
+                <event_contained_object_changed_owner space="player.galaxy" owner="faction.player"/>
+                <event_cue_signalled/>
+              </check_any>
+              <check_object object="event.param" checkoperational="true"/>
+            </check_all>
           </conditions>
           <delay exact="100ms"/>
           <actions>
@@ -256,6 +259,7 @@
                       <replace string="{5554302,20}" with="''"/>
                     </substitute_text>
                   </do_else>
+                  <set_value name="player.entity.$unformatted_names.{$object}" exact="player.entity.$unformatted_names.{$object} + event.name" comment="temp for debug"/>
                   <debug_text filter="general" text="'Name set to %1'.[player.entity.$unformatted_names.{$object}]" chance="0"/>
                   <include_actions ref="RenameActions"/>
                 </do_if>
@@ -268,14 +272,20 @@
         <cue name="NameUpdate_FromEventObject" instantiate="true">
           <conditions>
             <check_any>
-              <event_object_signalled group="$NamedObjectsDynamic" param="'Object Name Updated'" comment="for Update Signalling from other Scripts"/>
+              <event_object_signalled group="$NamedObjects" param="'Object Name Updated'" comment="for Update Signalling from other Scripts"/>
             </check_any>
           </conditions>
-          <delay min="100ms" max="1000ms"/>
+          <delay min="10ms" max="100ms"/>
           <actions>
             <set_value name="$object" exact="event.object"/>
-            <include_actions ref="RenameActions"/>
-            <remove_value name="$object"/>
+            <do_if value="player.entity.$unformatted_names.{$object} == ''">
+              <!-- re-initialize if name is empty -->
+              <signal_cue_instantly cue="NameUpdate_Initialize" param="$object"/>
+            </do_if>
+            <do_else>
+              <include_actions ref="RenameActions"/>
+              <remove_value name="$object"/>
+            </do_else>
           </actions>
         </cue>
         <cue name="NameUpdate_FromLua" instantiate="true">
@@ -355,16 +365,38 @@
           <conditions>
             <check_all>
               <check_any>
+                <event_object_changed_subordinategroup group="$NamedObjects"/>
+                <event_object_changed_assignment group="$NamedObjects"/>
+                <event_control_entity_added group="$NamedObjects"/>
                 <event_player_build_finished/>
                 <event_player_trade_completed/>
+                <event_object_order_cancelled group="$NamedObjects"/>
+                <event_object_order_finished group="$NamedObjects"/>
+                <event_object_order_ready group="$NamedObjects"/>
                 <!--event_build_finished/>
                 <event_trade_completed/-->
               </check_any>
-              <check_value value="$NamedObjectsDynamic.indexof.{event.object}"/>
+              <!--<check_value value="$NamedObjectsDynamic.indexof.{event.object}"/>-->
             </check_all>
           </conditions>
           <actions>
-            <signal_objects object="event.object" param="'Object Name Updated'"/>
+            <do_if value="event.name == 'event_player_trade_completed'">
+              <do_if value="event.param.buyer.owner == faction.player">
+                <signal_objects object="event.param.buyer" param="'Object Name Updated'"/>
+              </do_if>
+              <do_if value="event.param.seller.owner == faction.player">
+                <signal_objects object="event.param.seller" param="'Object Name Updated'"/>
+              </do_if>
+            </do_if>
+            <do_elseif value="event.name == 'event_player_build_finished'">
+              <signal_objects object="event.param" param="'Object Name Updated'"/>
+            </do_elseif>
+            <do_elseif value="event.object.exists">
+              <signal_objects object="event.object" param="'Object Name Updated'"/>
+            </do_elseif>
+            <do_else>
+              <debug_text filter="error" text="'%s / %s no event.object, e.o: %s e.p1 %s e.p2 %s e.p3 %s'.[this.name,event.name,event.object,event.param,event.param2,event.param3]"/>
+            </do_else>
           </actions>
         </cue>
         <cue name="NameUpdateBoarding" instantiate="true">
@@ -376,16 +408,20 @@
                 <event_boarding_phase_changed/>
               </check_any>
               <check_any>
-                <check_value value="$NamedObjectsDynamic.indexof.{event.param.boardee}"/>
-                <check_value value="$NamedObjectsDynamic.indexof.{event.param.boarder}"/>
+                <check_value value="$NamedObjects.indexof.{event.param.boardee}"/>
+                <!-- Dynamic -->
+                <check_value value="$NamedObjects.indexof.{event.param.boarder}"/>
+                <!-- Dynamic -->
               </check_any>
             </check_all>
           </conditions>
           <actions>
-            <do_if value="$NamedObjectsDynamic.indexof.{event.boardee}">
+            <do_if value="$NamedObjects.indexof.{event.boardee}">
+              <!-- Dynamic -->
               <signal_objects object="event.param.boardee" param="'Object Name Updated'"/>
             </do_if>
-            <do_if value="$NamedObjectsDynamic.indexof.{event.boarder}">
+            <do_if value="$NamedObjects.indexof.{event.boarder}">
+              <!-- Dynamic -->
               <signal_objects object="event.param.boarder" param="'Object Name Updated'"/>
             </do_if>
           </actions>
@@ -534,7 +570,6 @@
             </substitute_text>
           </do_all>
           <set_value name="$debug" exact="'%1\nCUSTOM: (Not seperate from next yet)\nLOCAL:   %2'.[$debug,$nameA]" chance="$debug? *100" comment="fill debug output Value"/>
-
           <get_text_ids_in_range result="$keys" page="5554301" start="2000" end="3000" factor="2"/>
           <do_all exact="$keys.count" counter="$i" reverse="false">
             <substitute_text text="$nameA">
@@ -631,12 +666,11 @@
             <replace string="{5554302,105}" with="$type"/>
             <replace string="{5554302,106}" with="$type"/>
             <replace string="{5554302,107}" with="if $object.isrealclass.station then $type else $object.macro.name"/>
-            <replace string="{5554302,108}" with="{5554301,11001} + $object.primarypurpose"/>
             <!-- will be post-dynamic replaced with proper Purpose Name -->
+            <replace string="{5554302,108}" with="{5554301,11001} + $object.primarypurpose"/>
+            <!-- will be post-dynamic replaced with proper Class Name -->
             <replace string="{5554302,109}" with="{5554301,11015} + $object.class"/>
-            <!-- will be post-dynamic replaced with proper Class Name -->
             <replace string="{5554302,110}" with="$object.idcode"/>
-            <!-- will be post-dynamic replaced with proper Class Name -->
             <!-- Random Color (cannot be done from t-file directly) -->
             <replace string="{5554302,119}+'0'" with="[{5554301,2001},{5554301,2003},{5554301,2005},{5554301,2007},{5554301,2009},{5554301,2011},{5554301,2013},{5554301,2015},{5554301,2017},{5554301,2019},{5554301,2021},{5554301,2025}+'0'].random"/>
             <replace string="{5554302,119}+'1'" with="[{5554301,2001},{5554301,2003},{5554301,2005},{5554301,2007},{5554301,2009},{5554301,2011},{5554301,2013},{5554301,2015},{5554301,2017},{5554301,2019},{5554301,2021},{5554301,2025}+'0'].random"/>
@@ -658,8 +692,9 @@
             <replace string="{5554302,115}" with="$object.cluster.shortname"/>
             <replace string="{5554302,116}" with="$object.macro.shortname"/>
             -->
+            <replace string="{5554302,111}" with="$object.fleet.name"/>
+            <replace string="{5554302,30}" with="readtext.{5554302}.{32+$object.subordinategroupid}"/>
           </substitute_text>
-
           <!-- Ship Sequence Numbers-->
           <substitute_text text="$nameB" source="$nameA">
             <replace string="{5554302,500}" with="''"/>
@@ -719,7 +754,7 @@
                   <substitute_text text="$nameB" source="$nameA">
                     <replace string="{5554302,504}" with="( if $sequence_purpose.{$object.primarypurpose} ge 100 and $tmp lt 100  then {5554302,122} else '' ) + ( if $sequence_purpose.{$object.primarypurpose} ge 10 and $tmp lt 10  then {5554302,122} else '' ) + $tmp"/>
                   </substitute_text>
-                  <do_if value="$nameA != $nameB">>
+                  <do_if value="$nameA != $nameB">
                     <do_if value="not $current_id.{$object}?">
                       <set_value name="$sequence_purpose.{$object.primarypurpose}" operation="add"/>
                       <set_value name="$current_id.{$object}" exact="$sequence_purpose.{$object.primarypurpose}"/>
@@ -749,7 +784,6 @@
                 </do_else>
               </do_else>
             </do_else>
-
             <!--substitute_text text="$nameA">
               <replace string="{5554302,501}" with="$current_id.{$object}"/>
               <replace string="{5554302,502}" with="$current_id.{$object}"/>
@@ -759,7 +793,6 @@
             </substitute_text-->
             <set_value name="$debug" exact="'%1\nSEQUENC: %2'.[$debug,$nameB ]" chance="$debug? *100" comment="fill debug output Value"/>
           </do_if>
-
           <!-- From here on $nameA contains the visible name (with frequently changing content) and $nameB the short variation without frequently changing content - if both are identical after this there is no need for Updates -->
           <set_value name="$nameA" exact="$nameB"/>
           <!-- Perform Script-Dynamic Replacements ( Marking Key $ ) - no Registration for Automated Update Event, send Signal or Include Actions yourself.-->
@@ -797,6 +830,7 @@
             <replace string="{5554302,54}" with="''"/>
             <replace string="{5554302,55}" with="''"/>
             <replace string="{5554302,56}" with="''"/>
+            <!--
             <replace string="{5554302,57}" with="''"/>
             <replace string="{5554302,58}" with="''"/>
             <replace string="{5554302,59}" with="''"/>
@@ -819,7 +853,7 @@
             <replace string="{5554302,76}" with="''"/>
             <replace string="{5554302,77}" with="''"/>
             <replace string="{5554302,78}" with="''"/>
-            <replace string="{5554302,79}" with="''"/>
+            <replace string="{5554302,79}" with="''"/>-->
             <replace string="{5554302,80}" with="''"/>
             <replace string="{5554302,81}" with="''"/>
             <replace string="{5554302,82}" with="''"/>
@@ -887,11 +921,16 @@
             <set_value name="$ressmintier" exact="10"/>
             <set_value name="$ressmaxtier" exact="0"/>
             <set_value name="$intermintier" exact="10"/>
-            <set_value name="$intermintier" exact="0"/>
+            <set_value name="$intermaxtier" exact="0"/>
             <set_value name="$prodmintier" exact="10"/>
-            <set_value name="$prodmintier" exact="0"/>
+            <set_value name="$prodmaxtier" exact="0"/>
             <do_for_each in="$object.resources.pure.list">
-              <set_value name="$tier" exact="$TiersByWare.{loop.element}"/>
+              <do_if value="$TiersByWare.{loop.element}?">
+                <set_value name="$tier" exact="$TiersByWare.{loop.element}"/>
+              </do_if>
+              <do_else>
+                <set_value name="$tier" exact="0"/>
+              </do_else>
               <do_if value="$ressmintier lt $tier">
                 <set_value name="$ressmintier" exact="$tier"/>
               </do_if>
@@ -934,60 +973,20 @@
           </do_else>
           <substitute_text text="$nameA">
             <!-- Skill-based Expressions -->
-            <!--replace string="{5554302,40}" with="@$object.boardingnpc.skill.combinedskill"/>
-            <replace string="{5554302,41}" with="@$object.boardingnpc.skill.boarding"/>
-            <replace string="{5554302,42}" with="@$object.boardingnpc.skill.combat"/>
-            <replace string="{5554302,43}" with="@$object.boardingnpc.skill.engineering"/>
-            <replace string="{5554302,44}" with="@$object.boardingnpc.skill.leadership"/>
-            <replace string="{5554302,45}" with="@$object.boardingnpc.skill.management"/>
-            <replace string="{5554302,46}" with="@$object.boardingnpc.skill.navigation"/>
-            <replace string="{5554302,47}" with="@$object.boardingnpc.skill.morale"/>
-            <replace string="{5554302,48}" with="@$object.boardingnpc.skill.science"/>
-            <replace string="{5554302,49}" with="if $object.boardingnpc.exists then ( '' + 
-$object.boardingnpc.skill.{$object.boardingnpc.type.skilltypes.{1}} + 
-( if $object.boardingnpc.type.skilltypes.{2}? then  + $object.boardingnpc.skill.{$object.boardingnpc.type.skilltypes.{2}} else '' ) +  
-( if $object.boardingnpc.type.skilltypes.{3}? then  + $object.boardingnpc.skill.{$object.boardingnpc.type.skilltypes.{3}} else '' ) )
-else 'null'"/-->
-            <replace string="{5554302,50}" with="@$object.pilot.combinedskill"/>
-            <replace string="{5554302,51}" with="@$object.pilot.skill.boarding"/>
-            <replace string="{5554302,52}" with="@$object.pilot.skill.combat"/>
-            <replace string="{5554302,53}" with="@$object.pilot.skill.engineering"/>
-            <replace string="{5554302,54}" with="@$object.pilot.skill.leadership"/>
-            <replace string="{5554302,55}" with="@$object.pilot.skill.management"/>
-            <replace string="{5554302,56}" with="@$object.pilot.skill.navigation"/>
-            <replace string="{5554302,57}" with="@$object.pilot.skill.morale"/>
-            <replace string="{5554302,58}" with="@$object.pilot.skill.science"/>
-            <replace string="{5554302,59}" with="if $object.pilot.exists then ( '' +  $object.pilot.skill.{$object.pilot.type.skilltypes.{1}} +  ( if $object.pilot.type.skilltypes.{2}? then  + $object.pilot.skill.{$object.pilot.type.skilltypes.{2}} else '' ) +   ( if $object.pilot.type.skilltypes.{3}? then  + $object.pilot.skill.{$object.pilot.type.skilltypes.{3}} else '' ) ) else 'null'"/>
-            <replace string="{5554302,60}" with="@$object.defencenpc.combinedskill"/>
-            <replace string="{5554302,61}" with="@$object.defencenpc.skill.boarding"/>
-            <replace string="{5554302,62}" with="@$object.defencenpc.skill.combat"/>
-            <replace string="{5554302,63}" with="@$object.defencenpc.skill.engineering"/>
-            <replace string="{5554302,64}" with="@$object.defencenpc.skill.leadership"/>
-            <replace string="{5554302,65}" with="@$object.defencenpc.skill.management"/>
-            <replace string="{5554302,66}" with="@$object.defencenpc.skill.navigation"/>
-            <replace string="{5554302,67}" with="@$object.defencenpc.skill.morale"/>
-            <replace string="{5554302,68}" with="@$object.defencenpc.skill.science"/>
-            <replace string="{5554302,69}" with="if $object.defencenpc.exists then ( '' +  $object.defencenpc.skill.{$object.defencenpc.type.skilltypes.{1}} +  ( if $object.defencenpc.type.skilltypes.{2}? then  + $object.defencenpc.skill.{$object.defencenpc.type.skilltypes.{2}} else '' ) +   ( if $object.defencenpc.type.skilltypes.{3}? then  + $object.defencenpc.skill.{$object.defencenpc.type.skilltypes.{3}} else '' ) ) else 'null'"/>
-            <replace string="{5554302,70}" with="@$object.engineer.combinedskill"/>
-            <replace string="{5554302,71}" with="@$object.engineer.skill.boarding"/>
-            <replace string="{5554302,72}" with="@$object.engineer.skill.combat"/>
-            <replace string="{5554302,73}" with="@$object.engineer.skill.engineering"/>
-            <replace string="{5554302,74}" with="@$object.engineer.skill.leadership"/>
-            <replace string="{5554302,75}" with="@$object.engineer.skill.management"/>
-            <replace string="{5554302,76}" with="@$object.engineer.skill.navigation"/>
-            <replace string="{5554302,77}" with="@$object.engineer.skill.morale"/>
-            <replace string="{5554302,78}" with="@$object.engineer.skill.science"/>
-            <replace string="{5554302,79}" with="if $object.engineer.exists then ( '' +  $object.engineer.skill.{$object.engineer.type.skilltypes.{1}} +  ( if $object.engineer.type.skilltypes.{2}? then  + $object.engineer.skill.{$object.engineer.type.skilltypes.{2}} else '' ) +   ( if $object.engineer.type.skilltypes.{3}? then  + $object.engineer.skill.{$object.engineer.type.skilltypes.{3}} else '' ) ) else 'null'"/>
-            <replace string="{5554302,80}" with="@$object.tradenpc.combinedskill"/>
-            <replace string="{5554302,81}" with="@$object.tradenpc.skill.boarding"/>
-            <replace string="{5554302,82}" with="@$object.tradenpc.skill.combat"/>
-            <replace string="{5554302,83}" with="@$object.tradenpc.skill.engineering"/>
-            <replace string="{5554302,84}" with="@$object.tradenpc.skill.leadership"/>
-            <replace string="{5554302,85}" with="@$object.tradenpc.skill.management"/>
-            <replace string="{5554302,86}" with="@$object.tradenpc.skill.navigation"/>
-            <replace string="{5554302,87}" with="@$object.tradenpc.skill.morale"/>
-            <replace string="{5554302,88}" with="@$object.tradenpc.skill.science"/>
-            <replace string="{5554302,89}" with="if $object.tradenpc.exists then ( '' +  $object.tradenpc.skill.{$object.tradenpc.type.skilltypes.{1}} +  ( if $object.tradenpc.type.skilltypes.{2}? then  + $object.tradenpc.skill.{$object.tradenpc.type.skilltypes.{2}} else '' ) +   ( if $object.tradenpc.type.skilltypes.{3}? then  + $object.tradenpc.skill.{$object.tradenpc.type.skilltypes.{3}} else '' ) ) else 'null'"/>
+            <replace string="{5554302,80}+{5554302,88}" with="if $object.tradenpc.exists then $object.tradenpc.skill.boarding else @$object.assignedaipilot.skill.boarding"/>
+            <replace string="{5554302,80}+{5554302,89}" with="(if $object.tradenpc.exists then $object.tradenpc.skill.boarding else @$object.assignedaipilot.skill.boarding)/3"/>
+            <replace string="{5554302,81}+{5554302,88}" with="if $object.tradenpc.exists then $object.tradenpc.combinedskill else @$object.assignedaipilot.combinedskill"/>
+            <replace string="{5554302,81}+{5554302,89}" with="(if $object.tradenpc.exists then $object.tradenpc.combinedskill else @$object.assignedaipilot.combinedskill)/20"/>
+            <replace string="{5554302,82}+{5554302,88}" with="if $object.tradenpc.exists then $object.tradenpc.skill.engineering else @$object.assignedaipilot.skill.engineering"/>
+            <replace string="{5554302,82}+{5554302,89}" with="(if $object.tradenpc.exists then $object.tradenpc.skill.engineering else @$object.assignedaipilot.skill.engineering)/3"/>
+            <replace string="{5554302,83}+{5554302,88}" with="if $object.tradenpc.exists then $object.tradenpc.skill.management else @$object.assignedaipilot.skill.management"/>
+            <replace string="{5554302,83}+{5554302,89}" with="(if $object.tradenpc.exists then $object.tradenpc.skill.management else @$object.assignedaipilot.skill.management)/3"/>
+            <replace string="{5554302,84}+{5554302,88}" with="if $object.tradenpc.exists then $object.tradenpc.skill.management else @$object.assignedaipilot.skill.management"/>
+            <replace string="{5554302,84}+{5554302,89}" with="(if $object.tradenpc.exists then $object.tradenpc.skill.management else @$object.assignedaipilot.skill.management)/3"/>
+            <replace string="{5554302,85}+{5554302,88}" with="if $object.tradenpc.exists then $object.tradenpc.skill.morale else @$object.assignedaipilot.skill.morale"/>
+            <replace string="{5554302,85}+{5554302,89}" with="(if $object.tradenpc.exists then $object.tradenpc.skill.morale else @$object.assignedaipilot.skill.morale)/3"/>
+            <replace string="{5554302,86}+{5554302,88}" with="if $object.tradenpc.exists then $object.tradenpc.skill.piloting else @$object.assignedaipilot.skill.piloting"/>
+            <replace string="{5554302,86}+{5554302,89}" with="(if $object.tradenpc.exists then $object.tradenpc.skill.piloting else @$object.assignedaipilot.skill.piloting)/3"/>
             <!-- Boarding Stuff -->
             <replace string="{5554302,90}" with="@$object.boardingmarines.count"/>
             <replace string="{5554302,91}" with="@$object.boardingmarines.combinedskill"/>
@@ -1009,6 +1008,9 @@ else 'null'"/-->
             <replace string="{5554302,129}" with="@$object.cargo.capacity.all"/>
             <replace string="{5554302,130}" with="@$object.cargo.capacity.all - @$object.cargo.free.all"/>
             <replace string="{5554302,131}" with="$cargolist.count"/>
+            <replace string="{5554302,132}" with="if @$object.order.isinloop then {1001,11270} else @$object.defaultorder.name"/>
+            <replace string="{5554302,133}" with="@$object.order.name"/>
+            <replace string="{5554302,134}" with="@$object.orders.count"/>
             <!-- Station related expressions -->
             <replace string="{5554302,411}" with="if @$object.resources.pure.count == 1 then @$object.resources.pure.{1} else @$object.resources.pure.count"/>
             <replace string="{5554302,412}" with="$ressmintier"/>
@@ -1025,16 +1027,15 @@ else 'null'"/-->
           <remove_value name="$secondarycargo"/>
           <remove_value name="$cargolist"/>
           <remove_value name="$products"/>
-
           <set_value name="$debug" exact="'%1\nDYNAMIC: %2 %4 %3'.[$debug,$nameA,@$nameB,if $nameA == @$nameB then '==' else '!=' ]" chance="$debug? *100" comment="fill debug output Value"/>
           <!-- if the Name contains something dynamic - add it to the Update-Group, otherwise remove it -->
-          <do_if value="$nameA != $nameB">
+          <!--<do_if value="$nameA != $nameB">
             <add_to_group groupname="md.UT_CAC_Object_Name_Managment.Init.$NamedObjectsDynamic" object="$object" comment="since this code might be included elsewhere refer to this var with mdscript/cue"/>
           </do_if>
           <do_else>
             <remove_from_group group="md.UT_CAC_Object_Name_Managment.Init.$NamedObjectsDynamic" object="$object"/>
             <remove_value name="$nameB"/>
-          </do_else>
+          </do_else>-->
           <!-- Post-dynamic substitutions -->
           <get_text_ids_in_range result="$keys" page="5554301" start="10000" end="12000" factor="2"/>
           <do_if value="$nameB?">
@@ -1103,7 +1104,7 @@ else 'null'"/-->
           </do_if>
           <do_else>
             <remove_from_group group="md.UT_CAC_Object_Name_Managment.Init.$NamedObjects" object="$object"/>
-            <remove_from_group group="md.UT_CAC_Object_Name_Managment.Init.$NamedObjectsDynamic" object="$object"/>
+            <!--<remove_from_group group="md.UT_CAC_Object_Name_Managment.Init.$NamedObjectsDynamic" object="$object"/>-->
             <debug_to_file text="'No Unformatted Name Var set on Object: %1 - doing nothing!! (may be caused by a Script Update)'.[@$object]" name="'Advanced Renaming.txt'" output="true"/>
           </do_else>
         </do_else>
@@ -1111,81 +1112,72 @@ else 'null'"/-->
     </library>
     <library name="SetWareTiers" purpose="run_actions">
       <params>
-        <param name="TiersByWare" default="null" />
+        <param name="TiersByWare" default="null"/>
         <!-- $TiersByWare.{$Ware} = tier number -->
-        <param name="Ware" default="null" />
-        <param name="IsInit" default="null" />
-        <param name="DebugIndent" default="''" />
+        <param name="Ware" default="null"/>
+        <param name="IsInit" default="null"/>
+        <param name="DebugIndent" default="''"/>
       </params>
       <actions>
         <do_if value="{5554302,3} == 'kurtee' or {5554302,3} == 'auto'">
           <do_if value="$IsInit">
-            <set_value name="$TiersByWare" exact="table[]" />
+            <set_value name="$TiersByWare" exact="table[]"/>
           </do_if>
           <do_if value="not $Ware">
-            <get_ware_definition result="$wares" tags="[tag.economy]" />
+            <get_ware_definition result="$wares" tags="[tag.economy]"/>
           </do_if>
           <do_else>
-            <set_value name="$wares" exact="@$Ware.resources.list" />
+            <set_value name="$wares" exact="@$Ware.resources.list"/>
           </do_else>
           <do_if value="@$wares.count">
             <do_for_each name="$ware_inList" in="$wares">
               <do_if value="not $TiersByWare.{$ware_inList}?">
                 <do_if value="@$ware_inList.resources.count">
                   <run_actions ref="SetWareTiers" result="$TiersByWare">
-                    <param name="TiersByWare" value="$TiersByWare" />
-                    <param name="Ware" value="$ware_inList" />
-                    <param name="DebugIndent" value="$DebugIndent + '    '" />
+                    <param name="TiersByWare" value="$TiersByWare"/>
+                    <param name="Ware" value="$ware_inList"/>
+                    <param name="DebugIndent" value="$DebugIndent + '    '"/>
                   </run_actions>
                 </do_if>
                 <do_else>
-                  <set_value name="$TiersByWare.{$ware_inList}" exact="0" />
+                  <set_value name="$TiersByWare.{$ware_inList}" exact="0"/>
                   <!-- <debug_text text="$DebugIndent + @$ware_inList + ': ' + @$TiersByWare.{$ware_inList} + ' (no resources but in resources list of ' + $Ware + ')'" chance="100" /> -->
-                  <debug_text text="@$ware_inList + ': ' + @$TiersByWare.{$ware_inList} + ' (no resources but in resources list of ' + $Ware + ')'" chance="100" />
+                  <debug_text text="@$ware_inList + ': ' + @$TiersByWare.{$ware_inList} + ' (no resources but in resources list of ' + $Ware + ')'" chance="100"/>
                 </do_else>
               </do_if>
             </do_for_each>
-            <set_value name="$resourceTier_max" exact="0" />
+            <set_value name="$resourceTier_max" exact="0"/>
             <do_for_each name="$ware_inList" in="$wares">
               <do_if value="$TiersByWare.{$ware_inList} gt $resourceTier_max">
-                <set_value name="$resourceTier_max" exact="$TiersByWare.{$ware_inList}" />
+                <set_value name="$resourceTier_max" exact="$TiersByWare.{$ware_inList}"/>
               </do_if>
             </do_for_each>
             <do_if value="$Ware">
-              <set_value name="$TiersByWare.{$Ware}" exact="$resourceTier_max + 1" />
-              <set_value name="$isLowTier" exact="
-          waregroup.agricultural.{$Ware}.exists or
-          waregroup.energy.{$Ware}.exists or
-          waregroup.food.{$Ware}.exists or
-          waregroup.gases.{$Ware}.exists or
-          waregroup.ice.{$Ware}.exists or
-          waregroup.minerals.{$Ware}.exists or
-          waregroup.pharmaceutical.{$Ware}.exists or
-          waregroup.water.{$Ware}.exists
-        " />
+              <set_value name="$TiersByWare.{$Ware}" exact="$resourceTier_max + 1"/>
+              <set_value name="$isLowTier" exact="           waregroup.agricultural.{$Ware}.exists or           waregroup.energy.{$Ware}.exists or           waregroup.food.{$Ware}.exists or           waregroup.gases.{$Ware}.exists or           waregroup.ice.{$Ware}.exists or           waregroup.minerals.{$Ware}.exists or           waregroup.pharmaceutical.{$Ware}.exists or           waregroup.water.{$Ware}.exists         "/>
               <do_if value="$isLowTier">
                 <do_if value="$TiersByWare.{$Ware} gt 3">
-                  <set_value name="$TiersByWare.{$Ware}" exact="$TiersByWare.{$Ware} - 1" />
+                  <set_value name="$TiersByWare.{$Ware}" exact="$TiersByWare.{$Ware} - 1"/>
                 </do_if>
               </do_if>
               <do_else>
-                <set_value name="$TiersByWare.{$Ware}" exact="$TiersByWare.{$Ware} + 1" />
+                <set_value name="$TiersByWare.{$Ware}" exact="$TiersByWare.{$Ware} + 1"/>
                 <do_if value="$TiersByWare.{$Ware} gt 5">
-                  <set_value name="$TiersByWare.{$Ware}" exact="$TiersByWare.{$Ware} - 1" />
+                  <set_value name="$TiersByWare.{$Ware}" exact="$TiersByWare.{$Ware} - 1"/>
                 </do_if>
               </do_else>
               <!-- <debug_text text="$DebugIndent + @$Ware + ': ' + @$TiersByWare.{$Ware} + ' $isLowTier: ' + $isLowTier" chance="100" /> -->
-              <debug_text text="@$Ware + ': ' + @$TiersByWare.{$Ware} + ' $isLowTier: ' + $isLowTier" chance="100" />
+              <debug_text text="@$Ware + ': ' + @$TiersByWare.{$Ware} + ' $isLowTier: ' + $isLowTier" chance="100"/>
               <do_for_each name="$ware_inList" in="$wares">
                 <!-- <debug_text text="$DebugIndent + '    +' + @$ware_inList + ': ' + @$TiersByWare.{$ware_inList}" chance="100" /> -->
-                <debug_text text="'    +' + @$ware_inList + ': ' + @$TiersByWare.{$ware_inList}" chance="100" />
+                <debug_text text="'    +' + @$ware_inList + ': ' + @$TiersByWare.{$ware_inList}" chance="100"/>
               </do_for_each>
             </do_if>
           </do_if>
-          <return value="$TiersByWare" />
+          <return value="$TiersByWare"/>
         </do_if>
         <do_elseif value="{5554302,3} == 'wiki'">
-          <get_ware_definition result="$wares" tags="[tag.economy]" />
+          <get_ware_definition result="$wares" tags="[tag.economy]"/>
           <set_value name="$TiersByWare" exact="table[]"/>
           <do_for_each in="$wares">
             <do_if value="waregroup.agricultural.{loop.element}.exists">
@@ -1274,94 +1266,119 @@ else 'null'"/-->
               <set_value name="$TiersByWare.{loop.element}" exact="6"/>
             </do_elseif>
           </do_for_each>
-          <return value="$TiersByWare" />
+          <return value="$TiersByWare"/>
         </do_elseif>
         <do_else>
-          <get_ware_definition result="$wares" tags="[tag.economy]" />
+          <get_ware_definition result="$wares" tags="[tag.economy]"/>
           <set_value name="$TiersByWare" exact="table[]"/>
           <do_for_each in="$wares">
             <do_if value="waregroup.agricultural.{loop.element}.exists">
-              <set_value name="$TiersByWare.{loop.element}" exact="5"/><!-- 1 -->
+              <set_value name="$TiersByWare.{loop.element}" exact="5"/>
+              <!-- 1 -->
             </do_if>
             <do_elseif value="waregroup.energy.{loop.element}.exists">
-              <set_value name="$TiersByWare.{loop.element}" exact="1"/><!-- 0 -->
+              <set_value name="$TiersByWare.{loop.element}" exact="1"/>
+              <!-- 0 -->
             </do_elseif>
             <do_elseif value="waregroup.food.{loop.element}.exists">
-              <set_value name="$TiersByWare.{loop.element}" exact="6"/><!-- 2 -->
+              <set_value name="$TiersByWare.{loop.element}" exact="6"/>
+              <!-- 2 -->
             </do_elseif>
             <do_elseif value="waregroup.gases.{loop.element}.exists">
-              <set_value name="$TiersByWare.{loop.element}" exact="0"/><!-- 0 -->
+              <set_value name="$TiersByWare.{loop.element}" exact="0"/>
+              <!-- 0 -->
             </do_elseif>
             <do_elseif value="waregroup.hightech.{loop.element}.exists">
-              <set_value name="$TiersByWare.{loop.element}" exact="3"/><!-- 4 -->
+              <set_value name="$TiersByWare.{loop.element}" exact="3"/>
+              <!-- 4 -->
             </do_elseif>
             <do_elseif value="waregroup.ice.{loop.element}.exists">
-              <set_value name="$TiersByWare.{loop.element}" exact="0"/><!-- 0 -->
+              <set_value name="$TiersByWare.{loop.element}" exact="0"/>
+              <!-- 0 -->
             </do_elseif>
             <do_elseif value="waregroup.minerals.{loop.element}.exists">
-              <set_value name="$TiersByWare.{loop.element}" exact="0"/><!-- 0 -->
+              <set_value name="$TiersByWare.{loop.element}" exact="0"/>
+              <!-- 0 -->
             </do_elseif>
             <do_elseif value="waregroup.pharmaceutical.{loop.element}.exists">
-              <set_value name="$TiersByWare.{loop.element}" exact="7"/><!-- 2 -->
+              <set_value name="$TiersByWare.{loop.element}" exact="7"/>
+              <!-- 2 -->
             </do_elseif>
             <do_elseif value="waregroup.refined.{loop.element}.exists">
-              <set_value name="$TiersByWare.{loop.element}" exact="2"/><!-- 3 -->
+              <set_value name="$TiersByWare.{loop.element}" exact="2"/>
+              <!-- 3 -->
             </do_elseif>
             <do_elseif value="waregroup.shiptech.{loop.element}.exists">
-              <set_value name="$TiersByWare.{loop.element}" exact="4"/><!-- 5 -->
+              <set_value name="$TiersByWare.{loop.element}" exact="4"/>
+              <!-- 5 -->
             </do_elseif>
             <do_elseif value="waregroup.weapontech.{loop.element}.exists">
-              <set_value name="$TiersByWare.{loop.element}" exact="3"/><!-- 6 -->
+              <set_value name="$TiersByWare.{loop.element}" exact="3"/>
+              <!-- 6 -->
             </do_elseif>
             <do_elseif value="waregroup.water.{loop.element}.exists">
-              <set_value name="$TiersByWare.{loop.element}" exact="2"/><!-- 0 -->
+              <set_value name="$TiersByWare.{loop.element}" exact="2"/>
+              <!-- 0 -->
             </do_elseif>
             <!-- Below here are the final equipment Products -->
             <do_elseif value="waregroup.ships_argon.{loop.element}.exists">
-              <set_value name="$TiersByWare.{loop.element}" exact="9"/><!-- 7 -->
+              <set_value name="$TiersByWare.{loop.element}" exact="9"/>
+              <!-- 7 -->
             </do_elseif>
             <do_elseif value="waregroup.ships_paranid.{loop.element}.exists">
-              <set_value name="$TiersByWare.{loop.element}" exact="9"/><!-- 7 -->
+              <set_value name="$TiersByWare.{loop.element}" exact="9"/>
+              <!-- 7 -->
             </do_elseif>
             <do_elseif value="waregroup.ships_teladi.{loop.element}.exists">
-              <set_value name="$TiersByWare.{loop.element}" exact="9"/><!-- 7 -->
+              <set_value name="$TiersByWare.{loop.element}" exact="9"/>
+              <!-- 7 -->
             </do_elseif>
             <do_elseif value="waregroup.ships_split.{loop.element}.exists">
-              <set_value name="$TiersByWare.{loop.element}" exact="9"/><!-- 7 -->
+              <set_value name="$TiersByWare.{loop.element}" exact="9"/>
+              <!-- 7 -->
             </do_elseif>
             <do_elseif value="waregroup.ships_terran.{loop.element}.exists">
-              <set_value name="$TiersByWare.{loop.element}" exact="9"/><!-- 7 -->
+              <set_value name="$TiersByWare.{loop.element}" exact="9"/>
+              <!-- 7 -->
             </do_elseif>
             <do_elseif value="waregroup.drones.{loop.element}.exists">
-              <set_value name="$TiersByWare.{loop.element}" exact="8"/><!-- 6 -->
+              <set_value name="$TiersByWare.{loop.element}" exact="8"/>
+              <!-- 6 -->
             </do_elseif>
             <do_elseif value="waregroup.countermeasures.{loop.element}.exists">
-              <set_value name="$TiersByWare.{loop.element}" exact="8"/><!-- 6 -->
+              <set_value name="$TiersByWare.{loop.element}" exact="8"/>
+              <!-- 6 -->
             </do_elseif>
             <do_elseif value="waregroup.engines.{loop.element}.exists">
-              <set_value name="$TiersByWare.{loop.element}" exact="8"/><!-- 6 -->
+              <set_value name="$TiersByWare.{loop.element}" exact="8"/>
+              <!-- 6 -->
             </do_elseif>
             <do_elseif value="waregroup.missiles.{loop.element}.exists">
-              <set_value name="$TiersByWare.{loop.element}" exact="8"/><!-- 6 -->
+              <set_value name="$TiersByWare.{loop.element}" exact="8"/>
+              <!-- 6 -->
             </do_elseif>
             <do_elseif value="waregroup.shields.{loop.element}.exists">
-              <set_value name="$TiersByWare.{loop.element}" exact="8"/><!-- 6 -->
+              <set_value name="$TiersByWare.{loop.element}" exact="8"/>
+              <!-- 6 -->
             </do_elseif>
             <do_elseif value="waregroup.software.{loop.element}.exists">
-              <set_value name="$TiersByWare.{loop.element}" exact="8"/><!-- 6 -->
+              <set_value name="$TiersByWare.{loop.element}" exact="8"/>
+              <!-- 6 -->
             </do_elseif>
             <do_elseif value="waregroup.thrusters.{loop.element}.exists">
-              <set_value name="$TiersByWare.{loop.element}" exact="8"/><!-- 6 -->
+              <set_value name="$TiersByWare.{loop.element}" exact="8"/>
+              <!-- 6 -->
             </do_elseif>
             <do_elseif value="waregroup.turrets.{loop.element}.exists">
-              <set_value name="$TiersByWare.{loop.element}" exact="8"/><!-- 6 -->
+              <set_value name="$TiersByWare.{loop.element}" exact="8"/>
+              <!-- 6 -->
             </do_elseif>
             <do_elseif value="waregroup.weapons.{loop.element}.exists">
-              <set_value name="$TiersByWare.{loop.element}" exact="8"/><!-- 6 -->
+              <set_value name="$TiersByWare.{loop.element}" exact="8"/>
+              <!-- 6 -->
             </do_elseif>
           </do_for_each>
-          <return value="$TiersByWare" />
-
+          <return value="$TiersByWare"/>
         </do_else>
       </actions>
     </library>

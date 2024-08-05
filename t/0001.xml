@@ -85,6 +85,14 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   <t id="11025">XS</t>
   <t id="11026">%CLASS:station</t>
   <t id="11027">ST</t>
+  <t id="11028">%CLASS:object</t>
+  <t id="11029">O</t>
+  <t id="11028">%CLASS:navbeacon</t>
+  <t id="11029">NV</t>
+  <t id="11030">%CLASS:resourceprobe</t>
+  <t id="11031">RS</t>
+  <t id="11030">%CLASS:satellite</t>
+  <t id="11031">SA</t>
   <!-- unneeded Color Tags - either with or without space in-between // will allow rhese for now-->
   <!--t id="11030"> \033A </t>
   <t id="11031"> \033A</t>
@@ -186,75 +194,44 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   <t id="20053"></t>
 </page>
 <page id="5554302" title="UT Advanced Renaming" descr="Object Name Dynamic Expressions and Internally used Text" voice="no">
-  <!-- NPC Skills
-  S => Skill
-  +
-  B => Boarding NPC (not present in X4; unused)
-  C  => Pilot,Captain (both are technically equal)
-  D => Defense Officer
-  E => Engineer
-  M => Manager
-  +
-  A => All(Combined)
-  B => Boarding
-  C => Combat
-  E => Engineering
-  L => Leadership
-  M => Managment
-  N => Navigation
-  O => Morale
-  S => Science
-  P=> Primary Skills in order of importance -->
-  <t id="40">$SBA</t>
-  <t id="41">$SBB</t>
-  <t id="42">$SBC</t>
-  <t id="43">$SBE</t>
-  <t id="44">$SBL</t>
-  <t id="45">$SBM</t>
-  <t id="46">$SBN</t>
-  <t id="47">$SBO</t>
-  <t id="48">$SBS</t>
-  <t id="49">$SBP</t>
-  <t id="50">$SCA</t>
-  <t id="51">$SCB</t>
-  <t id="52">$SCC</t>
-  <t id="53">$SCE</t>
-  <t id="54">$SCL</t>
-  <t id="55">$SCM</t>
-  <t id="56">$SCN</t>
-  <t id="57">$SCO</t>
-  <t id="58">$SCS</t>
-  <t id="59">$SCP</t>
-  <t id="60">$SDA</t>
-  <t id="61">$SDB</t>
-  <t id="62">$SDC</t>
-  <t id="63">$SDE</t>
-  <t id="64">$SDL</t>
-  <t id="65">$SDM</t>
-  <t id="66">$SDN</t>
-  <t id="67">$SDO</t>
-  <t id="68">$SDS</t>
-  <t id="69">$SDP</t>
-  <t id="70">$SEA</t>
-  <t id="71">$SEB</t>
-  <t id="72">$SEC</t>
-  <t id="73">$SEE</t>
-  <t id="74">$SEL</t>
-  <t id="75">$SEM</t>
-  <t id="76">$SEN</t>
-  <t id="77">$SEO</t>
-  <t id="78">$SES</t>
-  <t id="79">$SEP</t>
-  <t id="80">$SMA</t>
-  <t id="81">$SMB</t>
-  <t id="82">$SMC</t>
-  <t id="83">$SME</t>
-  <t id="84">$SML</t>
-  <t id="85">$SMM</t>
-  <t id="86">$SMN</t>
-  <t id="87">$SMO</t>
-  <t id="88">$SMS</t>
-  <t id="89">$SMP</t>
+  <t id="30" >/groupid</t>
+  <t id="31" comment="No Group">No Group</t>
+  <t id="32" comment="Construction ?">Under Construction</t>
+  <t id="33" comment="Alpha">Alpha</t>
+  <t id="34" comment="Beta">Beta</t>
+  <t id="35" comment="Gamma">Gamma</t>
+  <t id="36" comment="Delta">Delta</t>
+  <t id="37" comment="Epsilon">Epsilon</t>
+  <t id="38" comment="Zeta">Zeta</t>
+  <t id="39" comment="Eta">Eta</t>
+  <t id="40" comment="Theta">Theta</t>
+  <t id="41" comment="Iota">Iota</t>
+  <t id="42" comment="Kappa">Kappa</t>
+  <t id="43" comment="Lambda">Lambda</t>
+  <t id="44" comment="My">My</t>
+  <t id="45" comment="Ny">Ny</t>
+  <t id="46" comment="Xi">Xi</t>
+  <t id="47" comment="Omikron">Omikron</t>
+  <t id="48" comment="Pi">Pi</t>
+  <t id="49" comment="Rho">Rho</t>
+  <t id="50" comment="Sigma">Sigma</t>
+  <t id="51" comment="Tau">Tau</t>
+  <t id="52" comment="Ypsilon">Ypsilon</t>
+  <t id="51" comment="Phi">Phi</t>
+  <t id="53" comment="Chi">Chi</t>
+  <t id="54" comment="Psi">Psi</t>
+  <t id="55" comment="Omega">Omega</t>
+  <!-- NPC Skills -->
+  <t id="80">/SkillB</t>
+  <t id="81">/SkillC</t>
+  <t id="82">/SkillE</t>
+  <t id="83">/SkillM</t>
+  <t id="84">/SkillN</t>
+  <t id="85">/SkillO</t>
+  <t id="86">/SkillP</t>
+  <t id="87"></t>
+  <t id="88">+(for range 0-15)</t>
+  <t id="89">-(for range 0-5)</t>
   <!-- Boarding stuff -->
   <t id="90">$boarding.marinecount</t>
   <t id="91">$boarding.marineskill</t>
@@ -272,6 +249,7 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   <t id="108">/purpose</t>
   <t id="109">/class</t>
   <t id="110">/idcode</t>
+  <t id="111">/fleet</t>
   <!-- currently unused - ->
   <t id="110">%superiorshortzone</t>
   <t id="111">%superiorshortsector</t>
@@ -297,6 +275,9 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   <t id="129">$cargo.vol</t>
   <t id="130">$cargo.used</t>
   <t id="131">$cargo.count</t>
+  <t id="132">$defaultorder</t>
+  <t id="133">$currentorder</t>
+  <t id="134">$ordercount</t>
   <!-- Freight Class Expression and Results -->
   <t id="200">/freightclass</t>
   <t id="201">U(niversal - equals BCEL)</t>
