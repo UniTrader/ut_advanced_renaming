@@ -1,15 +1,13 @@
 local ffi = require("ffi")
 local C = ffi.C
 
-local Lib = require("extensions.sn_mod_support_apis.lua_library")
-
 local menu = {}
 local utRenaming = {}
 
 local function init()
 	-- DebugError("UniTrader Advanced Rename Init")
 
-	menu = Lib.Get_Egosoft_Menu("MapMenu")
+	menu = Helper.getMenu("MapMenu")
 
 	menu.registerCallback("utRenaming_setupInfoSubmenuRows", utRenaming.setupInfoSubmenuRows)
 	menu.registerCallback("utRenaming_infoChangeObjectName", utRenaming.infoChangeObjectName)

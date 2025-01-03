@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon name="infocenter" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../ui/core/addon.xsd">
+  <environment type="menus">
+    <file name="ui/infocenter.lua" />
+    <dependency name="ego_detailmonitor" />
+    <savedvariable name="InfoCenter_Filters" storage="userdata" />
+  </environment>
+</addon>

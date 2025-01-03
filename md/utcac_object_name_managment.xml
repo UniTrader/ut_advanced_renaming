@@ -24,7 +24,7 @@
         <signal_cue_instantly cue="md.G_Work_Around.Signal" param="'.\\extensions\\ut_advanced_renaming\\utrenaming.lua'"/>
       </actions>
     </cue-->
-    <cue name="RegisterUI_Lua_Loader" instantiate="true">
+    <!-- <cue name="RegisterUI_Lua_Loader" instantiate="true">
       <conditions>
         <event_ui_triggered screen="'Lua_Loader'" control="'Ready'"/>
       </conditions>
@@ -34,7 +34,7 @@
         <raise_lua_event name="'Lua_Loader.Load'" param="'extensions.kuertee_ui_extensions.ui.kuertee_menu_map'"/>
         <raise_lua_event name="'Lua_Loader.Load'" param="'extensions.ut_advanced_renaming.ui.utrenaming'"/>
       </actions>
-    </cue>
+    </cue> -->
     <cue name="Init" version="3">
       <actions>
         <!-- Set Up all Groups needed for Automatic Name Upates -->
