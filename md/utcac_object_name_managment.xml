@@ -1,40 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <mdscript xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="UT_CAC_Object_Name_Managment" xsi:noNamespaceSchemaLocation="http://localhost/x4mod/libraries/md.xsd">
   <cues>
-    <!--cue name="RegisterUI_G_Workaround" version="1" instantiate="true">
-      <conditions>
-        <event_cue_completed cue="md.G_Work_Around.Init"/>
-        <check_value value="md.G_Work_Around.Signal.exists" negate="true" comment="use latest lua load API if present"/>
-        <check_value value="md.Lua_Loader.Reload_Listener.exists" negate="true" comment="use latest lua load API if present"/>
-      </conditions>
-      <actions>
-        <debug_text filter="general" text="'utrenaming g workaround call'" chance="0"/>
-        <raise_lua_event name="'RegisterAddon'" param="'extensions.ut_advanced_renaming.utrenaming'"/>
-      </actions>
-    </cue>
-    <cue name="RegisterUI_G_Workaround_020" version="1" instantiate="true">
-      <conditions>
-        <event_game_loaded/>
-        <check_value value="md.G_Work_Around.Signal.exists"/>
-        <check_value value="md.Lua_Loader.Reload_Listener.exists" negate="true" comment="use latest lua load API if present"/>
-      </conditions>
-      <delay exact="1s"/>
-      <actions>
-        <debug_text filter="general" text="'utrenaming g workaround 020 call'" chance="0"/>
-        <signal_cue_instantly cue="md.G_Work_Around.Signal" param="'.\\extensions\\ut_advanced_renaming\\utrenaming.lua'"/>
-      </actions>
-    </cue-->
-    <cue name="RegisterUI_Lua_Loader" instantiate="true">
-      <conditions>
-        <event_ui_triggered screen="'Lua_Loader'" control="'Ready'"/>
-      </conditions>
-      <delay min="10ms" max="100ms"/>
-      <actions>
-        <debug_text filter="general" text="'utrenaming lua loader call'" chance="0"/>
-        <raise_lua_event name="'Lua_Loader.Load'" param="'extensions.kuertee_ui_extensions.ui.kuertee_menu_map'"/>
-        <raise_lua_event name="'Lua_Loader.Load'" param="'extensions.ut_advanced_renaming.ui.utrenaming'"/>
-      </actions>
-    </cue>
     <cue name="Init" version="3">
       <actions>
         <!-- Set Up all Groups needed for Automatic Name Upates -->
@@ -259,7 +225,7 @@
                       <replace string="{5554302,20}" with="''"/>
                     </substitute_text>
                   </do_else>
-                  <set_value name="player.entity.$unformatted_names.{$object}" exact="player.entity.$unformatted_names.{$object} + event.name" comment="temp for debug"/>
+                  <!-- <set_value name="player.entity.$unformatted_names.{$object}" exact="player.entity.$unformatted_names.{$object} + event.name" comment="temp for debug"/> -->
                   <debug_text filter="general" text="'Name set to %1'.[player.entity.$unformatted_names.{$object}]" chance="0"/>
                   <include_actions ref="RenameActions"/>
                 </do_if>
@@ -291,6 +257,7 @@
         <cue name="NameUpdate_FromLua" instantiate="true">
           <conditions>
             <check_any>
+              <event_cue_signalled comment="uix multi-rename support" />
               <event_object_signalled object="player.galaxy" param="'Object Name Updated'" comment="for (initial) signalling from lua"/>
               <event_object_signalled object="player.galaxy" param="'Subordinates Name Updated'" comment="for (initial) signalling from lua"/>
               <event_object_signalled object="player.galaxy" param="'Subordinates Name Updated - bigships'" comment="for (initial) signalling from lua"/>
@@ -328,11 +295,18 @@
               <remove_value name="$objectname"/>
             </do_if>
             <do_else>
-              <set_value name="$object" exact="event.param2" comment="event.param2"/>
-              <set_value name="player.entity.$unformatted_names.{$object}" exact="event.param3"/>
+              <do_if value="event.name == 'event_cue_signalled'" comment="multi-rename support">
+                <set_value name="$object" exact="event.param.$object" />
+                <set_value name="$unformattedname" exact="event.param.$unformattedname" />
+              </do_if>
+              <do_else>
+                <set_value name="$object" exact="event.param2" comment="event.param2"/>
+                <set_value name="$unformattedname" exact="event.param3" />
+              </do_else>
               <!--set_value name="player.entity.$unformatted_names.{event.param2.{2}}" exact="event.param3" comment="Specifically for lua because it refuses to retrieve the unformatted name otherwise - screw lua!!!"/-->
               <!--add_to_group groupname="$NamedObjectsDynamic" object="$object"/-->
-              <do_if value="event.param3 == ''" comment="If the set Name is empty - use/re-set default name according to custom file">
+              <set_value name="player.entity.$unformatted_names.{$object}" exact="$unformattedname"/>
+              <do_if value="$unformattedname == ''" comment="If the set Name is empty - use/re-set default name according to custom file">
                 <remove_value name="player.entity.$unformatted_names.{$object}"/>
                 <signal_cue_instantly cue="NameUpdate_Initialize" param="$object"/>
               </do_if>
@@ -428,6 +402,18 @@
               <!-- Dynamic -->
               <signal_objects object="event.param.boarder" param="'Object Name Updated'"/>
             </do_if>
+          </actions>
+        </cue>
+        <cue name="MultiRename" instantiate="true" namespace="this">
+          <conditions>
+            <event_object_signalled object="player.galaxy" param="'multirename'" />
+          </conditions>
+          <actions>
+            <!-- objects in a multi-rename is in player.entity.$multirenamedobjects -->
+            <do_for_each name="$object" in="player.entity.$multirenamedobjects">
+              <signal_cue_instantly cue="NameUpdate_FromLua" param="table[$object = $object, $unformattedname = $object.knownname]" />
+            </do_for_each>
+            <remove_value name="player.entity.$multirenamedobjects" />
           </actions>
         </cue>
         <cue name="RegularUpdate">
@@ -922,58 +908,56 @@
           <set_value name="$secondarycargo" exact="if $secondarycargo then $secondarycargo.name else {5554302,127}"/>
           <!-- Get Ware Tiers -->
           <do_if value="$object.isclass.station">
-            <set_value name="$ressmintier" exact="10"/>
-            <set_value name="$ressmaxtier" exact="0"/>
-            <set_value name="$intermintier" exact="10"/>
-            <set_value name="$intermaxtier" exact="0"/>
-            <set_value name="$prodmintier" exact="10"/>
-            <set_value name="$prodmaxtier" exact="0"/>
-            <do_for_each in="$object.resources.pure.list">
-              <do_if value="$TiersByWare.{loop.element}?">
-                <set_value name="$tier" exact="$TiersByWare.{loop.element}"/>
-              </do_if>
-              <do_else>
-                <set_value name="$tier" exact="0"/>
-              </do_else>
-              <do_if value="$ressmintier lt $tier">
-                <set_value name="$ressmintier" exact="$tier"/>
-              </do_if>
-              <do_if value="$ressmaxtier gt $tier">
-                <set_value name="$ressmaxtier" exact="$tier"/>
-              </do_if>
-            </do_for_each>
-            <do_for_each in="$object.resources.intermediate.list">
-              <set_value name="$tier" exact="$TiersByWare.{loop.element}"/>
-              <do_if value="$intermintier lt $tier">
-                <set_value name="$intermintier" exact="$tier"/>
-              </do_if>
-              <do_if value="$intermaxtier gt $tier">
-                <set_value name="$intermaxtier" exact="$tier"/>
-              </do_if>
-            </do_for_each>
+            <!-- resources -->
+            <run_actions ref="GetMinMaxTierData" result="$minmaxtierdata">
+              <param name="Station" value="$object" />
+              <param name="WareList" value="$object.resources.pure.list.clone" />
+              <param name="TiersByWare" value="$TiersByWare" />
+            </run_actions>
+            <set_value name="$ressmintier" exact="if $minmaxtierdata.$mintier then $minmaxtierdata.$mintier else 0" />
+            <set_value name="$ressmaxtier" exact="if $minmaxtierdata.$maxtier then $minmaxtierdata.$maxtier else 0" />
+            <set_value name="$resswaremintier" exact="if $minmaxtierdata.$mintierware then $minmaxtierdata.$mintierware else ''" />
+            <set_value name="$resswaremaxtier" exact="if $minmaxtierdata.$maxtierware then $minmaxtierdata.$maxtierware else ''" />
+            <!-- intermediates -->
+            <run_actions ref="GetMinMaxTierData" result="$minmaxtierdata">
+              <param name="Station" value="$object" />
+              <param name="WareList" value="$object.resources.intermediate.list.clone" />
+              <param name="TiersByWare" value="$TiersByWare" />
+            </run_actions>
+            <set_value name="$intermintier" exact="if $minmaxtierdata.$mintier then $minmaxtierdata.$mintier else $ressmintier" />
+            <set_value name="$intermaxtier" exact="if $minmaxtierdata.$maxtier then $minmaxtierdata.$maxtier else $ressmaxtier" />
+            <set_value name="$interwaremintier" exact="if $minmaxtierdata.$mintierware then $minmaxtierdata.$mintierware else $resswaremintier" />
+            <set_value name="$interwaremaxtier" exact="if $minmaxtierdata.$maxtierware then $minmaxtierdata.$maxtierware else $resswaremaxtier" />
+            <!-- produces -->
             <set_value name="$products" exact="[]"/>
             <do_for_each in="$object.products.list">
               <do_if value="not $object.products.{loop.element}.intermediate">
                 <append_to_list name="$products" exact="loop.element"/>
               </do_if>
             </do_for_each>
-            <do_for_each in="$products">
-              <set_value name="$tier" exact="$TiersByWare.{loop.element}"/>
-              <do_if value="$prodmintier lt $tier">
-                <set_value name="$prodmintier" exact="$tier"/>
-              </do_if>
-              <do_if value="$prodmaxtier gt $tier">
-                <set_value name="$prodmaxtier" exact="$tier"/>
-              </do_if>
-            </do_for_each>
+            <run_actions ref="GetMinMaxTierData" result="$minmaxtierdata">
+              <param name="Station" value="$object" />
+              <param name="WareList" value="$products" />
+              <param name="TiersByWare" value="$TiersByWare" />
+            </run_actions>
+            <set_value name="$prodmintier" exact="if $minmaxtierdata.$mintier then $minmaxtierdata.$mintier else $intermintier" />
+            <set_value name="$prodmaxtier" exact="if $minmaxtierdata.$maxtier then $minmaxtierdata.$maxtier else $intermaxtier" />
+            <set_value name="$prodwaremintier" exact="if $minmaxtierdata.$mintierware then $minmaxtierdata.$mintierware else $interwaremintier" />
+            <set_value name="$prodwaremaxtier" exact="if $minmaxtierdata.$maxtierware then $minmaxtierdata.$maxtierware else $interwaremaxtier" />
           </do_if>
           <do_else>
             <set_value name="$ressmintier" exact="''"/>
             <set_value name="$ressmaxtier" exact="''"/>
             <set_value name="$intermintier" exact="''"/>
-            <set_value name="$intermintier" exact="''"/>
+            <set_value name="$intermaxtier" exact="''"/>
             <set_value name="$prodmintier" exact="''"/>
-            <set_value name="$prodmintier" exact="''"/>
+            <set_value name="$prodmaxtier" exact="''"/>
+            <set_value name="$resswaremintier" exact="''" />
+            <set_value name="$resswaremaxtier" exact="''" />
+            <set_value name="$interwaremintier" exact="''" />
+            <set_value name="$interwaremaxtier" exact="''" />
+            <set_value name="$prodwaremintier" exact="''" />
+            <set_value name="$prodwaremaxtier" exact="''" />
           </do_else>
           <substitute_text text="$nameA">
             <!-- Skill-based Expressions -->
@@ -1016,15 +1000,18 @@
             <replace string="{5554302,133}" with="@$object.order.name"/>
             <replace string="{5554302,134}" with="@$object.orders.count"/>
             <!-- Station related expressions -->
-            <replace string="{5554302,411}" with="if @$object.resources.pure.count == 1 then @$object.resources.pure.{1} else @$object.resources.pure.count"/>
-            <replace string="{5554302,412}" with="$ressmintier"/>
-            <replace string="{5554302,413}" with="$ressmaxtier"/>
-            <replace string="{5554302,421}" with="if @$object.resources.intermediate.count == 1 then @$object.resources.intermediate.{1} else @$object.resources.intermediate.count"/>
-            <replace string="{5554302,422}" with="$intermintier"/>
-            <replace string="{5554302,423}" with="$intermaxtier"/>
-            <replace string="{5554302,431}" with="if $products then if @products.count == 1 then $products.{1} else @$object.products.count else ''"/>
-            <replace string="{5554302,432}" with="$prodmintier"/>
-            <replace string="{5554302,433}" with="$prodmaxtier"/>
+            <replace string="{5554302,411}" with="$ressmintier"/>
+            <replace string="{5554302,412}" with="$ressmaxtier"/>
+            <replace string="{5554302,413}" with="$resswaremintier"/>
+            <replace string="{5554302,414}" with="$resswaremaxtier"/>
+            <replace string="{5554302,421}" with="$intermintier"/>
+            <replace string="{5554302,422}" with="$intermaxtier"/>
+            <replace string="{5554302,423}" with="$interwaremintier"/>
+            <replace string="{5554302,424}" with="$interwaremaxtier"/>
+            <replace string="{5554302,431}" with="$prodmintier"/>
+            <replace string="{5554302,432}" with="$prodmaxtier"/>
+            <replace string="{5554302,433}" with="$prodwaremintier"/>
+            <replace string="{5554302,434}" with="$prodwaremaxtier"/>
           </substitute_text>
           <!-- remove temp Values for Cargo Expression -->
           <remove_value name="$primarycargo"/>
@@ -1384,6 +1371,49 @@
           </do_for_each>
           <return value="$TiersByWare"/>
         </do_else>
+      </actions>
+    </library>
+    <library name="GetMinMaxTierData" purpose="run_actions">
+      <params>
+        <param name="Station" />
+        <param name="WareList" />
+        <param name="TiersByWare" />
+      </params>
+      <actions>
+        <do_if value="$WareList.count">
+          <set_value name="$tierdata" exact="table[
+            $mintier = 1000000,
+            $maxtier = -1000000,
+            $mintierware = null,
+            $maxtierware = null,
+          ]" />
+          <sort_list list="$WareList" sortbyvalue="$TiersByWare.{loop.element}" sortdescending="false" />
+          <set_value name="$tierdata.$mintier" exact="$TiersByWare.{$WareList.{1}}"/>
+          <set_value name="$tierdata.$maxtier" exact="$TiersByWare.{$WareList.{$WareList.count}}"/>
+          <set_value name="$tierdata.$mintierware" exact="$WareList.{1}" />
+          <set_value name="$tierdata.$maxtierware" exact="$WareList.{$WareList.count}" />
+          <sort_list list="$WareList" sortbyvalue="$Station.cargo.{loop.element}.count" sortdescending="true" />
+          <do_for_each in="$WareList">
+            <set_value name="$tier" exact="$TiersByWare.{loop.element}"/>
+            <do_if value="$tier lt $tierdata.$mintier">
+              <set_value name="$tierdata.$mintier" exact="$tier"/>
+              <set_value name="$tierdata.$mintierware" exact="$WareList.{loop.element}" />
+            </do_if>
+            <do_if value="$tier gt $tierdata.$maxtier">
+              <set_value name="$tierdata.$maxtier" exact="$tier"/>
+              <set_value name="$tierdata.$maxtierware" exact="$WareList.{loop.element}" />
+            </do_if>
+          </do_for_each>
+        </do_if>
+        <do_else>
+          <set_value name="$tierdata" exact="table[
+            $mintier = 0,
+            $maxtier = 0,
+            $mintierware = null,
+            $maxtierware = null,
+          ]" />
+        </do_else>
+        <return value="$tierdata" />
       </actions>
     </library>
   </cues>

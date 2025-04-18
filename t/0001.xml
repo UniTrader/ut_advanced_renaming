@@ -300,15 +300,18 @@ $***** is a Script-defined dnyamic Replacement (applied second;based on a local 
   <t id="308">$stageH#</t>
   <t id="309">$stageI#</t>
   <!-- Station specific expressions -->
-  <t id="411">$prod.ressware</t>
-  <t id="412">$prod.resstiermin</t>
-  <t id="413">$prod.resstiermax</t>
-  <t id="421">$prod.interware</t>
-  <t id="422">$prod.intertiermin</t>
-  <t id="423">$prod.intertiermax</t>
-  <t id="431">$prod.prodware</t>
-  <t id="432">$prod.prodtiermin</t>
-  <t id="433">$prod.prodtiermax</t>
+  <t id="411">$resstier</t>
+  <t id="412">$ressTIER</t>
+  <t id="413">$resswaretier</t>
+  <t id="414">$resswareTIER</t>
+  <t id="421">$intertier</t>
+  <t id="422">$interTIER</t>
+  <t id="423">$interwaretier</t>
+  <t id="424">$interwareTIER</t>
+  <t id="431">$prodtier</t>
+  <t id="432">$prodTIER</t>
+  <t id="433">$prodwaretier</t>
+  <t id="434">$prodwareTIER</t>
   <!-- Sequence Number Expressions and Control Codes-->
   <t id="500">%seq</t><!-- Common Prefix for all Sequence entries, so we can quickly check if any are present -->
   <t id="501">%seqall</t>
